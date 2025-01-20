@@ -50,10 +50,10 @@ const CheckoutSideMenu = () => {
     <aside
       className={`${
         context.isCheckoutSideMenuOpen ? 'flex' : 'hidden'
-      } checkout-side-menu flex-col fixed right-0 border border-black rounded-lg bg-white`}
+      } checkout-side-menu flex-col fixed right-0 border border-black rounded-lg bg-white shadow-lg sm:max-w-sm w-full`}
     >
-      <div className="flex justify-between items-center p-6">
-        <h2 className="font-medium text-xl">Order Summary</h2>
+      <div className="flex justify-between items-center p-4 sm:p-6">
+        <h2 className="font-medium text-lg sm:text-xl">Order Summary</h2>
         <div>
           <XMarkIcon
             className="h-6 w-6 text-black cursor-pointer"
@@ -61,7 +61,7 @@ const CheckoutSideMenu = () => {
           />
         </div>
       </div>
-      <div className="px-6 overflow-y-scroll">
+      <div className="px-4 sm:px-6 overflow-y-scroll max-h-[70vh]">
         {context.cartProducts.map((product) => (
           <OrderCard
             key={product.id}
@@ -77,12 +77,14 @@ const CheckoutSideMenu = () => {
           />
         ))}
       </div>
-      <div className="px-6 py-4 mt-auto">
+      <div className="px-4 sm:px-6 py-4 mt-auto">
         <p className='flex justify-between items-center mb-2'>
-          <span className='font-light'>Total:</span>
-          <span className='font-medium text-2xl'>${totalPrice(context.cartProducts).toFixed(2)}</span>
+          <span className='font-light text-sm sm:text-base'>Total:</span>
+          <span className='font-medium text-lg sm:text-2xl'>${totalPrice(context.cartProducts).toFixed(2)}</span>
         </p>
-        <button className='bg-black py-3 text-white w-full rounded-lg' onClick={() => handleCheckout()}>Checkout</button>
+        <button className='bg-black py-2 sm:py-3 text-white w-full rounded-lg text-sm sm:text-base' onClick={() => handleCheckout()}>
+          Checkout
+        </button>
       </div>
     </aside>
   );

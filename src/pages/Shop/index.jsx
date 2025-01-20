@@ -2,6 +2,7 @@ import { useContext } from 'react';
 import Layout from '../../components/Layout';
 import Card from '../../components/Card';
 import { ShoppingCartContext } from '../../context';
+import './styles.css'
 
 function Shop() {
   const { products, loading } = useContext(ShoppingCartContext);
@@ -12,7 +13,7 @@ function Shop() {
 
   return (
     <Layout>
-      <div className="grid gap-10 grid-cols-4 w-full max-w-screen-xl">
+      <div className="grid-container grid gap-8 justify-center">
         {products?.map(item => (
           <Card key={item.id} data={item} />
         ))}
@@ -21,4 +22,4 @@ function Shop() {
   );
 }
 
-export default Shop;
+export default Shop
