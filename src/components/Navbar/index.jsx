@@ -8,11 +8,11 @@ const Navbar = () => {
   const activeStyle = 'underline underline-offset-4'
 
   return (
-    <nav className='flex justify-between items-center fixed z-10  top-0 w-full py-5 px-8 text-sm font-light bg-nude font-product'>
+    <nav className='flex items-center justify-between mx-auto fixed z-10  top-0 w-full py-5 lg:px-8 text-sm font-light bg-nude font-product'>
       <ul className='flex items-center gap-3'>
         <li className='font-semibold text-lg'>
           <NavLink to='/'>
-            Shopi
+            <img src='/logo_glimmer.png' alt='Logo' className='w-24 h-auto' />
           </NavLink>
         </li>
         <li>
@@ -21,52 +21,25 @@ const Navbar = () => {
             className={({ isActive }) =>
               isActive ? activeStyle : undefined
             }>
-            All
+            HOME
           </NavLink>
         </li>
         <li>
           <NavLink
-            to='/clothes'
+            to='/about us'
             className={({ isActive }) =>
               isActive ? activeStyle : undefined
             }>
-            Clothes
+            ABOUT US
           </NavLink>
         </li>
         <li>
           <NavLink
-            to='/electronics'
+            to='/shop'
             className={({ isActive }) =>
               isActive ? activeStyle : undefined
             }>
-            Electronics
-          </NavLink>
-        </li>
-        <li>
-          <NavLink
-            to='/furnitures'
-            className={({ isActive }) =>
-              isActive ? activeStyle : undefined
-            }>
-            Furnitures
-          </NavLink>
-        </li>
-        <li>
-          <NavLink
-            to='/toys'
-            className={({ isActive }) =>
-              isActive ? activeStyle : undefined
-            }>
-            Toys
-          </NavLink>
-        </li>
-        <li>
-          <NavLink
-            to='/others'
-            className={({ isActive }) =>
-              isActive ? activeStyle : undefined
-            }>
-            Others
+            SHOP
           </NavLink>
         </li>
       </ul>

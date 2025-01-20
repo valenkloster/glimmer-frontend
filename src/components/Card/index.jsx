@@ -1,14 +1,16 @@
 import { useContext } from 'react'
 import { PlusIcon, CheckIcon } from '@heroicons/react/24/solid'
 import { ShoppingCartContext } from '../../context'
+import { Link } from 'react-router-dom';
+
 
 const Card = (data) => {
   const context = useContext(ShoppingCartContext)
 
-  const showProduct = (productDetail) => {
-    context.openProductDetail()
-    context.setProductToShow(productDetail)
-  }
+  // const showProduct = (productDetail) => {
+  //   context.openProductDetail()
+  //   context.setProductToShow(productDetail)
+  // }
 
   const addProductsToCart = (event, productData) => {
     event.stopPropagation()
@@ -41,20 +43,23 @@ const Card = (data) => {
   }
 
   return (
-    <div 
-      className='bg-white cursor-pointer w-64 h-96 rounded-sm hover:opacity-80'
-      onClick={() => showProduct(data.data)}>
-      <figure className='relative mb-2 w-full h-2/3'>
-        <img className='w-full h-full object-cover rounded-sm bg-nude' src={data.data.images[0]} alt={data.data.title} />
-        {renderIcon(data.data.id)}
-      </figure>
-      <div className='my-3 h-1/3'>
-        <hr className='pt-2 border-gray-400'></hr>
-        <p className='text-base font-bold font-product py-1'>{data.data.title}</p>
-        <p className='text-sm font-product text-gray-500 py-1'>{data.data.category.name}</p>
-        <p className='text-base font-product font-bold'>${data.data.price}</p>
+      <div className='bg-white cursor-pointer w-64 h-96 rounded-sm hover:opacity-80'>
+        {/*onClick={() => showProduct(data.data)}> */}
+        <figure className='relative mb-2 w-full h-2/3'>
+          <Link to={`/products/${data.data.id}`}>
+            <img className='w-full h-full object-cover rounded-sm bg-nude' src={data.data.images[0]} alt={data.data.title} />
+          </Link>
+          {renderIcon(data.data.id)}
+        </figure>
+        <Link to={`/products/${data.data.id}`}>
+          <div className='my-3 h-1/3'>
+            <hr className='pt-2 border-gray-400'></hr>
+            <p className='text-base font-bold font-product py-1'>{data.data.title}</p>
+            <p className='text-sm font-product text-gray-500 py-1'>{data.data.category.name}</p>
+            <p className='text-base font-serif font-bold'>${data.data.price}</p>
+          </div>
+        </Link>
       </div>
-    </div>
   )
   }
   

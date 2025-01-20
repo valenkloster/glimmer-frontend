@@ -2,6 +2,7 @@ import { useContext } from 'react';
 import { XMarkIcon } from '@heroicons/react/24/solid';
 import { ShoppingCartContext } from '../../context';
 import OrderCard from '../OrderCard';
+import { totalPrice } from '../../utils'
 import './styles.css';
 
 const CheckoutSideMenu = () => {
@@ -33,6 +34,18 @@ const CheckoutSideMenu = () => {
     context.setCartProducts(updatedProducts);
   };
 
+  const handleCheckout = () => {
+    const orderToAdd = {
+      date: DATE.NOW(),
+      products: context.cartProducts,
+      totalProducts: context.cartProducts.length,
+      totalPrice: totalPrice(context.cartProducts)
+    }
+
+    context.setOrder([...context.order, orderToAdd])
+    context.setCartProducts([])
+  }
+
   return (
     <aside
       className={`${
@@ -63,6 +76,13 @@ const CheckoutSideMenu = () => {
             handleDelete={handleDelete}
           />
         ))}
+      </div>
+      <div className="px-6 py-4 mt-auto">
+        <p className='flex justify-between items-center mb-2'>
+          <span className='font-light'>Total:</span>
+          <span className='font-medium text-2xl'>${totalPrice(context.cartProducts).toFixed(2)}</span>
+        </p>
+        <button className='bg-black py-3 text-white w-full rounded-lg' onClick={() => handleCheckout()}>Checkout</button>
       </div>
     </aside>
   );
