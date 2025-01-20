@@ -7,9 +7,21 @@ const Navbar = () => {
   const context = useContext(ShoppingCartContext)
   const activeStyle = 'underline underline-offset-4'
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [isShopMenuOpen, setIsShopMenuOpen] = useState(false)
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen)
+  }
+
+  // Obtener solo las categorías padre
+  const parentCategories = context.categories?.filter(cat => !cat.id_categoria_padre) || []
+
+  const handleCategoryClick = (categoryId) => {
+    context.setSelectedCategory(categoryId);
+    setIsShopMenuOpen(false);
+    setIsMenuOpen(false);
+    // Actualizar la URL sin recargar la página
+    window.history.pushState({}, '', `/shop?category=${categoryId}`);
   }
 
   return (
@@ -31,7 +43,7 @@ const Navbar = () => {
                 className={({ isActive }) =>
                   isActive ? activeStyle : undefined
                 }>
-                HOME
+                INICIO
               </NavLink>
             </li>
             <li>
@@ -40,17 +52,55 @@ const Navbar = () => {
                 className={({ isActive }) =>
                   isActive ? activeStyle : undefined
                 }>
-                ABOUT US
+                SOBRE NOSOTROS
               </NavLink>
             </li>
-            <li>
+            <li className="relative">
               <NavLink
                 to='/shop'
                 className={({ isActive }) =>
-                  isActive ? activeStyle : undefined
-                }>
-                SHOP
+                  `${isActive ? activeStyle : ''} relative`
+                }
+                onMouseEnter={() => setIsShopMenuOpen(true)}
+                onClick={() => {
+                  context.setSelectedCategory(null)
+                  setIsShopMenuOpen(false)
+                }}>
+                TIENDA
               </NavLink>
+              {/* Desktop dropdown menu */}
+              {isShopMenuOpen && (
+                <div 
+                  className="absolute left-0 mt-1 w-48 bg-white shadow-lg rounded-md py-2 z-50"
+                  onMouseEnter={() => setIsShopMenuOpen(true)}
+                  onMouseLeave={() => setIsShopMenuOpen(false)}
+                >
+                  {parentCategories.map(parentCat => (
+                    <div key={parentCat.id_categoria} className="relative group">
+                      <NavLink
+                        to='/shop'
+                        onClick={() => handleCategoryClick(parentCat.id_categoria)}
+                        className="block px-4 py-2 hover:bg-gray-100 w-full text-left"
+                      >
+                        {parentCat.nombre}
+                      </NavLink>
+                      
+                      <div className="absolute left-full top-0 w-48 bg-white shadow-lg rounded-md py-2 hidden group-hover:block">
+                        {parentCat.subcategorias.map(childCat => (
+                          <NavLink
+                            key={childCat.id_categoria}
+                            to='/shop'
+                            onClick={() => handleCategoryClick(childCat.id_categoria)}
+                            className="block px-4 py-2 hover:bg-gray-100 w-full text-left"
+                          >
+                            {childCat.nombre}
+                          </NavLink>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </li>
           </ul>
         </div>
@@ -105,15 +155,43 @@ const Navbar = () => {
                 ABOUT US
               </NavLink>
             </li>
-            <li>
+            <li className="w-full">
               <NavLink
                 to='/shop'
-                onClick={() => setIsMenuOpen(false)}
+                onClick={() => {
+                  context.setSelectedCategory(null)
+                  setIsMenuOpen(false)
+                }}
                 className={({ isActive }) =>
                   isActive ? activeStyle : undefined
                 }>
                 SHOP
               </NavLink>
+              <div className="pl-4 mt-2">
+                {parentCategories.map(parentCat => (
+                  <div key={parentCat.id_categoria}>
+                    <NavLink
+                      to='/shop'
+                      onClick={() => handleCategoryClick(parentCat.id_categoria)}
+                      className="block py-2"
+                    >
+                      {parentCat.nombre}
+                    </NavLink>
+                    <div className="pl-4">
+                      {parentCat.subcategorias.map(childCat => (
+                        <NavLink
+                          key={childCat.id_categoria}
+                          to='/shop'
+                          onClick={() => handleCategoryClick(childCat.id_categoria)}
+                          className="block py-2"
+                        >
+                          {childCat.nombre}
+                        </NavLink>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </li>
           </ul>
         </div>
