@@ -9,7 +9,7 @@ import NotFound from '../NotFound';
 import SingIn from '../SingIn';
 import Navbar from '../../components/Navbar';
 import CheckoutSideMenu from '../../components/CheckoutSideMenu';
-import ProductPage from '../../pages/ProductPage'; // Aquí va la página completa del producto
+import ProductPage from '../../pages/ProductPage';
 
 import './App.css';
 
@@ -22,21 +22,29 @@ const AppRoutes = () => {
     { path: '/my-orders', element: <MyOrders /> },
     { path: '/*', element: <NotFound /> },
     { path: '/sing-in', element: <SingIn /> },
-    { path: '/products/:id', element: <ProductPage /> } // Nueva ruta para la página completa del producto
+    { path: '/products/:id', element: <ProductPage /> }
   ]);
 
   return routes;
 };
 
+const AppContent = () => {
+  return (
+    <>
+      <Navbar />
+      <AppRoutes />
+      <CheckoutSideMenu />
+    </>
+  );
+};
+
 const App = () => {
   return (
-    <ShoppingCartProvider>
-      <BrowserRouter>
-        <Navbar />
-        <AppRoutes />
-        <CheckoutSideMenu />
-      </BrowserRouter>
-    </ShoppingCartProvider>
+    <BrowserRouter>
+      <ShoppingCartProvider>
+        <AppContent />
+      </ShoppingCartProvider>
+    </BrowserRouter>
   );
 };
 

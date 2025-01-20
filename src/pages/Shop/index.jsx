@@ -6,12 +6,11 @@ import { ShoppingCartContext } from '../../context';
 import './styles.css'
 
 function Shop() {
-  const { products, loading } = useContext(ShoppingCartContext);
   const context = useContext(ShoppingCartContext);
+  const { filteredProducts, loading } = context;
   const location = useLocation();
 
   useEffect(() => {
-    // Obtener categoryId de los parámetros de la URL
     const params = new URLSearchParams(location.search);
     const categoryId = params.get('category');
     
@@ -21,13 +20,13 @@ function Shop() {
   }, [location.search]);
 
   if (loading) {
-    return <div>Cargando productos...</div>; // Muestra un mensaje mientras se cargan los productos
+    return <div>Cargando productos...</div>;
   }
 
   return (
     <Layout>
       <div className="grid-container grid gap-8 justify-center">
-        {products?.map(item => (
+        {filteredProducts?.map(item => (
           <Card key={item.id_producto} data={item} />
         ))}
       </div>
@@ -35,4 +34,4 @@ function Shop() {
   );
 }
 
-export default Shop
+export default Shop;

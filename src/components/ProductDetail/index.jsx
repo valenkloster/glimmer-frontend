@@ -1,22 +1,35 @@
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { ShoppingCartContext } from '../../context';
 import { HeartIcon } from '@heroicons/react/24/outline';
+import { productService } from '../../services/api';
+import ReviewSection from '../ProductReviews';
 
 const ProductDetail = () => {
+  const { id } = useParams(); // Obtener el ID de la URL
   const context = useContext(ShoppingCartContext);
   const { productToShow } = context;
 
-  const addProductsToCart = (event, productData) => {
-    event.stopPropagation()
-    const productWithQuantity = { ...productData, quantity: 1 };
-    context.setCartProducts([...context.cartProducts, productWithQuantity]);
-    context.setCount(context.count + 1);
-    context.openCheckoutSideMenu();
-    context.closeProductDetail();
-  }
+  // Cargar el producto cuando cambie el ID de la URL
+  useEffect(() => {
+    const loadProduct = async () => {
+      try {
+        const response = await productService.getById(id);
+        context.setProductToShow(response.body);
+      } catch (error) {
+        console.error('Error loading product:', error);
+      }
+    };
 
-  const renderIcon = (id) => {
-    const isInCart = context.cartProducts.find(product => product.id === id) !== undefined
+    if (id) {
+      loadProduct();
+    }
+  }, [id]);
+
+  const renderIcon = (id_producto) => {
+    const isInCart = context.cartProducts.filter(product => 
+      product.id_producto === id_producto
+    ).length > 0;
 
     if (isInCart) {
       return (
@@ -27,48 +40,49 @@ const ProductDetail = () => {
     } else {
       return (
         <button 
-          className="p-3 m-2 border rounded-full hover:border-black"
-          onClick={(event) => addProductsToCart(event, productToShow)}>
-          Agregar al carrito
+          className="p-3 m-2 border rounded-full hover:border-black disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={productToShow?.stock <= 0}
+          onClick={(event) => context.addProductToCart(event, productToShow)}>
+          {productToShow?.stock <= 0 ? 'Sin stock' : 'Agregar al carrito'}
         </button>
-)
+      )
     }
   }
 
   return (
     <section className="w-full min-h-screen bg-white">
       <div className="max-w-7xl mx-auto px-20 py-8">
-        <div className="grid md:grid-cols-2 gap-8">
-          <div className="flex items-center justify-center rounded-lg">
+       <div className="grid md:grid-cols-2 gap-8">
+          <div className="flex items-center bg-gray-50 justify-center rounded-lg">
             <img 
-              src={productToShow?.images?.[0]} 
-              alt={productToShow?.title} 
+              src={productToShow?.imagen} 
+              alt={productToShow?.nombre} 
               loading="lazy"
             />
           </div>
           <div className="flex flex-col my-8 space-y-2">
               <p className="text-sm text-gray-500">
-                  Ordinary
+                {productToShow?.marca}
               </p>
               <p className="text-2xl font-bold text-gray-900 font-product">
-                {productToShow?.title}
+                {productToShow?.nombre}
               </p>
               <p className="text-xs text-gray-600">
-                Item 2580405
+                Item {productToShow?.codigo}
               </p>
               <p className="text-xl font-semibold font-serif">
-                ${productToShow?.price}
+                ${productToShow?.precio}
               </p>
               <p className="text-sm text-gray-600">
-                  Size: 1.0 oz
+                {productToShow?.tamanio}
               </p>
               <hr />
               <h3 className='text-xl text-bold font-serif'>Resumen</h3>
               <p className="text-gray-600 font-serif">
-                  {productToShow?.description}
+                  {productToShow?.descripcion}
               </p>
               <div className='flex items-center justify-around mx-20'>
-                {renderIcon(productToShow?.id)}
+                {renderIcon(productToShow?.id_producto)}
                 <button 
                   className="p-3 border rounded-full hover:border-black">
                   <HeartIcon className='h-6 w-6'></HeartIcon>

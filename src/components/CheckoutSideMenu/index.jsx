@@ -9,15 +9,15 @@ const CheckoutSideMenu = () => {
   const context = useContext(ShoppingCartContext);
 
   const handleDelete = (id) => {
-    const filteredProducts = context.cartProducts.filter((product) => product.id !== id);
+    const filteredProducts = context.cartProducts.filter((product) => product.id_producto !== id);
     context.setCartProducts(filteredProducts);
     context.setCount(context.count - 1);
   };
 
   const handleIncreaseQuantity = (id) => {
     const updatedProducts = context.cartProducts.map((product) => {
-      if (product.id === id) {
-        return { ...product, quantity: (product.quantity) + 1 };
+      if (product.id_producto === id) {
+        return { ...product, quantity: (product.quantity || 1) + 1 };
       }
       return product;
     });
@@ -26,8 +26,8 @@ const CheckoutSideMenu = () => {
 
   const handleDecreaseQuantity = (id) => {
     const updatedProducts = context.cartProducts.map((product) => {
-      if (product.id === id) {
-        return { ...product, quantity: product.quantity - 1 };
+      if (product.id_producto === id) {
+        return { ...product, quantity: Math.max(1, (product.quantity || 1) - 1) };
       }
       return product;
     });
@@ -36,7 +36,7 @@ const CheckoutSideMenu = () => {
 
   const handleCheckout = () => {
     const orderToAdd = {
-      date: DATE.NOW(),
+      date: new Date().toISOString(),
       products: context.cartProducts,
       totalProducts: context.cartProducts.length,
       totalPrice: totalPrice(context.cartProducts)
@@ -44,6 +44,7 @@ const CheckoutSideMenu = () => {
 
     context.setOrder([...context.order, orderToAdd])
     context.setCartProducts([])
+    context.setCount(0)
   }
 
   return (
@@ -53,7 +54,7 @@ const CheckoutSideMenu = () => {
       } checkout-side-menu flex-col fixed right-0 border border-black rounded-lg bg-white shadow-lg sm:max-w-sm w-full`}
     >
       <div className="flex justify-between items-center p-4 sm:p-6">
-        <h2 className="font-medium text-lg sm:text-xl">Order Summary</h2>
+        <h2 className="font-medium text-lg sm:text-xl">Mi Carrito</h2>
         <div>
           <XMarkIcon
             className="h-6 w-6 text-black cursor-pointer"
@@ -64,15 +65,14 @@ const CheckoutSideMenu = () => {
       <div className="px-4 sm:px-6 overflow-y-scroll max-h-[70vh]">
         {context.cartProducts.map((product) => (
           <OrderCard
-            key={product.id}
-            id={product.id}
-            title={product.title}
-            category={product.category.name}
-            image={product.images[0]}
-            price={product.price}
-            quantity={product.quantity}
-            onIncrease={() => handleIncreaseQuantity(product.id)}
-            onDecrease={() => handleDecreaseQuantity(product.id)}
+            key={product.id_producto}
+            id_producto={product.id_producto}
+            nombre={product.nombre}
+            imagen={product.imagen}
+            precio={product.precio}
+            quantity={product.quantity || 1}
+            onIncrease={() => handleIncreaseQuantity(product.id_producto)}
+            onDecrease={() => handleDecreaseQuantity(product.id_producto)}
             handleDelete={handleDelete}
           />
         ))}
@@ -82,8 +82,11 @@ const CheckoutSideMenu = () => {
           <span className='font-light text-sm sm:text-base'>Total:</span>
           <span className='font-medium text-lg sm:text-2xl'>${totalPrice(context.cartProducts).toFixed(2)}</span>
         </p>
-        <button className='bg-black py-2 sm:py-3 text-white w-full rounded-lg text-sm sm:text-base' onClick={() => handleCheckout()}>
-          Checkout
+        <button 
+          className='bg-black py-2 sm:py-3 text-white w-full rounded-lg text-sm sm:text-base' 
+          onClick={handleCheckout}
+        >
+          Finalizar Compra
         </button>
       </div>
     </aside>

@@ -11,7 +11,18 @@ export const productService = {
         throw error;
       }
     },
-    // Nuevo método para obtener productos por categoría
+  
+    getById: async (id) => {
+      try {
+        const response = await fetch(`${baseURL}/api/v1/productos/${id}`);
+        if (!response.ok) throw new Error('Network response was not ok');
+        return await response.json();
+      } catch (error) {
+        console.error('Error fetching product:', error);
+        throw error;
+      }
+    },
+  
     getByCategory: async (categoryId) => {
       try {
         const response = await fetch(`${baseURL}/api/v1/productos/categoria/${categoryId}`);
