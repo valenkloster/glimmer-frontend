@@ -4,7 +4,7 @@ import { productService, categoryService } from '../services/api';
 export const ShoppingCartContext = createContext();
 
 export const ShoppingCartProvider = ({ children }) => {
-  // SHOPPING CART - Inicializar con datos del localStorage
+  // ==================== Estado del Carrito ====================
   const [cartProducts, setCartProducts] = useState(() => {
     try {
       const savedCart = localStorage.getItem('cart');
@@ -24,39 +24,44 @@ export const ShoppingCartProvider = ({ children }) => {
     }
   });
 
+  // Persistencia del carrito en localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem('cart', JSON.stringify(cartProducts));
+    } catch (error) {
+      console.error('Error saving cart to localStorage:', error);
+    }
+  }, [cartProducts]);
+
+  // ==================== Estados de UI ====================
   const [isCheckoutSideMenuOpen, setIsCheckoutSideMenuOpen] = useState(false);
-  const openCheckoutSideMenu = () => setIsCheckoutSideMenuOpen(true);
-  const closeCheckoutSideMenu = () => setIsCheckoutSideMenuOpen(false);
-
-  // PRODUCT DETAIL
   const [isProductDetailOpen, setIsProductDetailOpen] = useState(false);
-  const openProductDetail = () => setIsProductDetailOpen(true);
-  const closeProductDetail = () => setIsProductDetailOpen(false);
-  const [productToShow, setProductToShow] = useState({});
+  const [loading, setLoading] = useState(true);
 
-  // PRODUCTS AND CATEGORIES
+  // ==================== Estados de Productos y Categorías ====================
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [productToShow, setProductToShow] = useState({});
 
-  // Lógica centralizada del carrito
+  // ==================== Controladores de UI ====================
+  const openCheckoutSideMenu = () => setIsCheckoutSideMenuOpen(true);
+  const closeCheckoutSideMenu = () => setIsCheckoutSideMenuOpen(false);
+  const openProductDetail = () => setIsProductDetailOpen(true);
+  const closeProductDetail = () => setIsProductDetailOpen(false);
+
+  // ==================== Controladores del Carrito ====================
   const addProductToCart = (event, productData) => {
     event?.stopPropagation();
     
-    // Verificar stock
-    if (productData.stock <= 0) {
-      return;
-    }
+    if (productData.stock <= 0) return;
 
-    // Verificar si el producto ya está en el carrito
     const existingProduct = cartProducts.find(
       product => product.id_producto === productData.id_producto
     );
 
     if (existingProduct) {
-      // Si ya está en el carrito, actualizamos la cantidad si hay stock suficiente
       if (existingProduct.quantity < productData.stock) {
         const updatedProducts = cartProducts.map(product => 
           product.id_producto === productData.id_producto 
@@ -66,7 +71,6 @@ export const ShoppingCartProvider = ({ children }) => {
         setCartProducts(updatedProducts);
       }
     } else {
-      // Si no está en el carrito, lo agregamos
       const productWithQuantity = { ...productData, quantity: 1 };
       setCartProducts([...cartProducts, productWithQuantity]);
       setCount(count + 1);
@@ -76,16 +80,44 @@ export const ShoppingCartProvider = ({ children }) => {
     closeProductDetail();
   };
 
-  // Guardar en localStorage cada vez que el carrito cambie
-  useEffect(() => {
-    try {
-      localStorage.setItem('cart', JSON.stringify(cartProducts));
-    } catch (error) {
-      console.error('Error saving cart to localStorage:', error);
-    }
-  }, [cartProducts]);
+  const handleDecreaseQuantity = (id) => {
+    const updatedProducts = cartProducts.map((product) => {
+      if (product.id_producto === id) {
+        const newQuantity = Math.max(1, (product.quantity || 1) - 1);
+        return { ...product, quantity: newQuantity };
+      }
+      return product;
+    });
+    setCartProducts(updatedProducts);
+  };
 
-  // Cargar productos y categorías
+  const handleIncreaseQuantity = (id) => {
+    const updatedProducts = cartProducts.map((product) => {
+      if (product.id_producto === id) {
+        if ((product.quantity || 1) < product.stock) {
+          return { ...product, quantity: (product.quantity || 1) + 1 };
+        }
+      }
+      return product;
+    });
+    setCartProducts(updatedProducts);
+  };
+
+  const handleDeleteFromCart = (id) => {
+    const filteredProducts = cartProducts.filter(
+      (product) => product.id_producto !== id
+    );
+    setCartProducts(filteredProducts);
+    setCount(count - 1);
+  };
+
+  // ==================== Controladores de Productos y Categorías ====================
+  const clearSelectedCategory = () => {
+    setSelectedCategory(null);
+    setFilteredProducts(products);
+  };
+
+  // Cargar datos iniciales
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -128,64 +160,48 @@ export const ShoppingCartProvider = ({ children }) => {
     };
 
     fetchProductsByCategory();
-  }, [selectedCategory]);
+  }, [selectedCategory, products]);
 
-  const handleDecreaseQuantity = (id) => {
-    const updatedProducts = cartProducts.map((product) => {
-      if (product.id_producto === id) {
-        const newQuantity = Math.max(1, (product.quantity || 1) - 1);
-        return { ...product, quantity: newQuantity };
-      }
-      return product;
-    });
-    setCartProducts(updatedProducts);
-  };
+  // ==================== Valor del Contexto ====================
+  const contextValue = {
+    // Cart State
+    count,
+    setCount,
+    cartProducts,
+    setCartProducts,
 
-  const handleIncreaseQuantity = (id) => {
-    const updatedProducts = cartProducts.map((product) => {
-      if (product.id_producto === id) {
-        if ((product.quantity || 1) < product.stock) {
-          return { ...product, quantity: (product.quantity || 1) + 1 };
-        }
-      }
-      return product;
-    });
-    setCartProducts(updatedProducts);
-  };
+    // UI State
+    isCheckoutSideMenuOpen,
+    isProductDetailOpen,
+    loading,
 
-  const handleDeleteFromCart = (id) => {
-    const filteredProducts = cartProducts.filter((product) => product.id_producto !== id);
-    setCartProducts(filteredProducts);
-    setCount(count - 1);
+    // Product and Category State
+    products,
+    filteredProducts,
+    categories,
+    selectedCategory,
+    productToShow,
+
+    // UI Controllers
+    openCheckoutSideMenu,
+    closeCheckoutSideMenu,
+    openProductDetail,
+    closeProductDetail,
+    setProductToShow,
+
+    // Cart Controllers
+    addProductToCart,
+    handleDecreaseQuantity,
+    handleIncreaseQuantity,
+    handleDeleteFromCart,
+
+    // Category Controllers
+    setSelectedCategory,
+    clearSelectedCategory
   };
 
   return (
-    <ShoppingCartContext.Provider
-      value={{
-        count,
-        setCount,
-        openProductDetail,
-        closeProductDetail,
-        isProductDetailOpen,
-        productToShow,
-        setProductToShow,
-        cartProducts,
-        setCartProducts,
-        isCheckoutSideMenuOpen,
-        openCheckoutSideMenu,
-        closeCheckoutSideMenu,
-        products,
-        filteredProducts,
-        categories,
-        selectedCategory,
-        setSelectedCategory,
-        loading,
-        addProductToCart,
-        handleDecreaseQuantity,
-        handleIncreaseQuantity,
-        handleDeleteFromCart
-      }}
-    >
+    <ShoppingCartContext.Provider value={contextValue}>
       {children}
     </ShoppingCartContext.Provider>
   );

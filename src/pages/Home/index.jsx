@@ -1,11 +1,7 @@
-import Layout from '../../components/Layout'
+import HomePage from '../../components/Homepage'
 
 function Home() {
-  return (
-    <Layout>
-      Home
-    </Layout>
-  )
-}
+  return < HomePage/>;
+};
 
-export default Home
+export default Home;
