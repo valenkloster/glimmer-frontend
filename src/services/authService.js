@@ -64,20 +64,20 @@ export const authService = {
 
   register: async (userData) => {
     try {
-      const response = await fetch(`${baseURL}/api/v1/auth/register`, {
+      const response = await fetch(`${baseURL}/api/v1/clientes/sign-up`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(userData),
+        body: JSON.stringify(userData)
       });
-
+  
       const data = await response.json();
-
+  
       if (!response.ok) {
         throw new Error(data.message || 'Error en el registro');
       }
-
+  
       return data;
     } catch (error) {
       throw error;

@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { useAuth } from '../../context/auth/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
 
 const RegisterForm = () => {
   const navigate = useNavigate();
+  const { register } = useAuth();
   const [formData, setFormData] = useState({
     nombre: '',
     apellido: '',
@@ -60,28 +62,20 @@ const RegisterForm = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:3000/api/v1/clientes/sign-up', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData)
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
+      const result = await register(formData);
+      
+      if (result.success) {
         navigate('/login');
       } else {
         setErrors({ 
           ...errors, 
-          submit: data.message || 'Error al registrarse' 
+          submit: result.error || 'Error al registrarse' 
         });
       }
     } catch (error) {
       setErrors({ 
         ...errors, 
-        submit: 'Error al conectar con el servidor' 
+        submit: error.message || 'Error al conectar con el servidor' 
       });
     }
   };
