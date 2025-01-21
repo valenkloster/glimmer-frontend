@@ -16,6 +16,7 @@ import ProductPage from '../ProductPage';
 import ForgotPassword from '../../components/ForgotPassword';
 import ResetPassword from '../../components/ResetPassword';
 import AboutUs from '../../components/AboutUs';
+import Footer from '../../components/Footer';
 
 import './App.css';
 
@@ -74,6 +75,7 @@ const Layout = () => {
       {!isAuthPage && <Navbar />}
       <AppRoutes />
       {!isAuthPage && <CheckoutSideMenu />}
+      {!isAuthPage && <Footer />}
     </>
   );
 };

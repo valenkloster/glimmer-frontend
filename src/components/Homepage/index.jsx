@@ -58,11 +58,13 @@ const HomePage = () => {
   }, [imagesLoaded]);
 
   const handleExploreClick = () => {
+    window.scrollTo(0, 0)
     clearSelectedCategory();
     navigate('/shop');
   };
 
   const handleCategoryClick = (categoryId) => {
+    window.scrollTo(0, 0)
     setSelectedCategory(categoryId);
     navigate('/shop');
   };

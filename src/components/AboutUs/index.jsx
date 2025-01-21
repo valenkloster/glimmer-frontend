@@ -2,23 +2,21 @@ import React, { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShoppingCartContext } from '../../context';
 
-
 const AboutUs = () => {
     const navigate = useNavigate();
-      const { clearSelectedCategory } = useContext(ShoppingCartContext);
+    const { clearSelectedCategory } = useContext(ShoppingCartContext);
     
-
     const handleExploreClick = () => {
+        window.scrollTo(0,0);
         clearSelectedCategory();
         navigate('/shop');
     };
 
   return (
-    <div className="w-full">
+    <div className="w-full pt-[81px]"> {/* Cambiado: marginTop por padding-top */}
       {/* Hero Section */}
       <section 
         className="relative h-[60vh] bg-[#F5F2ED] flex items-center justify-center"
-        style={{ marginTop: '81px' }}
       >
         <div className="absolute inset-0 overflow-hidden">
           <img
@@ -27,7 +25,7 @@ const AboutUs = () => {
             className="w-full h-full object-cover opacity-20"
           />
         </div>
-        <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
+        <div className="relative z-[1] text-center px-4 max-w-4xl mx-auto"> {/* Añadido: z-index específico */}
           <h1 className="text-4xl md:text-5xl font-light mb-6">
             Hacemos que el cuidado de tu piel sea simple
           </h1>

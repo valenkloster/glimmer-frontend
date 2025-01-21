@@ -22,12 +22,10 @@ const Navbar = () => {
   const [isShopMenuOpen, setIsShopMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
-  // Refs para los elementos del menú
   const shopMenuRef = useRef(null);
   const userMenuRef = useRef(null);
   const navRef = useRef(null);
 
-  // Función para manejar clics fuera de los menús
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -55,11 +53,16 @@ const Navbar = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  // Obtener solo las categorías padre
   const parentCategories = context.categories?.filter(cat => !cat.id_categoria_padre) || [];
+
+  const handleNavigation = (path) => {
+    window.scrollTo(0, 0);
+    navigate(path);
+  };
 
   const handleCategoryClick = (categoryId, e) => {
     e.preventDefault();
+    window.scrollTo(0, 0);
     context.setSelectedCategory(categoryId);
     setIsShopMenuOpen(false);
     setIsMenuOpen(false);
@@ -67,6 +70,7 @@ const Navbar = () => {
   };
 
   const handleLogout = () => {
+    window.scrollTo(0, 0);
     logout();
     setIsUserMenuOpen(false);
     navigate('/');
@@ -83,30 +87,39 @@ const Navbar = () => {
             <p className="text-sm font-medium text-gray-700">{user?.nombre || 'Usuario'}</p>
             <p className="text-xs text-gray-500 truncate">{user?.email}</p>
           </div>
-          <NavLink
-            to="/my-account"
-            onClick={() => setIsUserMenuOpen(false)}
+          <button
+            onClick={() => {
+              window.scrollTo(0, 0);
+              setIsUserMenuOpen(false);
+              navigate('/my-account');
+            }}
             className="inline-flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 gap-2"
           >
             <UserCircleIcon className="h-5 w-5" />
             Mi Cuenta
-          </NavLink>
-          <NavLink
-            to="/my-orders"
-            onClick={() => setIsUserMenuOpen(false)}
+          </button>
+          <button
+            onClick={() => {
+              window.scrollTo(0, 0);
+              setIsUserMenuOpen(false);
+              navigate('/my-orders');
+            }}
             className="inline-flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 gap-2"
           >
             <ShoppingCartIcon className="h-5 w-5" />
             Mis Pedidos
-          </NavLink>
-          <NavLink
-            to="/favorites"
-            onClick={() => setIsUserMenuOpen(false)}
+          </button>
+          <button
+            onClick={() => {
+              window.scrollTo(0, 0);
+              setIsUserMenuOpen(false);
+              navigate('/favorites');
+            }}
             className="inline-flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 gap-2"
           >
             <HeartIcon className="h-5 w-5" />
             Favoritos
-          </NavLink>
+          </button>
           <button
             onClick={handleLogout}
             className="inline-flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-gray-100 gap-2"
@@ -117,20 +130,26 @@ const Navbar = () => {
         </>
       ) : (
         <>
-          <NavLink
-            to="/login"
-            onClick={() => setIsUserMenuOpen(false)}
-            className="w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 inline-block"
+          <button
+            onClick={() => {
+              window.scrollTo(0, 0);
+              setIsUserMenuOpen(false);
+              navigate('/login');
+            }}
+            className="w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 text-left"
           >
             Iniciar Sesión
-          </NavLink>
-          <NavLink
-            to="/register"
-            onClick={() => setIsUserMenuOpen(false)}
-            className="w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 inline-block"
+          </button>
+          <button
+            onClick={() => {
+              window.scrollTo(0, 0);
+              setIsUserMenuOpen(false);
+              navigate('/register');
+            }}
+            className="w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 text-left"
           >
             Registrarse
-          </NavLink>
+          </button>
         </>
       )}
     </div>
@@ -141,47 +160,44 @@ const Navbar = () => {
       <div className='flex items-center justify-between w-full'>
         {/* Left section - Logo */}
         <div className='flex items-center'>
-          <NavLink to='/'>
+          <button onClick={() => handleNavigation('/')}>
             <img src='/logo_glimmer.png' alt='Logo' className='w-24 h-auto' />
-          </NavLink>
+          </button>
         </div>
 
         {/* Center section - Navigation links */}
         <div className='hidden md:flex items-center justify-center flex-1'>
           <ul className='flex gap-6'>
             <li>
-              <NavLink
-                to='/'
-                className={({ isActive }) =>
-                  isActive ? activeStyle : undefined
-                }>
+              <button
+                onClick={() => handleNavigation('/')}
+                className={location.pathname === '/' ? activeStyle : undefined}
+              >
                 INICIO
-              </NavLink>
+              </button>
             </li>
             <li>
-              <NavLink
-                to='/aboutUs'
-                className={({ isActive }) =>
-                  isActive ? activeStyle : undefined
-                }>
+              <button
+                onClick={() => handleNavigation('/aboutUs')}
+                className={location.pathname === '/aboutUs' ? activeStyle : undefined}
+              >
                 SOBRE NOSOTROS
-              </NavLink>
+              </button>
             </li>
             <li className="relative">
-              <NavLink
-                to='/shop'
-                className={({ isActive }) =>
-                  `${isActive ? activeStyle : ''} relative`
-                }
+              <button
+                className={`${location.pathname === '/shop' ? activeStyle : ''} relative`}
                 onMouseEnter={() => setIsShopMenuOpen(true)}
                 onClick={(e) => {
                   e.preventDefault();
+                  window.scrollTo(0, 0);
                   context.setSelectedCategory(null);
                   setIsShopMenuOpen(!isShopMenuOpen);
                   navigate('/shop');
-                }}>
+                }}
+              >
                 PRODUCTOS
-              </NavLink>
+              </button>
               {/* Desktop dropdown menu */}
               {isShopMenuOpen && (
                 <div 
@@ -192,24 +208,22 @@ const Navbar = () => {
                 >
                   {parentCategories.map(parentCat => (
                     <div key={parentCat.id_categoria} className="relative group">
-                      <NavLink
-                        to={`/shop?category=${parentCat.id_categoria}`}
+                      <button
                         onClick={(e) => handleCategoryClick(parentCat.id_categoria, e)}
                         className="block px-4 py-2 hover:bg-gray-100 w-full text-left"
                       >
                         {parentCat.nombre}
-                      </NavLink>
+                      </button>
                       
                       <div className="absolute left-full top-0 w-48 bg-white shadow-lg rounded-md py-2 hidden group-hover:block">
                         {parentCat.subcategorias?.map(childCat => (
-                          <NavLink
+                          <button
                             key={childCat.id_categoria}
-                            to={`/shop?category=${childCat.id_categoria}`}
                             onClick={(e) => handleCategoryClick(childCat.id_categoria, e)}
                             className="block px-4 py-2 hover:bg-gray-100 w-full text-left"
                           >
                             {childCat.nombre}
-                          </NavLink>
+                          </button>
                         ))}
                       </div>
                     </div>
@@ -256,59 +270,57 @@ const Navbar = () => {
         <div className='absolute top-full left-0 w-full bg-nude md:hidden max-h-[calc(100vh-5rem)] overflow-y-auto'>
           <ul className='flex flex-col items-start p-4 gap-4'>
             <li>
-              <NavLink
-                to='/'
-                onClick={() => setIsMenuOpen(false)}
-                className={({ isActive }) =>
-                  isActive ? activeStyle : undefined
-                }>
+              <button
+                onClick={() => {
+                  handleNavigation('/');
+                  setIsMenuOpen(false);
+                }}
+                className={location.pathname === '/' ? activeStyle : undefined}
+              >
                 INICIO
-              </NavLink>
+              </button>
             </li>
             <li>
-              <NavLink
-                to='/about us'
-                onClick={() => setIsMenuOpen(false)}
-                className={({ isActive }) =>
-                  isActive ? activeStyle : undefined
-                }>
+              <button
+                onClick={() => {
+                  handleNavigation('/aboutUs');
+                  setIsMenuOpen(false);
+                }}
+                className={location.pathname === '/aboutUs' ? activeStyle : undefined}
+              >
                 SOBRE NOSOTROS
-              </NavLink>
+              </button>
             </li>
             <li className="w-full">
-              <NavLink
-                to='/shop'
-                onClick={(e) => {
-                  e.preventDefault();
+              <button
+                onClick={() => {
+                  window.scrollTo(0, 0);
                   context.setSelectedCategory(null);
                   setIsMenuOpen(false);
-                  window.history.pushState({}, '', '/shop');
+                  navigate('/shop');
                 }}
-                className={({ isActive }) =>
-                  isActive ? activeStyle : undefined
-                }>
+                className={location.pathname === '/shop' ? activeStyle : undefined}
+              >
                 TIENDA
-              </NavLink>
+              </button>
               <div className="pl-4 mt-2">
                 {parentCategories.map(parentCat => (
                   <div key={parentCat.id_categoria}>
-                    <NavLink
-                      to={`/shop?category=${parentCat.id_categoria}`}
+                    <button
                       onClick={(e) => handleCategoryClick(parentCat.id_categoria, e)}
                       className="block py-2"
                     >
                       {parentCat.nombre}
-                    </NavLink>
+                    </button>
                     <div className="pl-4">
                       {parentCat.subcategorias?.map(childCat => (
-                        <NavLink
+                        <button
                           key={childCat.id_categoria}
-                          to={`/shop?category=${childCat.id_categoria}`}
                           onClick={(e) => handleCategoryClick(childCat.id_categoria, e)}
                           className="block py-2"
                         >
                           {childCat.nombre}
-                        </NavLink>
+                        </button>
                       ))}
                     </div>
                   </div>
