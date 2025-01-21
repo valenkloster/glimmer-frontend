@@ -1,4 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import { authService } from '../services/authService';
 
 export const AuthContext = createContext();
 
@@ -18,9 +19,13 @@ export const AuthProvider = ({ children }) => {
       const storedUser = localStorage.getItem('user');
 
       if (token && storedUser) {
-        // Aquí podrías hacer una llamada al backend para validar el token
-        setUser(JSON.parse(storedUser));
-        setIsAuthenticated(true);
+        const isValid = await authService.validateToken(token);
+        if (isValid) {
+          setUser(JSON.parse(storedUser));
+          setIsAuthenticated(true);
+        } else {
+          logout();
+        }
       }
     } catch (error) {
       console.error('Error checking auth status:', error);
@@ -33,20 +38,8 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       setError(null);
-      const response = await fetch('http://localhost:3000/api/v1/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Error en el inicio de sesión');
-      }
-
+      const data = await authService.login(email, password);
+      
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
       setUser(data.user);
@@ -62,20 +55,7 @@ export const AuthProvider = ({ children }) => {
   const register = async (userData) => {
     try {
       setError(null);
-      const response = await fetch('http://localhost:3000/api/v1/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(userData),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Error en el registro');
-      }
-
+      await authService.register(userData);
       return { success: true };
     } catch (error) {
       setError(error.message);
@@ -108,7 +88,6 @@ export const AuthProvider = ({ children }) => {
   };
 
   if (loading) {
-    // Puedes personalizar este loading según tu diseño
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#F5F2ED]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#5EA692]"></div>
@@ -123,7 +102,6 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-// Hook personalizado para usar el contexto
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {

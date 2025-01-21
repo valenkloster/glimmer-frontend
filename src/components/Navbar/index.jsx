@@ -160,7 +160,7 @@ const Navbar = () => {
             </li>
             <li>
               <NavLink
-                to='/about us'
+                to='/aboutUs'
                 className={({ isActive }) =>
                   isActive ? activeStyle : undefined
                 }>
@@ -180,7 +180,7 @@ const Navbar = () => {
                   setIsShopMenuOpen(!isShopMenuOpen);
                   navigate('/shop');
                 }}>
-                TIENDA
+                PRODUCTOS
               </NavLink>
               {/* Desktop dropdown menu */}
               {isShopMenuOpen && (

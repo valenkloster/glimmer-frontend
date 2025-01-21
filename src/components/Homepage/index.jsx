@@ -5,41 +5,9 @@ import { ShoppingCartContext } from '../../context';
 const HomePage = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
+  const [imagesLoaded, setImagesLoaded] = useState(false);
   const navigate = useNavigate();
   const { setSelectedCategory, clearSelectedCategory } = useContext(ShoppingCartContext);
-
-
-  useEffect(() => {
-    setIsVisible(true);
-  }, []);
-
-  const handleExploreClick = () => {
-    clearSelectedCategory(); // Limpiar la categoría seleccionada
-    navigate('/shop');
-  };
-
-  const handleCategoryClick = (categoryId) => {
-    setSelectedCategory(categoryId); // Establecer la categoría
-    navigate('/shop');
-  };
-
-  const carouselItems = [
-    {
-      title: "Descubre tu rutina ideal",
-      description: "Productos seleccionados para cada tipo de piel",
-      image: "https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?w=800"
-    },
-    {
-      title: "Cuida tu piel",
-      description: "Los mejores productos para tu rutina diaria",
-      image: "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=800"
-    },
-    {
-      title: "Belleza natural",
-      description: "Realza tu belleza con productos de calidad",
-      image: "https://images.unsplash.com/photo-1619451427882-6aaaded0cc61?w=800"
-    }
-  ];
 
   const collageStructure = [
     { className: 'col-span-2 row-span-2', image: '/product_green.jpg' },
@@ -47,6 +15,74 @@ const HomePage = () => {
     { className: 'col-span-1', image: '/product2.jpg' },
     { className: 'col-span-1', image: '/person1.jpg' },
     { className: 'col-span-1', image: '/products.jpg' }
+  ];
+
+  // Precargar imágenes
+  useEffect(() => {
+    let loadedImages = 0;
+    const totalImages = collageStructure.length;
+
+    const preloadImage = (src) => {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.src = src;
+        img.onload = () => {
+          loadedImages += 1;
+          if (loadedImages === totalImages) {
+            setImagesLoaded(true);
+          }
+          resolve();
+        };
+        img.onerror = reject;
+      });
+    };
+
+    const preloadAllImages = async () => {
+      try {
+        await Promise.all(collageStructure.map(item => preloadImage(item.image)));
+      } catch (error) {
+        console.error('Error preloading images:', error);
+        // Mostrar el contenido incluso si hay error en algunas imágenes
+        setImagesLoaded(true);
+      }
+    };
+
+    preloadAllImages();
+  }, []);
+
+  // Mostrar el contenido solo cuando las imágenes estén cargadas
+  useEffect(() => {
+    if (imagesLoaded) {
+      setIsVisible(true);
+    }
+  }, [imagesLoaded]);
+
+  const handleExploreClick = () => {
+    clearSelectedCategory();
+    navigate('/shop');
+  };
+
+  const handleCategoryClick = (categoryId) => {
+    setSelectedCategory(categoryId);
+    navigate('/shop');
+  };
+
+  const carouselItems = [
+    {
+      title: "Descubre tu rutina ideal",
+      description: "Tu piel es única y merece un cuidado personalizado. Descubre la combinación perfecta de productos que transformarán tu piel y te harán lucir radiante todos los días.",
+      image: "https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?w=800"
+    },
+    {
+      title: "Cuida tu piel",
+      description: "La constancia es la clave para una piel saludable. Encuentra los productos que tu piel necesita para mantener su balance y vitalidad natural.",
+      image: "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=800"
+    },
+    {
+      title: "Belleza natural",
+      description: "Resalta tu belleza natural con productos que realmente funcionan. Ingredientes de calidad que nutren tu piel y realzan tu belleza única.",
+      image: "https://images.unsplash.com/photo-1619451427882-6aaaded0cc61?w=800"
+    }
   ];
   
 
@@ -100,7 +136,7 @@ const HomePage = () => {
 
   return (
     <div className="w-full overflow-x-hidden">
-      {/* Hero Section with Collage - Ajustado para el navbar */}
+      {/* Hero Section with Collage */}
       <section 
         className={`relative transition-opacity duration-1000 ${isVisible ? 'opacity-100' : 'opacity-0'}`}
         style={{ 
@@ -109,7 +145,7 @@ const HomePage = () => {
         }}
       >
         <div className="absolute inset-0">
-          <div className="grid grid-cols-3 grid-rows-2 gap-2 h-full">
+          <div className={`grid grid-cols-3 grid-rows-2 gap-2 h-full ${!imagesLoaded ? 'invisible' : ''}`}>
             {collageStructure.map((item, index) => (
               <div 
                 key={index} 
@@ -126,7 +162,15 @@ const HomePage = () => {
           </div>
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/30 to-black/50" />
         </div>
-        <div className="relative h-full flex items-center justify-center">
+
+        {/* Loading Spinner (opcional) */}
+        {!imagesLoaded && (
+          <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-verde-agua"></div>
+          </div>
+        )}
+
+        <div className={`relative h-full flex items-center justify-center transition-opacity duration-1000 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
           <div className="text-center px-4">
             <h1 className="text-5xl md:text-6xl font-light mb-6 text-white drop-shadow-lg">
               Tu piel merece lo mejor
@@ -136,7 +180,7 @@ const HomePage = () => {
             </p>
             <button 
               onClick={handleExploreClick}
-              className="bg-[#5EA692] text-white px-8 py-3 rounded-full hover:bg-opacity-90 transition-all inline-block hover:transform hover:scale-105 duration-300"
+              className="bg-verde-agua text-white px-8 py-3 rounded-full hover:bg-opacity-90 transition-all inline-block hover:transform hover:scale-105 duration-300"
             >
               Explorar productos
             </button>
@@ -173,7 +217,7 @@ const HomePage = () => {
       </section>
 
       {/* Carousel Section */}
-      <section className="py-24 bg-[#F5F2ED]">
+      <section className="py-24 bg-nude">
         <div className="max-w-6xl mx-auto px-4">
           <div className="relative">
             <div className="overflow-hidden rounded-xl">
@@ -204,7 +248,7 @@ const HomePage = () => {
             </div>
             <button
               onClick={prevSlide}
-              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-12 p-2 bg-white rounded-full shadow-lg hover:bg-[#5EA692] hover:text-white transition-all duration-300"
+              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-12 p-2 bg-white rounded-full shadow-lg hover:bg-verde-agua hover:text-white transition-all duration-300"
             >
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
@@ -212,7 +256,7 @@ const HomePage = () => {
             </button>
             <button
               onClick={nextSlide}
-              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 p-2 bg-white rounded-full shadow-lg hover:bg-[#5EA692] hover:text-white transition-all duration-300"
+              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-12 p-2 bg-white rounded-full shadow-lg hover:bg-verde-agua hover:text-white transition-all duration-300"
             >
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                 <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
