@@ -8,7 +8,7 @@ import {
   UserCircleIcon,
   HeartIcon,
   ShoppingCartIcon,
-  ArrowRightOnRectangleIcon
+  ArrowTopRightOnSquareIcon,
 } from '@heroicons/react/24/outline';
 import { ShoppingCartContext } from '../../context';
 import { useAuth } from '../../context/AuthContext';
@@ -63,7 +63,7 @@ const Navbar = () => {
     context.setSelectedCategory(categoryId);
     setIsShopMenuOpen(false);
     setIsMenuOpen(false);
-    window.history.pushState({}, '', `/shop?category=${categoryId}`);
+    navigate(`/shop?category=${categoryId}`);
   };
 
   const handleLogout = () => {
@@ -111,7 +111,7 @@ const Navbar = () => {
             onClick={handleLogout}
             className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
           >
-            <ArrowRightOnRectangleIcon className="h-5 w-5" />
+            <ArrowTopRightOnSquareIcon className="h-5 w-5" />
             Cerrar Sesión
           </button>
         </>
@@ -173,11 +173,12 @@ const Navbar = () => {
                 className={({ isActive }) =>
                   `${isActive ? activeStyle : ''} relative`
                 }
+                onMouseEnter={() => setIsShopMenuOpen(true)}
                 onClick={(e) => {
                   e.preventDefault();
                   context.setSelectedCategory(null);
                   setIsShopMenuOpen(!isShopMenuOpen);
-                  window.history.pushState({}, '', '/shop');
+                  navigate('/shop');
                 }}>
                 TIENDA
               </NavLink>
@@ -186,6 +187,8 @@ const Navbar = () => {
                 <div 
                   ref={shopMenuRef}
                   className="absolute left-0 mt-1 w-48 bg-white shadow-lg rounded-md py-2 z-50"
+                  onMouseEnter={() => setIsShopMenuOpen(true)}
+                  onMouseLeave={() => setIsShopMenuOpen(false)}
                 >
                   {parentCategories.map(parentCat => (
                     <div key={parentCat.id_categoria} className="relative group">

@@ -1,6 +1,6 @@
-import { useRoutes, BrowserRouter } from 'react-router-dom';
+import { useRoutes, BrowserRouter, useLocation } from 'react-router-dom';
 import { ShoppingCartProvider } from '../../context';
-import { AuthProvider } from '../../context/AuthContext';
+import { AuthProvider, useAuth } from '../../context/AuthContext';
 import ProtectedRoute from '../../hooks/ProtectedRoute';
 import Home from '../Home';
 import Shop from '../Shop';
@@ -53,22 +53,28 @@ const AppRoutes = () => {
   return routes;
 };
 
-const AppContent = () => {
+// Componente separado para el layout
+const Layout = () => {
+  const location = useLocation();
+  const { isAuthenticated } = useAuth();
+  const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
+
   return (
     <>
-      <Navbar />
+      {!isAuthPage && <Navbar />}
       <AppRoutes />
-      <CheckoutSideMenu />
+      {!isAuthPage && <CheckoutSideMenu />}
     </>
   );
 };
 
+// Componente principal con providers
 const App = () => {
   return (
     <BrowserRouter>
       <AuthProvider>
         <ShoppingCartProvider>
-          <AppContent />
+          <Layout />
         </ShoppingCartProvider>
       </AuthProvider>
     </BrowserRouter>
