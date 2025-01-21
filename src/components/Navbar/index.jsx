@@ -86,7 +86,7 @@ const Navbar = () => {
           <NavLink
             to="/my-account"
             onClick={() => setIsUserMenuOpen(false)}
-            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+            className="inline-flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 gap-2"
           >
             <UserCircleIcon className="h-5 w-5" />
             Mi Cuenta
@@ -94,7 +94,7 @@ const Navbar = () => {
           <NavLink
             to="/my-orders"
             onClick={() => setIsUserMenuOpen(false)}
-            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+            className="inline-flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 gap-2"
           >
             <ShoppingCartIcon className="h-5 w-5" />
             Mis Pedidos
@@ -102,14 +102,14 @@ const Navbar = () => {
           <NavLink
             to="/favorites"
             onClick={() => setIsUserMenuOpen(false)}
-            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+            className="inline-flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 gap-2"
           >
             <HeartIcon className="h-5 w-5" />
             Favoritos
           </NavLink>
           <button
             onClick={handleLogout}
-            className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
+            className="inline-flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-gray-100 gap-2"
           >
             <ArrowTopRightOnSquareIcon className="h-5 w-5" />
             Cerrar Sesión
@@ -120,14 +120,14 @@ const Navbar = () => {
           <NavLink
             to="/login"
             onClick={() => setIsUserMenuOpen(false)}
-            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+            className="w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 inline-block"
           >
             Iniciar Sesión
           </NavLink>
           <NavLink
             to="/register"
             onClick={() => setIsUserMenuOpen(false)}
-            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+            className="w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 inline-block"
           >
             Registrarse
           </NavLink>
