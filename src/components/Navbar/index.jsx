@@ -1,31 +1,143 @@
-import { useContext, useState } from 'react'
-import { NavLink } from 'react-router-dom'
-import { ShoppingBagIcon, Bars3Icon, XMarkIcon, UserIcon } from '@heroicons/react/24/outline'
-import { ShoppingCartContext } from '../../context'
+import { useContext, useState, useRef, useEffect } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { 
+  ShoppingBagIcon, 
+  Bars3Icon, 
+  XMarkIcon, 
+  UserIcon,
+  UserCircleIcon,
+  HeartIcon,
+  ShoppingCartIcon,
+  ArrowRightOnRectangleIcon
+} from '@heroicons/react/24/outline';
+import { ShoppingCartContext } from '../../context';
+import { useAuth } from '../../context/AuthContext';
 
 const Navbar = () => {
-  const context = useContext(ShoppingCartContext)
-  const activeStyle = 'underline underline-offset-4'
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [isShopMenuOpen, setIsShopMenuOpen] = useState(false)
+  const context = useContext(ShoppingCartContext);
+  const { user, isAuthenticated, logout } = useAuth();
+  const navigate = useNavigate();
+  const activeStyle = 'underline underline-offset-4';
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isShopMenuOpen, setIsShopMenuOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+
+  // Refs para los elementos del menú
+  const shopMenuRef = useRef(null);
+  const userMenuRef = useRef(null);
+  const navRef = useRef(null);
+
+  // Función para manejar clics fuera de los menús
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        shopMenuRef.current && 
+        !shopMenuRef.current.contains(event.target) &&
+        !navRef.current.contains(event.target)
+      ) {
+        setIsShopMenuOpen(false);
+      }
+      if (
+        userMenuRef.current && 
+        !userMenuRef.current.contains(event.target)
+      ) {
+        setIsUserMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen)
-  }
+    setIsMenuOpen(!isMenuOpen);
+  };
 
   // Obtener solo las categorías padre
-  const parentCategories = context.categories?.filter(cat => !cat.id_categoria_padre) || []
+  const parentCategories = context.categories?.filter(cat => !cat.id_categoria_padre) || [];
 
   const handleCategoryClick = (categoryId, e) => {
-    e.preventDefault(); // Prevenir la navegación predeterminada
+    e.preventDefault();
     context.setSelectedCategory(categoryId);
     setIsShopMenuOpen(false);
     setIsMenuOpen(false);
     window.history.pushState({}, '', `/shop?category=${categoryId}`);
-  }
+  };
+
+  const handleLogout = () => {
+    logout();
+    setIsUserMenuOpen(false);
+    navigate('/');
+  };
+
+  const UserMenu = () => (
+    <div 
+      ref={userMenuRef}
+      className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50"
+    >
+      {isAuthenticated ? (
+        <>
+          <div className="px-4 py-2 border-b border-gray-200">
+            <p className="text-sm font-medium text-gray-700">{user?.nombre || 'Usuario'}</p>
+            <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+          </div>
+          <NavLink
+            to="/my-account"
+            onClick={() => setIsUserMenuOpen(false)}
+            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+          >
+            <UserCircleIcon className="h-5 w-5" />
+            Mi Cuenta
+          </NavLink>
+          <NavLink
+            to="/my-orders"
+            onClick={() => setIsUserMenuOpen(false)}
+            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+          >
+            <ShoppingCartIcon className="h-5 w-5" />
+            Mis Pedidos
+          </NavLink>
+          <NavLink
+            to="/favorites"
+            onClick={() => setIsUserMenuOpen(false)}
+            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+          >
+            <HeartIcon className="h-5 w-5" />
+            Favoritos
+          </NavLink>
+          <button
+            onClick={handleLogout}
+            className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 flex items-center gap-2"
+          >
+            <ArrowRightOnRectangleIcon className="h-5 w-5" />
+            Cerrar Sesión
+          </button>
+        </>
+      ) : (
+        <>
+          <NavLink
+            to="/login"
+            onClick={() => setIsUserMenuOpen(false)}
+            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+          >
+            Iniciar Sesión
+          </NavLink>
+          <NavLink
+            to="/register"
+            onClick={() => setIsUserMenuOpen(false)}
+            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+          >
+            Registrarse
+          </NavLink>
+        </>
+      )}
+    </div>
+  );
 
   return (
-    <nav className='flex items-center fixed z-10 top-0 w-full py-5 px-5 text-sm font-light bg-nude font-product'>
+    <nav ref={navRef} className='flex items-center fixed z-10 top-0 w-full py-5 px-5 text-sm font-light bg-nude font-product'>
       <div className='flex items-center justify-between w-full'>
         {/* Left section - Logo */}
         <div className='flex items-center'>
@@ -61,11 +173,10 @@ const Navbar = () => {
                 className={({ isActive }) =>
                   `${isActive ? activeStyle : ''} relative`
                 }
-                onMouseEnter={() => setIsShopMenuOpen(true)}
                 onClick={(e) => {
                   e.preventDefault();
                   context.setSelectedCategory(null);
-                  setIsShopMenuOpen(false);
+                  setIsShopMenuOpen(!isShopMenuOpen);
                   window.history.pushState({}, '', '/shop');
                 }}>
                 TIENDA
@@ -73,9 +184,8 @@ const Navbar = () => {
               {/* Desktop dropdown menu */}
               {isShopMenuOpen && (
                 <div 
+                  ref={shopMenuRef}
                   className="absolute left-0 mt-1 w-48 bg-white shadow-lg rounded-md py-2 z-50"
-                  onMouseEnter={() => setIsShopMenuOpen(true)}
-                  onMouseLeave={() => setIsShopMenuOpen(false)}
                 >
                   {parentCategories.map(parentCat => (
                     <div key={parentCat.id_categoria} className="relative group">
@@ -88,7 +198,7 @@ const Navbar = () => {
                       </NavLink>
                       
                       <div className="absolute left-full top-0 w-48 bg-white shadow-lg rounded-md py-2 hidden group-hover:block">
-                        {parentCat.subcategorias.map(childCat => (
+                        {parentCat.subcategorias?.map(childCat => (
                           <NavLink
                             key={childCat.id_categoria}
                             to={`/shop?category=${childCat.id_categoria}`}
@@ -109,14 +219,19 @@ const Navbar = () => {
 
         {/* Right section - Icons and menu button */}
         <div className='flex items-center gap-4'>
-          <NavLink
-            to='/my-account'
-            className={({ isActive }) =>
-              isActive ? activeStyle : undefined
-            }>
-            <UserIcon className='h-6 w-6' />
-          </NavLink>
-          <div className='flex items-center'>
+          <div className="relative">
+            <button
+              className="flex items-center focus:outline-none"
+              onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+            >
+              <UserIcon className="h-6 w-6" />
+            </button>
+            {isUserMenuOpen && <UserMenu />}
+          </div>
+          <div 
+            className='flex items-center cursor-pointer'
+            onClick={() => context.openCheckoutSideMenu()}
+          >
             <ShoppingBagIcon className='h-6 w-6' />
             <div>{context.count}</div>
           </div>
@@ -135,8 +250,8 @@ const Navbar = () => {
 
       {/* Mobile menu */}
       {isMenuOpen && (
-      <div className='absolute top-full left-0 w-full bg-nude md:hidden max-h-[calc(100vh-5rem)] overflow-y-auto'>
-        <ul className='flex flex-col items-start p-4 gap-4'>
+        <div className='absolute top-full left-0 w-full bg-nude md:hidden max-h-[calc(100vh-5rem)] overflow-y-auto'>
+          <ul className='flex flex-col items-start p-4 gap-4'>
             <li>
               <NavLink
                 to='/'
@@ -182,7 +297,7 @@ const Navbar = () => {
                       {parentCat.nombre}
                     </NavLink>
                     <div className="pl-4">
-                      {parentCat.subcategorias.map(childCat => (
+                      {parentCat.subcategorias?.map(childCat => (
                         <NavLink
                           key={childCat.id_categoria}
                           to={`/shop?category=${childCat.id_categoria}`}
@@ -201,7 +316,7 @@ const Navbar = () => {
         </div>
       )}
     </nav>
-  )
-}
+  );
+};
 
-export default Navbar
+export default Navbar;
