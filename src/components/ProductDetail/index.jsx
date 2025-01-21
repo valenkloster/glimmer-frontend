@@ -2,7 +2,7 @@ import { useContext, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { ShoppingCartContext } from '../../context';
 import { HeartIcon } from '@heroicons/react/24/outline';
-import { productService } from '../../services/api';
+import { productService } from '../../services';
 import ReviewSection from '../ProductReviews';
 
 const ProductDetail = () => {
@@ -53,8 +53,9 @@ const ProductDetail = () => {
     <section className="w-full min-h-screen bg-white">
       <div className="max-w-7xl mx-auto px-20 py-8">
        <div className="grid md:grid-cols-2 gap-8">
-          <div className="flex items-center bg-gray-50 justify-center rounded-lg">
+          <div className="w-full h-full bg-gray-50 rounded-lg p-6">
             <img 
+              className='w-full h-full object-contain' 
               src={productToShow?.imagen} 
               alt={productToShow?.nombre} 
               loading="lazy"
@@ -74,7 +75,7 @@ const ProductDetail = () => {
                 ${productToShow?.precio}
               </p>
               <p className="text-sm text-gray-600">
-                {productToShow?.tamanio}
+                Tamaño: {productToShow?.tamanio}
               </p>
               <hr />
               <h3 className='text-xl text-bold font-serif'>Resumen</h3>

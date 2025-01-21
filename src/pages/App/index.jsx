@@ -1,6 +1,6 @@
 import { useRoutes, BrowserRouter, useLocation } from 'react-router-dom';
 import { ShoppingCartProvider } from '../../context';
-import { AuthProvider, useAuth } from '../../context/AuthContext';
+import { AuthProvider } from '../../context/auth/AuthContext';
 import ProtectedRoute from '../../hooks/ProtectedRoute';
 import Home from '../Home';
 import Shop from '../Shop';
@@ -86,7 +86,7 @@ const App = () => {
     <BrowserRouter>
       <AuthProvider>
         <ShoppingCartProvider>
-          <Layout />
+            <Layout />
         </ShoppingCartProvider>
       </AuthProvider>
     </BrowserRouter>

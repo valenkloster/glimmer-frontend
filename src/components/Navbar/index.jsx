@@ -11,7 +11,7 @@ import {
   ArrowTopRightOnSquareIcon,
 } from '@heroicons/react/24/outline';
 import { ShoppingCartContext } from '../../context';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../context/auth/AuthContext';
 
 const Navbar = () => {
   const context = useContext(ShoppingCartContext);
@@ -301,7 +301,7 @@ const Navbar = () => {
                 }}
                 className={location.pathname === '/shop' ? activeStyle : undefined}
               >
-                TIENDA
+                PRODUCTOS
               </button>
               <div className="pl-4 mt-2">
                 {parentCategories.map(parentCat => (
