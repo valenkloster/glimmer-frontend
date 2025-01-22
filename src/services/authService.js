@@ -23,8 +23,15 @@ export const authService = {
     }
   },
 
+  validatePassword: (password) => {
+    if (password.length < 8) {
+      throw new Error('La contraseña debe tener al menos 8 caracteres');
+    }
+  },
+
   resetPassword: async (token, newPassword) => {
     try {
+      authService.validatePassword(newPassword);
       const response = await fetch(`${baseURL}/api/v1/auth/change-password`, {
         method: 'POST',
         headers: {
