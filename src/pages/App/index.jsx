@@ -3,6 +3,7 @@ import { ShoppingCartProvider } from '../../context';
 import { AuthProvider } from '../../context/auth/AuthContext';
 import { FavoritesProvider } from '../../context/favorites/FavoritesContext';
 import { CartProvider } from '../../context/cart/CartContext';
+import { ReviewProvider } from '../../context/review/reviewContext';
 import ProtectedRoute from '../../hooks/ProtectedRoute';
 import Home from '../Home';
 import Shop from '../Shop';
@@ -90,7 +91,9 @@ const App = () => {
         <FavoritesProvider>
           <AuthProvider>
             <ShoppingCartProvider>
+              <ReviewProvider>
                 <Layout />
+              </ReviewProvider>
             </ShoppingCartProvider>
           </AuthProvider>
         </FavoritesProvider>

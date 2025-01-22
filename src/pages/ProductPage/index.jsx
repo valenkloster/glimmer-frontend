@@ -1,24 +1,40 @@
-import { useParams } from 'react-router-dom';
 import { useContext, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { ShoppingCartContext } from '../../context';
+import { productService } from '../../services/productService';
 import ProductDetail from '../../components/ProductDetail';
-// import Reviews from '../../components/Reviews';
+import Reviews from '../../components/Reviews';
 
 const ProductPage = () => {
   const { id } = useParams();
-  const { products, setProductToShow } = useContext(ShoppingCartContext);
+  const context = useContext(ShoppingCartContext);
 
   useEffect(() => {
-    const product = products.find((product) => product.id === parseInt(id));
-    console.log(product)
-    if (product) {
-      setProductToShow(product);
+    const loadProduct = async () => {
+      try {
+        const response = await productService.getById(id);
+        context.setProductToShow(response.body);
+      } catch (error) {
+        console.error('Error loading product:', error);
+      }
+    };
+
+    if (id) {
+      loadProduct();
     }
-  }, [id, products, setProductToShow]);
+
+    // Limpiar el producto al desmontar
+    return () => {
+      context.setProductToShow(null);
+    };
+  }, [id]);
 
   return (
-    <div className='m-8 w-10/12 h-screen'>
-        < ProductDetail/>
+    <div className="min-h-screen bg-white" style={{ marginTop: '81px' }}>
+      <ProductDetail />
+      <div className="max-w-7xl mx-auto px-4 md:px-20">
+        <Reviews productId={id} />
+      </div>
     </div>
   );
 };
