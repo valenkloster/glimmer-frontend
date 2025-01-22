@@ -3,8 +3,8 @@ import { LockClosedIcon } from '@heroicons/react/24/outline';
 
 export const LoginAlert = (props) => {
   return (
-    <div className="fixed top-20 left-4 w-80 bg-white rounded-lg shadow-lg animate-in duration-500">
-      <div className="p-4 flex items-center gap-3">
+    <div className="fixed top-20 right-0 w-72 bg-white rounded-lg shadow-lg animate-in duration-500">
+      <div className="p-3 flex items-center gap-3">
         <LockClosedIcon className="h-5 w-5 text-verde-agua flex-shrink-0" />
         <div className="flex-1">
         <p className="text-sm text-gray-600 mb-2">
