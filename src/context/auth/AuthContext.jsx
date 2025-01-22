@@ -13,19 +13,16 @@ export const AuthProvider = ({ children }) => {
     checkAuthStatus();
   }, []);
 
-  const checkAuthStatus = async () => {
+  const checkAuthStatus = () => {
     try {
       const token = localStorage.getItem('token');
       const storedUser = localStorage.getItem('user');
-
+  
       if (token && storedUser) {
-        const isValid = await authService.validateToken(token);
-        if (isValid) {
-          setUser(JSON.parse(storedUser));
-          setIsAuthenticated(true);
-        } else {
-          logout();
-        }
+        setUser(JSON.parse(storedUser));
+        setIsAuthenticated(true);
+      } else {
+        logout();
       }
     } catch (error) {
       console.error('Error checking auth status:', error);
@@ -39,7 +36,6 @@ export const AuthProvider = ({ children }) => {
     try {
       setError(null);
       const data = await authService.login(email, password);
-      
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
       setUser(data.user);

@@ -1,3 +1,5 @@
+import { translateError } from './errorMessages';
+
 const baseURL = import.meta.env.VITE_API_URL;
 
 export const authService = {
@@ -13,7 +15,7 @@ export const authService = {
 
       const data = await response.json();
       if (!response.ok) {
-        throw new Error(data.message || 'Error al solicitar el cambio de contraseña');
+        throw new Error(translateError(data.body) || 'Error al solicitar el cambio de contraseña');
       }
       return data;
     } catch (error) {
@@ -33,7 +35,7 @@ export const authService = {
 
       const data = await response.json();
       if (!response.ok) {
-        throw new Error(data.message || 'Error al cambiar la contraseña');
+        throw new Error(translateError(data.body) || 'Error al cambiar la contraseña');
       }
       return data;
     } catch (error) {
@@ -53,7 +55,7 @@ export const authService = {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'Error en el inicio de sesión');
+        throw new Error(translateError(data.body) || 'Error en el inicio de sesión');
       }
 
       return data;
@@ -75,32 +77,12 @@ export const authService = {
       const data = await response.json();
   
       if (!response.ok) {
-        throw new Error(data.body || 'Error en el registro');
+        throw new Error(translateError(data.body) || 'Error en el registro');
       }
   
       return data;
     } catch (error) {
       throw error;
-    }
-  },
-
-  validateToken: async (token) => {
-    try {
-      const response = await fetch(`${baseURL}/api/v1/auth/validate`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      
-      if (!response.ok) {
-        throw new Error('Token inválido');
-      }
-
-      return true;
-    } catch (error) {
-      console.error('Error validando token:', error);
-      return false;
     }
   }
 };
