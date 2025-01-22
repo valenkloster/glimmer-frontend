@@ -11,7 +11,6 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
-  // Obtener loadFavorites del FavoritesContext
   const favoritesContext = useContext(FavoritesContext);
   const cartContext = useContext(CartContext);
 
@@ -27,7 +26,6 @@ export const AuthProvider = ({ children }) => {
       if (token && storedUser) {
         setUser(JSON.parse(storedUser));
         setIsAuthenticated(true);
-        // Cargar favoritos al verificar el estado de autenticación
         favoritesContext?.loadFavorites?.();
         cartContext?.loadCart?.();
       } else {
@@ -50,7 +48,6 @@ export const AuthProvider = ({ children }) => {
       setUser(data.user);
       setIsAuthenticated(true);
       
-      // Cargar favoritos después del login exitoso
       favoritesContext?.loadFavorites?.();
       cartContext?.loadCart?.();
 
@@ -78,7 +75,6 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     setIsAuthenticated(false);
     
-    // Limpiar favoritos al hacer logout
     favoritesContext?.loadFavorites?.();
     cartContext?.loadCart?.();
     cartContext?.closeCart?.();

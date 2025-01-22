@@ -13,7 +13,6 @@ const AboutUs = () => {
         '/our_mision.jpg'
     ];
 
-    // Preload images
     useEffect(() => {
         let loadedImages = 0;
         const totalImages = images.length;
@@ -38,7 +37,6 @@ const AboutUs = () => {
                 await Promise.all(images.map(src => preloadImage(src)));
             } catch (error) {
                 console.error('Error preloading images:', error);
-                // Show content even if some images fail to load
                 setImagesLoaded(true);
             }
         };
@@ -46,7 +44,6 @@ const AboutUs = () => {
         preloadAllImages();
     }, []);
 
-    // Show content when images are loaded
     useEffect(() => {
         if (imagesLoaded) {
             setIsVisible(true);

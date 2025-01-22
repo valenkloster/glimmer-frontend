@@ -64,7 +64,6 @@ const AppRoutes = () => {
   return routes;
 };
 
-// Componente separado para el layout
 const Layout = () => {
   const location = useLocation();
   const isAuthPage = [
@@ -84,7 +83,6 @@ const Layout = () => {
   );
 };
 
-// Componente principal con providers
 const App = () => {
   return (
     <BrowserRouter>

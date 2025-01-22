@@ -17,7 +17,6 @@ export const FavoriteButton = ({ productId }) => {
     
     if (!isAuthenticated) {
       setShowAlert(true);
-      // Ocultar la alerta después de 3 segundos
       setTimeout(() => setShowAlert(false), 3000);
       return;
     }

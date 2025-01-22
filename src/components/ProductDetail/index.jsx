@@ -6,7 +6,7 @@ import { AuthContext } from '../../context/auth/AuthContext';
 import { CartContext } from '../../context/cart/CartContext';
 import { HeartIcon as HeartOutline } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolid } from '@heroicons/react/24/solid';
-import { productService } from '../../services';
+import { productService } from '../../services/productService';
 import { LoginAlert } from '../LoginAlert';
 
 const ProductDetail = () => {

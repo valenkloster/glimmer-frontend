@@ -32,7 +32,6 @@ const HomePage = () => {
     }
   ];
 
-  // Precargar imágenes
   useEffect(() => {
     let loadedImages = 0;
     const totalImages = collageStructure.length;
@@ -65,7 +64,6 @@ const HomePage = () => {
     preloadAllImages();
   }, []);
 
-  // Mostrar el contenido solo cuando las imágenes estén cargadas
   useEffect(() => {
     if (imagesLoaded) {
       setIsVisible(true);

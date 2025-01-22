@@ -1,5 +1,5 @@
 import { useContext, useState, useRef, useEffect } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { 
   ShoppingBagIcon, 
   Bars3Icon, 
@@ -16,7 +16,7 @@ import { useAuth } from '../../context/auth/AuthContext';
 
 const Navbar = () => {
   const context = useContext(ShoppingCartContext);
-  const { cartCount, openCart } = useContext(CartContext); // Reemplaza el contexto del carrito
+  const { cartCount, openCart } = useContext(CartContext);
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
   const activeStyle = 'underline underline-offset-4';

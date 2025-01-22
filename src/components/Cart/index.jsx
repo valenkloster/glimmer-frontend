@@ -1,4 +1,3 @@
-// Cart.jsx
 import { useContext } from 'react';
 import { XMarkIcon } from '@heroicons/react/24/solid';
 import { CartContext } from '../../context/cart/CartContext';

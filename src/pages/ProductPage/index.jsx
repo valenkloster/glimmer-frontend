@@ -5,15 +5,14 @@ import ProductDetail from '../../components/ProductDetail';
 // import Reviews from '../../components/Reviews';
 
 const ProductPage = () => {
-  const { id } = useParams(); // Obtener el ID del producto desde la URL
+  const { id } = useParams();
   const { products, setProductToShow } = useContext(ShoppingCartContext);
 
-  // Cargar el producto cuando el ID cambia
   useEffect(() => {
     const product = products.find((product) => product.id === parseInt(id));
     console.log(product)
     if (product) {
-      setProductToShow(product); // Establece el producto a mostrar en el contexto
+      setProductToShow(product);
     }
   }, [id, products, setProductToShow]);
 
