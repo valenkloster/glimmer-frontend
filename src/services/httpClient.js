@@ -31,6 +31,16 @@ export const httpClient = {
     if (!response.ok) throw new Error('Network response was not ok');
     return response.json();
   },
+  
+  async patch(endpoint, data) {
+    const response = await fetch(`${baseURL}${endpoint}`, {
+      method: 'PATCH',
+      headers: createHeaders(),
+      body: JSON.stringify(data)
+    });
+    if (!response.ok) throw new Error('Network response was not ok');
+    return response.json();
+  },
 
   async delete(endpoint, data) {
     const response = await fetch(`${baseURL}${endpoint}`, {

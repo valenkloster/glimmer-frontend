@@ -1,16 +1,16 @@
 import { useContext } from 'react'
 import { PlusIcon, CheckIcon } from '@heroicons/react/24/solid'
-import { ShoppingCartContext } from '../../context'
+import { CartContext } from '../../context/cart/CartContext'
 import { FavoriteButton } from '../Favorite/FavoriteButton'
 import { Link } from 'react-router-dom'
 import './styles.css'
 
 const Card = (data) => {
-  const context = useContext(ShoppingCartContext)
+  const { cart, addToCart } = useContext(CartContext)
   const outOfStock = data.data.stock <= 0
 
   const renderIcon = (id) => {
-    const isInCart = context.cartProducts.filter(product => product.id_producto === id).length > 0
+    const isInCart = cart?.detalles?.some(item => item.id_producto === id)
 
     if (outOfStock) {
       return (
@@ -32,7 +32,10 @@ const Card = (data) => {
       <button
         disabled={outOfStock}
         className='absolute top-0 right-0 flex justify-center items-center bg-verde-agua text-white w-6 h-6 rounded-full m-4 p-1 disabled:bg-gray-400'
-        onClick={(event) => context.addProductToCart(event, data.data)}>
+        onClick={(event) => {
+          event.stopPropagation();
+          addToCart(data.data.id_producto, 1);
+        }}>
         <PlusIcon className='h-4 w-4 text-white'></PlusIcon>
       </button>
     )

@@ -11,10 +11,12 @@ import {
   ArrowTopRightOnSquareIcon,
 } from '@heroicons/react/24/outline';
 import { ShoppingCartContext } from '../../context';
+import { CartContext } from '../../context/cart/CartContext';
 import { useAuth } from '../../context/auth/AuthContext';
 
 const Navbar = () => {
   const context = useContext(ShoppingCartContext);
+  const { cartCount, openCart } = useContext(CartContext); // Reemplaza el contexto del carrito
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
   const activeStyle = 'underline underline-offset-4';
@@ -247,10 +249,10 @@ const Navbar = () => {
           </div>
           <div 
             className='flex items-center cursor-pointer'
-            onClick={() => context.openCheckoutSideMenu()}
+            onClick={openCart}
           >
             <ShoppingBagIcon className='h-6 w-6' />
-            <div>{context.count}</div>
+            <div>{cartCount}</div>
           </div>
           <button 
             className='md:hidden'

@@ -1,6 +1,7 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { authService } from '../../services/authService';
 import { FavoritesContext } from '../favorites/FavoritesContext';
+import { CartContext } from '../cart/CartContext';
 
 export const AuthContext = createContext();
 
@@ -12,6 +13,7 @@ export const AuthProvider = ({ children }) => {
   
   // Obtener loadFavorites del FavoritesContext
   const favoritesContext = useContext(FavoritesContext);
+  const cartContext = useContext(CartContext);
 
   useEffect(() => {
     checkAuthStatus();
@@ -27,6 +29,7 @@ export const AuthProvider = ({ children }) => {
         setIsAuthenticated(true);
         // Cargar favoritos al verificar el estado de autenticación
         favoritesContext?.loadFavorites?.();
+        cartContext?.loadCart?.();
       } else {
         logout();
       }
@@ -49,6 +52,7 @@ export const AuthProvider = ({ children }) => {
       
       // Cargar favoritos después del login exitoso
       favoritesContext?.loadFavorites?.();
+      cartContext?.loadCart?.();
 
       return { success: true };
     } catch (error) {
@@ -76,6 +80,8 @@ export const AuthProvider = ({ children }) => {
     
     // Limpiar favoritos al hacer logout
     favoritesContext?.loadFavorites?.();
+    cartContext?.loadCart?.();
+    cartContext?.closeCart?.();
   };
 
   const updateUser = (userData) => {

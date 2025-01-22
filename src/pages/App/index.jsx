@@ -2,6 +2,7 @@ import { useRoutes, BrowserRouter, useLocation } from 'react-router-dom';
 import { ShoppingCartProvider } from '../../context';
 import { AuthProvider } from '../../context/auth/AuthContext';
 import { FavoritesProvider } from '../../context/favorites/FavoritesContext';
+import { CartProvider } from '../../context/cart/CartContext';
 import ProtectedRoute from '../../hooks/ProtectedRoute';
 import Home from '../Home';
 import Shop from '../Shop';
@@ -13,7 +14,7 @@ import NotFound from '../NotFound';
 import LoginPage from '../Auth/LoginPage';
 import RegisterPage from '../Auth/RegisterPage';
 import Navbar from '../../components/Navbar';
-import CheckoutSideMenu from '../../components/CheckoutSideMenu';
+import Cart from '../../components/Cart';
 import ProductPage from '../ProductPage';
 import ForgotPassword from '../../components/ForgotPassword';
 import ResetPassword from '../../components/ResetPassword';
@@ -77,7 +78,7 @@ const Layout = () => {
     <>
       {!isAuthPage && <Navbar />}
       <AppRoutes />
-      {!isAuthPage && <CheckoutSideMenu />}
+      {!isAuthPage && <Cart />}
       {!isAuthPage && <Footer />}
     </>
   );
@@ -87,13 +88,15 @@ const Layout = () => {
 const App = () => {
   return (
     <BrowserRouter>
-      <FavoritesProvider>
-        <AuthProvider>
-          <ShoppingCartProvider>
-              <Layout />
-          </ShoppingCartProvider>
-        </AuthProvider>
-      </FavoritesProvider>
+      <CartProvider>
+        <FavoritesProvider>
+          <AuthProvider>
+            <ShoppingCartProvider>
+                <Layout />
+            </ShoppingCartProvider>
+          </AuthProvider>
+        </FavoritesProvider>
+      </CartProvider>
     </BrowserRouter>
   );
 };
