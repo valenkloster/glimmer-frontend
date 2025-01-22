@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { ShoppingCartContext } from '../../context';
 import { FavoritesContext } from '../../context/favorites/FavoritesContext';
 import { AuthContext } from '../../context/auth/AuthContext';
+import { CartContext } from '../../context/cart/CartContext';
 import { HeartIcon as HeartOutline } from '@heroicons/react/24/outline';
 import { HeartIcon as HeartSolid } from '@heroicons/react/24/solid';
 import { productService } from '../../services';
@@ -13,9 +14,11 @@ const ProductDetail = () => {
   const context = useContext(ShoppingCartContext);
   const { addToFavorites, removeFromFavorites, isProductFavorite } = useContext(FavoritesContext);
   const { isAuthenticated } = useContext(AuthContext);
+  const { addToCart, cart } = useContext(CartContext);
   const { productToShow } = context;
-  const [showAlert, setShowAlert] = useState(false);
-
+  const [showFavAlert, setShowFavAlert] = useState(false);
+  const [showCartAlert, setShowCartAlert] = useState(false);
+  
   useEffect(() => {
     const loadProduct = async () => {
       try {
@@ -33,8 +36,8 @@ const ProductDetail = () => {
 
   const handleFavoriteClick = () => {
     if (!isAuthenticated) {
-      setShowAlert(true);
-      setTimeout(() => setShowAlert(false), 3000);
+      setShowFavAlert(true);
+      setTimeout(() => setShowFavAlert(false), 3000);
       return;
     }
 
@@ -46,9 +49,17 @@ const ProductDetail = () => {
   };
 
   const renderIcon = (id_producto) => {
-    const isInCart = context.cartProducts.filter(product => 
-      product.id_producto === id_producto
-    ).length > 0;
+    const isInCart = cart?.detalles?.some(item => 
+      item.id_producto === id_producto
+    );
+
+    if (productToShow?.stock <= 0) {
+      return (
+        <div className="p-3 m-2 border rounded-full bg-gray-400 opacity-60 text-black">
+          Sin stock
+        </div>
+      );
+    }
 
     if (isInCart) {
       return (
@@ -56,23 +67,31 @@ const ProductDetail = () => {
           Producto agregado
         </div>
       );
-    } else {
-      return (
-        <button 
-          className="p-3 m-2 border rounded-full hover:border-black disabled:opacity-50 disabled:cursor-not-allowed"
-          disabled={productToShow?.stock <= 0}
-          onClick={(event) => context.addProductToCart(event, productToShow)}>
-          {productToShow?.stock <= 0 ? 'Sin stock' : 'Agregar al carrito'}
-        </button>
-      );
     }
+
+    return (
+      <button 
+        className="p-3 m-2 border rounded-full hover:border-black"
+        onClick={(event) => {
+          event.stopPropagation();
+          if (!isAuthenticated) {
+            setShowCartAlert(true);
+            setTimeout(() => setShowCartAlert(false), 3000);
+            return;
+          }
+          addToCart(productToShow.id_producto, 1);
+        }}>
+        Agregar al carrito
+      </button>
+    );
   };
 
   const isFavorite = productToShow?.id_producto ? isProductFavorite(productToShow.id_producto) : false;
 
   return (
     <section className="w-full min-h-screen bg-white">
-      {showAlert && <LoginAlert />}
+      {showFavAlert && <LoginAlert text="agregar productos a favoritos" />}
+      {showCartAlert && <LoginAlert text="agregar productos al carrito" />}
       <div className="max-w-7xl mx-auto px-20 py-8">
         <div className="grid md:grid-cols-2 gap-8">
           <div className="w-full h-full bg-gray-50 rounded-lg p-6">

@@ -44,7 +44,7 @@ export const FavoriteButton = ({ productId }) => {
           <HeartOutline className='h-4 w-4 text-white' />
         )}
       </button>
-      {showAlert && <LoginAlert />}
+      {showAlert && <LoginAlert text="agregar productos a favoritos" />}
     </>
   );
 };
