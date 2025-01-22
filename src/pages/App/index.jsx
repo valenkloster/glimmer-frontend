@@ -1,9 +1,11 @@
 import { useRoutes, BrowserRouter, useLocation } from 'react-router-dom';
 import { ShoppingCartProvider } from '../../context';
 import { AuthProvider } from '../../context/auth/AuthContext';
+import { FavoritesProvider } from '../../context/favorites/FavoritesContext';
 import ProtectedRoute from '../../hooks/ProtectedRoute';
 import Home from '../Home';
 import Shop from '../Shop';
+import FavoritesPage from '../Favorites';
 import MyAccount from '../MyAccount';
 import MyOrder from '../MyOrder';
 import MyOrders from '../MyOrders';
@@ -25,6 +27,7 @@ const AppRoutes = () => {
     { path: '/', element: <Home /> },
     { path: '/aboutUs', element: <AboutUs /> },
     { path: '/shop', element: <Shop /> },
+    { path: '/favorites', element: <FavoritesPage /> },
     { 
       path: '/my-account', 
       element: (
@@ -84,11 +87,13 @@ const Layout = () => {
 const App = () => {
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <ShoppingCartProvider>
-            <Layout />
-        </ShoppingCartProvider>
-      </AuthProvider>
+      <FavoritesProvider>
+        <AuthProvider>
+          <ShoppingCartProvider>
+              <Layout />
+          </ShoppingCartProvider>
+        </AuthProvider>
+      </FavoritesProvider>
     </BrowserRouter>
   );
 };

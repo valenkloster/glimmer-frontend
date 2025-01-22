@@ -1,6 +1,7 @@
 import { useContext } from 'react'
 import { PlusIcon, CheckIcon } from '@heroicons/react/24/solid'
 import { ShoppingCartContext } from '../../context'
+import { FavoriteButton } from '../Favorite/FavoriteButton'
 import { Link } from 'react-router-dom'
 import './styles.css'
 
@@ -49,6 +50,7 @@ const Card = (data) => {
             />
           </div>
         </Link>
+        <FavoriteButton productId={data.data.id_producto} />
         {renderIcon(data.data.id_producto)}
       </figure>
       <Link to={`/products/${data.data.id_producto}`}>

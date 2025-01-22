@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { authService } from '../../services/authService';
+import { FavoritesContext } from '../favorites/FavoritesContext';
 
 export const AuthContext = createContext();
 
@@ -8,6 +9,9 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // Obtener loadFavorites del FavoritesContext
+  const favoritesContext = useContext(FavoritesContext);
 
   useEffect(() => {
     checkAuthStatus();
@@ -21,6 +25,8 @@ export const AuthProvider = ({ children }) => {
       if (token && storedUser) {
         setUser(JSON.parse(storedUser));
         setIsAuthenticated(true);
+        // Cargar favoritos al verificar el estado de autenticación
+        favoritesContext?.loadFavorites?.();
       } else {
         logout();
       }
@@ -40,6 +46,9 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('user', JSON.stringify(data.user));
       setUser(data.user);
       setIsAuthenticated(true);
+      
+      // Cargar favoritos después del login exitoso
+      favoritesContext?.loadFavorites?.();
 
       return { success: true };
     } catch (error) {
@@ -64,6 +73,9 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('user');
     setUser(null);
     setIsAuthenticated(false);
+    
+    // Limpiar favoritos al hacer logout
+    favoritesContext?.loadFavorites?.();
   };
 
   const updateUser = (userData) => {

@@ -5,7 +5,7 @@ const createHeaders = () => {
     'Content-Type': 'application/json'
   };
 
-  const token = localStorage.getItem('jwt');
+  const token = localStorage.getItem('token');
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
   }

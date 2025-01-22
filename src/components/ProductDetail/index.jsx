@@ -1,16 +1,21 @@
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { ShoppingCartContext } from '../../context';
-import { HeartIcon } from '@heroicons/react/24/outline';
+import { FavoritesContext } from '../../context/favorites/FavoritesContext';
+import { AuthContext } from '../../context/auth/AuthContext';
+import { HeartIcon as HeartOutline } from '@heroicons/react/24/outline';
+import { HeartIcon as HeartSolid } from '@heroicons/react/24/solid';
 import { productService } from '../../services';
-import ReviewSection from '../ProductReviews';
+import { LoginAlert } from '../LoginAlert';
 
 const ProductDetail = () => {
-  const { id } = useParams(); // Obtener el ID de la URL
+  const { id } = useParams();
   const context = useContext(ShoppingCartContext);
+  const { addToFavorites, removeFromFavorites, isProductFavorite } = useContext(FavoritesContext);
+  const { isAuthenticated } = useContext(AuthContext);
   const { productToShow } = context;
+  const [showAlert, setShowAlert] = useState(false);
 
-  // Cargar el producto cuando cambie el ID de la URL
   useEffect(() => {
     const loadProduct = async () => {
       try {
@@ -26,6 +31,20 @@ const ProductDetail = () => {
     }
   }, [id]);
 
+  const handleFavoriteClick = () => {
+    if (!isAuthenticated) {
+      setShowAlert(true);
+      setTimeout(() => setShowAlert(false), 3000);
+      return;
+    }
+
+    if (isProductFavorite(productToShow?.id_producto)) {
+      removeFromFavorites(productToShow.id_producto);
+    } else {
+      addToFavorites(productToShow.id_producto);
+    }
+  };
+
   const renderIcon = (id_producto) => {
     const isInCart = context.cartProducts.filter(product => 
       product.id_producto === id_producto
@@ -36,7 +55,7 @@ const ProductDetail = () => {
         <div className="p-3 m-2 border rounded-full bg-gray-400 opacity-60 text-black">
           Producto agregado
         </div>
-      )
+      );
     } else {
       return (
         <button 
@@ -45,14 +64,17 @@ const ProductDetail = () => {
           onClick={(event) => context.addProductToCart(event, productToShow)}>
           {productToShow?.stock <= 0 ? 'Sin stock' : 'Agregar al carrito'}
         </button>
-      )
+      );
     }
-  }
+  };
+
+  const isFavorite = productToShow?.id_producto ? isProductFavorite(productToShow.id_producto) : false;
 
   return (
     <section className="w-full min-h-screen bg-white">
+      {showAlert && <LoginAlert />}
       <div className="max-w-7xl mx-auto px-20 py-8">
-       <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid md:grid-cols-2 gap-8">
           <div className="w-full h-full bg-gray-50 rounded-lg p-6">
             <img 
               className='w-full h-full object-contain' 
@@ -62,36 +84,46 @@ const ProductDetail = () => {
             />
           </div>
           <div className="flex flex-col my-8 space-y-2">
-              <p className="text-sm text-gray-500">
-                {productToShow?.marca}
-              </p>
-              <p className="text-2xl font-bold text-gray-900 font-product">
-                {productToShow?.nombre}
-              </p>
-              <p className="text-xs text-gray-600">
-                Item {productToShow?.codigo}
-              </p>
-              <p className="text-xl font-semibold font-serif">
-                ${productToShow?.precio}
-              </p>
-              <p className="text-sm text-gray-600">
-                Tamaño: {productToShow?.tamanio}
-              </p>
-              <hr />
-              <h3 className='text-xl text-bold font-serif'>Resumen</h3>
-              <p className="text-gray-600 font-serif">
-                  {productToShow?.descripcion}
-              </p>
-              <div className='flex items-center justify-around mx-20'>
-                {renderIcon(productToShow?.id_producto)}
-                <button 
-                  className="p-3 border rounded-full hover:border-black">
-                  <HeartIcon className='h-6 w-6'></HeartIcon>
-                </button>
-              </div>
-          </div>
+            <p className="text-sm text-gray-500">
+              {productToShow?.marca}
+            </p>
+            <p className="text-2xl font-bold text-gray-900 font-product">
+              {productToShow?.nombre}
+            </p>
+            <p className="text-xs text-gray-600">
+              Item {productToShow?.codigo}
+            </p>
+            <p className="text-xl font-semibold font-serif">
+              ${productToShow?.precio}
+            </p>
+            <p className="text-sm text-gray-600">
+              Tamaño: {productToShow?.tamanio}
+            </p>
+            <hr />
+            <h3 className='text-xl text-bold font-serif'>Resumen</h3>
+            <p className="text-gray-600 font-serif">
+              {productToShow?.descripcion}
+            </p>
+            <div className='flex items-center justify-around mx-20'>
+              {renderIcon(productToShow?.id_producto)}
+              <button 
+                onClick={handleFavoriteClick}
+                className={`p-3 border rounded-full transition-colors duration-300 ${
+                  isFavorite 
+                    ? 'border-red-500 hover:bg-red-50' 
+                    : 'hover:border-black'
+                }`}
+              >
+                {isFavorite ? (
+                  <HeartSolid className='h-6 w-6 text-red-500'/>
+                ) : (
+                  <HeartOutline className='h-6 w-6'/>
+                )}
+              </button>
+            </div>
           </div>
         </div>
+      </div>
     </section>
   );
 };

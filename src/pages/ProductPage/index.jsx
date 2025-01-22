@@ -1,6 +1,5 @@
 import { useParams } from 'react-router-dom';
 import { useContext, useEffect } from 'react';
-import Layout from '../../components/Layout';
 import { ShoppingCartContext } from '../../context';
 import ProductDetail from '../../components/ProductDetail';
 // import Reviews from '../../components/Reviews';
@@ -19,11 +18,9 @@ const ProductPage = () => {
   }, [id, products, setProductToShow]);
 
   return (
-    <Layout>
-      <div className='m-8 w-10/12 h-screen'>
+    <div className='m-8 w-10/12 h-screen'>
         < ProductDetail/>
-      </div>
-    </Layout>
+    </div>
   );
 };
 
