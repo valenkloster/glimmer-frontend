@@ -1,10 +1,57 @@
-import React, { useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShoppingCartContext } from '../../context';
 
 const AboutUs = () => {
     const navigate = useNavigate();
     const { clearSelectedCategory } = useContext(ShoppingCartContext);
+    const [imagesLoaded, setImagesLoaded] = useState(false);
+    const [isVisible, setIsVisible] = useState(false);
+    
+    const images = [
+        '/bg-about-us.jpg',
+        '/our_mision.jpg'
+    ];
+
+    // Preload images
+    useEffect(() => {
+        let loadedImages = 0;
+        const totalImages = images.length;
+
+        const preloadImage = (src) => {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.src = src;
+                img.onload = () => {
+                    loadedImages += 1;
+                    if (loadedImages === totalImages) {
+                        setImagesLoaded(true);
+                    }
+                    resolve();
+                };
+                img.onerror = reject;
+            });
+        };
+
+        const preloadAllImages = async () => {
+            try {
+                await Promise.all(images.map(src => preloadImage(src)));
+            } catch (error) {
+                console.error('Error preloading images:', error);
+                // Show content even if some images fail to load
+                setImagesLoaded(true);
+            }
+        };
+
+        preloadAllImages();
+    }, []);
+
+    // Show content when images are loaded
+    useEffect(() => {
+        if (imagesLoaded) {
+            setIsVisible(true);
+        }
+    }, [imagesLoaded]);
     
     const handleExploreClick = () => {
         window.scrollTo(0,0);
@@ -13,19 +60,23 @@ const AboutUs = () => {
     };
 
   return (
-    <div className="w-full pt-[81px]"> {/* Cambiado: marginTop por padding-top */}
+    <div className="w-full pt-[81px]">
       {/* Hero Section */}
-      <section 
-        className="relative h-[60vh] bg-[#F5F2ED] flex items-center justify-center"
-      >
+      <section className={`relative h-[60vh] bg-[#F5F2ED] flex items-center justify-center transition-opacity duration-1000 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
         <div className="absolute inset-0 overflow-hidden">
-          <img
-            src="/bg-about-us.jpg"
-            alt="Skincare products"
-            className="w-full h-full object-cover opacity-20"
-          />
+            {/* Loading Spinner */}
+            {!imagesLoaded && (
+                <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+                    <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[#5EA692]"></div>
+                </div>
+            )}
+            <img
+                src="/bg-about-us.jpg"
+                alt="Skincare products"
+                className={`w-full h-full object-cover opacity-20 transition-opacity duration-500 ${imagesLoaded ? 'opacity-20' : 'opacity-0'}`}
+            />
         </div>
-        <div className="relative z-[1] text-center px-4 max-w-4xl mx-auto"> {/* Añadido: z-index específico */}
+        <div className="relative z-[1] text-center px-4 max-w-4xl mx-auto">
           <h1 className="text-4xl md:text-5xl font-light mb-6">
             Hacemos que el cuidado de tu piel sea simple
           </h1>
@@ -36,33 +87,40 @@ const AboutUs = () => {
       </section>
 
       {/* Our Mission */}
-      <section className="py-20 bg-white">
+      <section className={`py-20 bg-white transition-opacity duration-1000 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
         <div className="max-w-6xl mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            <div className="order-2 md:order-1">
-              <h2 className="text-3xl mb-6 font-light">Nuestra Misión</h2>
-              <p className="text-gray-600 mb-6 leading-relaxed">
-                Nacimos con el propósito de simplificar el acceso a productos de skincare de alta calidad en Argentina. Entendemos que el proceso de importación puede ser complejo y costoso, por eso nos encargamos de todo el proceso para que vos solo te preocupes por cuidar tu piel.
-              </p>
-              <p className="text-gray-600 leading-relaxed">
-                Seleccionamos cuidadosamente cada producto, asegurándonos de que cumpla con los más altos estándares de calidad y efectividad. Trabajamos directamente con marcas reconocidas internacionalmente para garantizar la autenticidad de cada producto.
-              </p>
-            </div>
-            <div className="order-1 md:order-2">
-              <div className="aspect-w-4 aspect-h-3 rounded-lg overflow-hidden">
-                <img
-                  src="/our_mision.jpg"
-                  alt="Our mission"
-                  className="w-full h-full object-cover transform transition-transform duration-500 hover:scale-105"
-                />
+              <div className="order-2 md:order-1">
+                <h2 className="text-3xl mb-6 font-light">Nuestra Misión</h2>
+                <p className="text-gray-600 mb-6 leading-relaxed">
+                  Nacimos con el propósito de simplificar el acceso a productos de skincare de alta calidad en Argentina. Entendemos que el proceso de importación puede ser complejo y costoso, por eso nos encargamos de todo el proceso para que vos solo te preocupes por cuidar tu piel.
+                </p>
+                <p className="text-gray-600 leading-relaxed">
+                  Seleccionamos cuidadosamente cada producto, asegurándonos de que cumpla con los más altos estándares de calidad y efectividad. Trabajamos directamente con marcas reconocidas internacionalmente para garantizar la autenticidad de cada producto.
+                </p>
+              </div>
+              <div className="order-1 md:order-2">
+                <div className="aspect-w-4 aspect-h-3 rounded-lg overflow-hidden">
+                  {!imagesLoaded && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+                      <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[#5EA692]"></div>
+                    </div>
+                  )}
+                  <img
+                    src="/our_mision.jpg"
+                    alt="Our mission"
+                    className={`w-full h-full object-cover transform transition-all duration-500 ${
+                      imagesLoaded ? 'opacity-100 hover:scale-105' : 'opacity-0'
+                    }`}
+                  />
+                </div>
               </div>
             </div>
-          </div>
         </div>
       </section>
 
       {/* Values */}
-      <section className="py-20 bg-[#F5F2ED]">
+      <section className={`py-20 bg-[#F5F2ED] transition-opacity duration-1000 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
         <div className="max-w-6xl mx-auto px-4">
           <h2 className="text-3xl mb-12 text-center font-light">Nuestros Valores</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -109,7 +167,7 @@ const AboutUs = () => {
       </section>
 
       {/* Why Choose Us */}
-      <section className="py-20 bg-white">
+      <section className={`py-20 bg-white transition-opacity duration-1000 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
         <div className="max-w-6xl mx-auto px-4">
           <h2 className="text-3xl mb-12 text-center font-light">¿Por qué elegirnos?</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -144,7 +202,7 @@ const AboutUs = () => {
       </section>
 
       {/* Call to Action */}
-      <section className="py-20 bg-[#5EA692] text-white">
+      <section className={`py-20 bg-[#5EA692] text-white transition-opacity duration-1000 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-3xl mb-6 font-light">Comenzá tu rutina de skincare hoy</h2>
           <p className="text-xl mb-8 font-light">

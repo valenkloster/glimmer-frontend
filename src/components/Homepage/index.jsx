@@ -10,11 +10,26 @@ const HomePage = () => {
   const { setSelectedCategory, clearSelectedCategory } = useContext(ShoppingCartContext);
 
   const collageStructure = [
-    { className: 'col-span-2 row-span-2', image: '/product_green.jpg' },
-    { className: 'col-span-1', image: '/person2.jpg' },
-    { className: 'col-span-1', image: '/product2.jpg' },
-    { className: 'col-span-1', image: '/person1.jpg' },
-    { className: 'col-span-1', image: '/products.jpg' }
+    { 
+      className: 'col-span-full row-span-full md:col-span-2 md:row-span-2', 
+      image: '/product_green.jpg' 
+    },
+    { 
+      className: 'col-span-1 hidden md:block', 
+      image: '/person2.jpg' 
+    },
+    { 
+      className: 'col-span-1 hidden md:block', 
+      image: '/product2.jpg' 
+    },
+    { 
+      className: 'col-span-1 hidden md:block', 
+      image: '/person1.jpg' 
+    },
+    { 
+      className: 'col-span-1 hidden md:block', 
+      image: '/products.jpg' 
+    }
   ];
 
   // Precargar imágenes
