@@ -8,7 +8,6 @@ import ProtectedRoute from '../../hooks/ProtectedRoute';
 import Home from '../Home';
 import Shop from '../Shop';
 import FavoritesPage from '../Favorites';
-import MyAccount from '../MyAccount';
 import MyOrder from '../MyOrder';
 import MyOrders from '../MyOrders';
 import NotFound from '../NotFound';
@@ -30,14 +29,6 @@ const AppRoutes = () => {
     { path: '/aboutUs', element: <AboutUs /> },
     { path: '/shop', element: <Shop /> },
     { path: '/favorites', element: <FavoritesPage /> },
-    { 
-      path: '/my-account', 
-      element: (
-        <ProtectedRoute>
-          <MyAccount />
-        </ProtectedRoute>
-      ) 
-    },
     { 
       path: '/my-order', 
       element: (

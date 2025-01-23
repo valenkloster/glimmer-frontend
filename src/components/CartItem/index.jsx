@@ -2,6 +2,7 @@ import { useContext } from 'react';
 import { TrashIcon } from '@heroicons/react/24/outline';
 import { MinusIcon, PlusIcon } from '@heroicons/react/24/solid';
 import { CartContext } from '../../context/cart/CartContext';
+import { Link } from 'react-router-dom';
 
 const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
   const { updatingItems } = useContext(CartContext);
@@ -15,18 +16,24 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
     <div className={`flex items-start gap-4 mb-3 w-full transition-opacity duration-200 ${
       isUpdating ? 'opacity-50' : 'opacity-100'
     }`}>
-      <figure className="w-20 h-20 flex-shrink-0">
+      <Link 
+        to={`/products/${id_producto}`}
+        className="w-20 h-20 flex-shrink-0"
+      >
         <img 
           className="w-full h-full rounded-lg object-cover" 
           src={producto.imagen} 
           alt={producto.nombre} 
         />
-      </figure>
+      </Link>
 
       <div className="flex flex-col flex-grow">
-        <p className="text-base font-medium break-words pr-2">
+        <Link 
+          to={`/products/${id_producto}`}
+          className="text-base font-medium break-words pr-2 hover:text-verde-agua transition-colors"
+        >
           {producto.nombre}
-        </p>
+        </Link>
         <p className="text-sm text-gray-500">
           {producto.marca}
         </p>

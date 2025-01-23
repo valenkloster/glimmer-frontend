@@ -5,7 +5,6 @@ import {
   Bars3Icon, 
   XMarkIcon, 
   UserIcon,
-  UserCircleIcon,
   HeartIcon,
   ShoppingCartIcon,
   ArrowTopRightOnSquareIcon,
@@ -13,6 +12,7 @@ import {
 import { ShoppingCartContext } from '../../context';
 import { CartContext } from '../../context/cart/CartContext';
 import { useAuth } from '../../context/auth/AuthContext';
+import { accountService } from '../../services/accountService';
 
 const Navbar = () => {
   const context = useContext(ShoppingCartContext);
@@ -23,10 +23,28 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isShopMenuOpen, setIsShopMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [clientName, setClientName] = useState('');
 
   const shopMenuRef = useRef(null);
   const userMenuRef = useRef(null);
   const navRef = useRef(null);
+
+  // Cargar el nombre del cliente
+  useEffect(() => {
+    const loadClientName = async () => {
+      if (isAuthenticated && user?.id_user) {
+        try {
+          const response = await accountService.getClientInfo();
+          if (response.body) {
+            setClientName(`${response.body.nombre} ${response.body.apellido}`);
+          }
+        } catch (err) {
+          console.error('Error loading client info:', err);
+        }
+      }
+    };
+    loadClientName();
+  }, [isAuthenticated, user]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -86,20 +104,9 @@ const Navbar = () => {
       {isAuthenticated ? (
         <>
           <div className="px-4 py-2 border-b border-gray-200">
-            <p className="text-sm font-medium text-gray-700">{user?.nombre || 'Usuario'}</p>
+            <p className="text-sm font-medium text-gray-700">{clientName || 'Usuario'}</p>
             <p className="text-xs text-gray-500 truncate">{user?.email}</p>
           </div>
-          <button
-            onClick={() => {
-              window.scrollTo(0, 0);
-              setIsUserMenuOpen(false);
-              navigate('/my-account');
-            }}
-            className="inline-flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 gap-2"
-          >
-            <UserCircleIcon className="h-5 w-5" />
-            Mi Cuenta
-          </button>
           <button
             onClick={() => {
               window.scrollTo(0, 0);
