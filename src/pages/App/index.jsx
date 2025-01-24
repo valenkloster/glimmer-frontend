@@ -4,6 +4,7 @@ import { AuthProvider } from '../../context/auth/AuthContext';
 import { FavoritesProvider } from '../../context/favorites/FavoritesContext';
 import { CartProvider } from '../../context/cart/CartContext';
 import { ReviewProvider } from '../../context/review/reviewContext';
+import { AddressProvider } from '../../context/address/AddressContext';
 import ProtectedRoute from '../../hooks/ProtectedRoute';
 import Home from '../Home';
 import Shop from '../Shop';
@@ -15,6 +16,7 @@ import LoginPage from '../Auth/LoginPage';
 import RegisterPage from '../Auth/RegisterPage';
 import SuccessPage from '../Success';
 import FailurePage from '../Failure';
+import CheckoutPage from '../Checkout';
 import Navbar from '../../components/Navbar';
 import Cart from '../../components/Cart';
 import ProductPage from '../ProductPage';
@@ -54,6 +56,7 @@ const AppRoutes = () => {
     { path: '/products/:id', element: <ProductPage /> },
     { path: '/success', element: <SuccessPage /> },
     { path: '/failure', element: <FailurePage /> },
+    { path: '/checkout', element: <CheckoutPage /> },
     { path: '/*', element: <NotFound /> },
   ]);
 
@@ -83,15 +86,17 @@ const App = () => {
   return (
     <BrowserRouter>
       <CartProvider>
-        <FavoritesProvider>
-          <AuthProvider>
-            <ShoppingCartProvider>
-              <ReviewProvider>
-                <Layout />
-              </ReviewProvider>
-            </ShoppingCartProvider>
-          </AuthProvider>
-        </FavoritesProvider>
+        <AddressProvider>
+          <FavoritesProvider>
+            <AuthProvider>
+              <ShoppingCartProvider>
+                <ReviewProvider>
+                  <Layout />
+                </ReviewProvider>
+              </ShoppingCartProvider>
+            </AuthProvider>
+          </FavoritesProvider>
+        </AddressProvider>
       </CartProvider>
     </BrowserRouter>
   );
