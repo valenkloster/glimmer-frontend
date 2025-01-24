@@ -4,14 +4,12 @@ import { CartContext } from '../../context/cart/CartContext';
 import CartItem from '../CartItem';
 import { initMercadoPago, Wallet } from '@mercadopago/sdk-react';
 import { httpClient } from '../../services/httpClient';
-import { useLocation } from 'react-router-dom';
 
 
 const Cart = () => {
  const [preferenceId, setPreferenceId] = useState(null);
  const [paymentLoading, setPaymentLoading] = useState(false);
  const [paymentError, setPaymentError] = useState(null);
- const location = useLocation();
 
 
  const { 
@@ -29,13 +27,11 @@ const Cart = () => {
    initMercadoPago(import.meta.env.VITE_MP_PUBLIC_KEY, {locale: 'es-AR'});
  }, []);
 
- const createPayment = async (id_direccion) => {
+ const handleCheckout = async () => {
    try {
      setPaymentLoading(true);
      setPaymentError(null);
-     const { body } = await httpClient.post('/api/v1/pagos/create-preference', { 
-       id_direccion 
-     });
+     const { body } = await httpClient.post('/api/v1/pagos/create-payment');
      setPreferenceId(body.id);
      return body;
    } catch (error) {
@@ -43,15 +39,6 @@ const Cart = () => {
      throw error;
    } finally {
      setPaymentLoading(false);
-   }
- };
-
- const handleCheckout = async () => {
-   try {
-     const id_direccion = 1;
-     await createPayment(id_direccion);
-   } catch (error) {
-     console.error('Error al crear preferencia:', error);
    }
  };
 

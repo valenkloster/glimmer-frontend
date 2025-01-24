@@ -89,32 +89,16 @@ export const CartProvider = ({ children }) => {
     if (quantity < 1) return;
     
     try {
-      setCart(prevCart => ({
-        ...prevCart,
-        detalles: prevCart.detalles.map(item => 
-          item.id_producto === productId
-            ? { ...item, cantidad: quantity }
-            : item
-        ),
-        monto_total: prevCart.detalles.reduce((total, item) => 
-          total + (item.id_producto === productId 
-            ? quantity * item.precio 
-            : item.cantidad * item.precio
-          ), 0
-        )
-      }));
-  
       setUpdatingItems(prev => new Set(prev).add(productId));
       const response = await cartService.update(productId, quantity);
   
-      if (response.error === false && response.status === 500) {
+      if (response.error === false && response.status === 200) {
         await loadCart();
-        setError('Producto no encontrado en el carrito');
       }
     } catch (err) {
-      await loadCart();
       setError('Error al actualizar cantidad');
       console.error('Error updating quantity:', err);
+      await loadCart();
     } finally {
       setUpdatingItems(prev => {
         const next = new Set(prev);
@@ -123,18 +107,36 @@ export const CartProvider = ({ children }) => {
       });
     }
   };
-
+  
   const removeFromCart = async (productId) => {
     try {
+      setCart(prevCart => {
+        const newDetalles = prevCart.detalles.filter(item => item.id_producto !== productId);
+        
+        // Usamos el precio unitario (producto.precio) en vez del precio total (item.precio)
+        const newTotal = newDetalles.reduce((total, item) => 
+          total + (parseFloat(item.cantidad) * parseFloat(item.producto.precio)), 
+          0
+        );
+  
+        return {
+          ...prevCart,
+          detalles: newDetalles,
+          monto_total: newTotal.toFixed(2)
+        };
+      });
+  
       const response = await cartService.remove(productId);
-      if (response.error === false && response.status === 200) {
+      if (response.error || response.status !== 200) {
         await loadCart();
       }
     } catch (err) {
+      await loadCart();
       setError('Error al eliminar del carrito');
       console.error('Error removing from cart:', err);
     }
   };
+
 
   const openCart = () => setIsCartOpen(true);
   const closeCart = () => setIsCartOpen(false);

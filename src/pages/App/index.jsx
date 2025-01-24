@@ -4,7 +4,6 @@ import { AuthProvider } from '../../context/auth/AuthContext';
 import { FavoritesProvider } from '../../context/favorites/FavoritesContext';
 import { CartProvider } from '../../context/cart/CartContext';
 import { ReviewProvider } from '../../context/review/reviewContext';
-import { PaymentProvider } from '../../context/payment/PaymentContext'
 import ProtectedRoute from '../../hooks/ProtectedRoute';
 import Home from '../Home';
 import Shop from '../Shop';
@@ -14,6 +13,8 @@ import MyOrders from '../MyOrders';
 import NotFound from '../NotFound';
 import LoginPage from '../Auth/LoginPage';
 import RegisterPage from '../Auth/RegisterPage';
+import SuccessPage from '../Success';
+import FailurePage from '../Failure';
 import Navbar from '../../components/Navbar';
 import Cart from '../../components/Cart';
 import ProductPage from '../ProductPage';
@@ -51,6 +52,8 @@ const AppRoutes = () => {
     { path: '/olvide-contrasena', element: <ForgotPassword /> },
     { path: '/cambio-de-contrasena', element: <ResetPassword /> },
     { path: '/products/:id', element: <ProductPage /> },
+    { path: '/success', element: <SuccessPage /> },
+    { path: '/failure', element: <FailurePage /> },
     { path: '/*', element: <NotFound /> },
   ]);
 
@@ -82,13 +85,11 @@ const App = () => {
       <CartProvider>
         <FavoritesProvider>
           <AuthProvider>
-            <PaymentProvider>
-              <ShoppingCartProvider>
-                <ReviewProvider>
-                  <Layout />
-                </ReviewProvider>
-              </ShoppingCartProvider>
-            </PaymentProvider>
+            <ShoppingCartProvider>
+              <ReviewProvider>
+                <Layout />
+              </ReviewProvider>
+            </ShoppingCartProvider>
           </AuthProvider>
         </FavoritesProvider>
       </CartProvider>
