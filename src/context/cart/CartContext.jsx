@@ -1,4 +1,3 @@
-// CartContext.jsx
 import { createContext, useState, useEffect } from 'react';
 import { cartService } from '../../services/cartService';
 import { productService } from '../../services/productService';
@@ -113,7 +112,6 @@ export const CartProvider = ({ children }) => {
       setCart(prevCart => {
         const newDetalles = prevCart.detalles.filter(item => item.id_producto !== productId);
         
-        // Usamos el precio unitario (producto.precio) en vez del precio total (item.precio)
         const newTotal = newDetalles.reduce((total, item) => 
           total + (parseFloat(item.cantidad) * parseFloat(item.producto.precio)), 
           0
