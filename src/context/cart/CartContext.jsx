@@ -95,18 +95,21 @@ export const CartProvider = ({ children }) => {
           item.id_producto === productId
             ? { ...item, cantidad: quantity }
             : item
+        ),
+        monto_total: prevCart.detalles.reduce((total, item) => 
+          total + (item.id_producto === productId 
+            ? quantity * item.precio 
+            : item.cantidad * item.precio
+          ), 0
         )
       }));
-
+  
       setUpdatingItems(prev => new Set(prev).add(productId));
-
       const response = await cartService.update(productId, quantity);
-
-      if (response.error === false) {
-        if (response.status === 500) {
-          await loadCart();
-          setError('Producto no encontrado en el carrito');
-        }
+  
+      if (response.error === false && response.status === 500) {
+        await loadCart();
+        setError('Producto no encontrado en el carrito');
       }
     } catch (err) {
       await loadCart();

@@ -13,7 +13,7 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
   if (!producto) return null;
 
   return (
-    <div className={`flex items-start gap-4 mb-3 w-full transition-opacity duration-200 ${
+    <div className={`flex items-start gap-4 my-3 w-full transition-opacity duration-200 ${
       isUpdating ? 'opacity-50' : 'opacity-100'
     }`}>
       <Link 
@@ -38,7 +38,7 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
           {producto.marca}
         </p>
         <p className="text-base font-medium">
-          ${parseFloat(precio).toFixed(2)}
+          ${parseFloat(precio).toFixed(2)} x1
         </p>
       </div>
 

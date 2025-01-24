@@ -4,6 +4,7 @@ import { AuthProvider } from '../../context/auth/AuthContext';
 import { FavoritesProvider } from '../../context/favorites/FavoritesContext';
 import { CartProvider } from '../../context/cart/CartContext';
 import { ReviewProvider } from '../../context/review/reviewContext';
+import { PaymentProvider } from '../../context/payment/PaymentContext'
 import ProtectedRoute from '../../hooks/ProtectedRoute';
 import Home from '../Home';
 import Shop from '../Shop';
@@ -50,7 +51,7 @@ const AppRoutes = () => {
     { path: '/olvide-contrasena', element: <ForgotPassword /> },
     { path: '/cambio-de-contrasena', element: <ResetPassword /> },
     { path: '/products/:id', element: <ProductPage /> },
-    { path: '/*', element: <NotFound /> }
+    { path: '/*', element: <NotFound /> },
   ]);
 
   return routes;
@@ -81,11 +82,13 @@ const App = () => {
       <CartProvider>
         <FavoritesProvider>
           <AuthProvider>
-            <ShoppingCartProvider>
-              <ReviewProvider>
-                <Layout />
-              </ReviewProvider>
-            </ShoppingCartProvider>
+            <PaymentProvider>
+              <ShoppingCartProvider>
+                <ReviewProvider>
+                  <Layout />
+                </ReviewProvider>
+              </ShoppingCartProvider>
+            </PaymentProvider>
           </AuthProvider>
         </FavoritesProvider>
       </CartProvider>
