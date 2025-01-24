@@ -1,20 +1,37 @@
-import { useContext } from 'react';
-import { AddressProvider, AddressContext } from '../../context/address/AddressContext';
+import { useContext, useEffect, useState } from 'react';
+import { AddressContext } from '../../context/address/AddressContext';
 import { Address } from '../../components/Address';
 import { AddressList } from '../../components/AddressList';
-import { useNavigate } from 'react-router-dom';
-import { ShoppingCartContext } from '../../context';
+import { initMercadoPago, Wallet } from '@mercadopago/sdk-react';
+import { httpClient } from '../../services/httpClient';
 
 const CheckoutPage = () => {
-  const navigate = useNavigate();
-  const { selectedAddress } = useContext(AddressContext);
-  const { setShippingAddress } = useContext(ShoppingCartContext);
-
-  const handlePayment = () => {
-    if (!selectedAddress) return;
-    setShippingAddress(selectedAddress);
-    navigate('/payment');
-  };
+    const { selectedAddress } = useContext(AddressContext);
+    
+    const [preferenceId, setPreferenceId] = useState(null);
+    const [paymentLoading, setPaymentLoading] = useState(false);
+    const [paymentError, setPaymentError] = useState(null);
+  
+    useEffect(() => {
+      initMercadoPago(import.meta.env.VITE_MP_PUBLIC_KEY, {locale: 'es-AR'});
+    }, []);
+  
+    const handlePayment = async () => {
+      if (!selectedAddress || selectedAddress <= 0) return;
+      
+      try {
+        setPaymentLoading(true);
+        setPaymentError(null);
+        localStorage.setItem('selectedAddressId', selectedAddress.id_direccion);
+        const { body } = await httpClient.post('/api/v1/pagos/create-payment');
+        setPreferenceId(body.id);
+      } catch (error) {
+        setPaymentError(error.message);
+        throw error;
+      } finally {
+        setPaymentLoading(false);
+      }
+    };
 
   return (
     <div className="min-h-screen bg-white flex flex-col" style={{ marginTop: '81px' }}>
@@ -45,16 +62,27 @@ const CheckoutPage = () => {
                   <div className="flex flex-col h-full justify-between">
                     <AddressList />
                     <button
-                   onClick={handlePayment}
-                   disabled={!selectedAddress}
-                   className={`w-full mt-4 py-3 px-6 rounded-full text-white transition-all duration-300 ${
-                     selectedAddress 
-                       ? 'bg-verde-agua hover:bg-opacity-90 cursor-pointer' 
-                       : 'bg-gray-300 cursor-not-allowed'
-                   }`}
-                 >
-                   {selectedAddress ? '¡Continuar con el pago! →' : 'Selecciona una dirección para continuar'}
-                 </button>
+                        onClick={handlePayment}
+                        disabled={!selectedAddress || paymentLoading}
+                        className={`w-full mt-4 py-3 px-6 rounded-full text-white transition-all duration-300 ${
+                        selectedAddress && !paymentLoading
+                            ? 'bg-verde-agua hover:bg-opacity-90 cursor-pointer' 
+                            : 'bg-gray-300 cursor-not-allowed'
+                        }`}
+                    >
+                        {paymentLoading 
+                        ? 'Procesando...' 
+                        : selectedAddress
+                            ? '¡Continuar con el pago! →' 
+                            : 'Selecciona una dirección para continuar'}
+                    </button>
+
+                    {preferenceId && (
+                        <Wallet
+                        initialization={{ preferenceId }}
+                        onError={(error) => console.error('Error:', error)}
+                        />
+                    )}
                   </div>
                 </div>
               </div>
