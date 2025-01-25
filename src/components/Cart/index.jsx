@@ -86,7 +86,7 @@ const proceedToCheckout = () => {
         <p className="flex justify-between items-center mb-2">
           <span className="font-light text-sm sm:text-base">Total:</span>
           <span className="font-medium text-lg sm:text-2xl">
-            ${parseFloat(cartTotal).toFixed(2)}
+            ${parseFloat(cartTotal).toLocaleString('es-AR')}
           </span>
         </p>
         <button 

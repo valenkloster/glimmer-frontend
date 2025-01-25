@@ -41,7 +41,7 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
          {producto.marca}
        </p>
        <p className="text-base font-medium">
-         ${parseFloat(precio).toFixed(2)}
+       ${parseFloat(precio).toLocaleString('es-AR')}
        </p>
        {outOfStock && (
          <p className="text-red-500 text-sm">Producto no disponible</p>

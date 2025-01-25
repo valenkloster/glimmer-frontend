@@ -30,7 +30,7 @@ const Card = (data) => {
         <div className="flex flex-col gap-1">
           <p className="text-sm text-gray-500 font-product">{data.data.marca}</p>
           <p className="text-base font-semibold font-product line-clamp-2">{data.data.nombre}</p>
-          <p className="text-base font-serif font-bold mt-1">${data.data.precio}</p>
+          <p className="text-base font-serif font-bold mt-1">${parseFloat(data.data.precio).toLocaleString('es-AR')}</p>
           {data.data.stock <= 0 && (
             <p className="text-red-500 text-sm">Producto no disponible</p>
           )}

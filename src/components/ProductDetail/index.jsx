@@ -114,7 +114,7 @@ const ProductDetail = () => {
               <AverageRating reviews={reviews} />
 
               <p className="text-xl font-semibold font-serif mt-4">
-                ${productToShow.precio}
+                ${parseFloat(productToShow.precio).toLocaleString('es-AR')}
               </p>
               <p className="text-sm text-gray-600">
                 Tamaño: {productToShow.tamanio}
