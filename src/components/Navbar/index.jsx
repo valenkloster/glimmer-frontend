@@ -200,6 +200,7 @@ const Navbar = () => {
                 className={`${location.pathname === '/shop' ? activeStyle : ''} relative`}
                 onMouseEnter={() => setIsShopMenuOpen(true)}
                 onClick={(e) => {
+                  context.clearSearch()
                   e.preventDefault();
                   window.scrollTo(0, 0);
                   context.setSelectedCategory(null);
@@ -309,6 +310,7 @@ const Navbar = () => {
             <li className="w-full">
               <button
                 onClick={() => {
+                  context.clearSearch()
                   window.scrollTo(0, 0);
                   context.setSelectedCategory(null);
                   setIsMenuOpen(false);

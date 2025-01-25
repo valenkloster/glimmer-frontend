@@ -16,6 +16,11 @@ export const ShoppingCartProvider = ({ children }) => {
   const [productToShow, setProductToShow] = useState({});
   const [searchQuery, setSearchQuery] = useState('');
 
+  const clearSearch = () => {
+    setSearchQuery('');
+    setFilteredProducts(products);
+  };
+
   // ==================== Controladores de UI ====================
   const openProductDetail = () => setIsProductDetailOpen(true);
   const closeProductDetail = () => setIsProductDetailOpen(false);
@@ -86,6 +91,7 @@ export const ShoppingCartProvider = ({ children }) => {
     searchQuery,
     setSearchQuery,
     setFilteredProducts,
+    clearSearch,
 
     // UI Controllers
     openProductDetail,
