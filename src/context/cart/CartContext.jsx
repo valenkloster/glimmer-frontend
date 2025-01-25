@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect } from 'react';
+import { createContext, useState, useEffect, useContext } from 'react';
 import { cartService } from '../../services/cartService';
 import { productService } from '../../services/productService';
 
@@ -8,6 +8,7 @@ export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [stockError, setStockError] = useState(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [updatingItems, setUpdatingItems] = useState(new Set());
 
@@ -98,6 +99,7 @@ export const CartProvider = ({ children }) => {
     try {
       const response = await cartService.add(productId, quantity);
       if (response.error === false && response.status === 200) {
+        setStockError(null);
         await loadCart();
       }
     } catch (err) {
@@ -114,6 +116,7 @@ export const CartProvider = ({ children }) => {
       const response = await cartService.update(productId, quantity);
   
       if (response.error === false && response.status === 200) {
+        setStockError(null);
         await loadCart();
       }
     } catch (err) {
@@ -157,12 +160,16 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-
   const openCart = async () => {
     setIsCartOpen(true);
+    setStockError(null);
     await checkStock();
   };
-  const closeCart = () => setIsCartOpen(false);
+
+  const closeCart = () => {
+    setIsCartOpen(false);
+    setStockError(null);
+  };
 
   const cartCount = cart?.detalles?.length || 0;
   const cartTotal = cart?.detalles?.reduce((total, item) => 
@@ -174,6 +181,7 @@ export const CartProvider = ({ children }) => {
     cart,
     loading,
     error,
+    stockError,
     isCartOpen,
     cartCount,
     cartTotal,
@@ -183,7 +191,8 @@ export const CartProvider = ({ children }) => {
     openCart,
     closeCart,
     loadCart,
-    updatingItems
+    updatingItems,
+    setStockError
   };
 
   return (

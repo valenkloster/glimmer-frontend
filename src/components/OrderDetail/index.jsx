@@ -7,8 +7,6 @@ const OrderDetail = () => {
   const { selectedOrder, loading, error, fetchOrderById } = useContext(OrderContext);
 
   useEffect(() => {
-    console.log('id:', id);
-    console.log('fetchOrderById:', !!fetchOrderById);
     if (id) {
       fetchOrderById(id);
     }

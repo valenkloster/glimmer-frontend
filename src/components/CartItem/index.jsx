@@ -1,18 +1,25 @@
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { TrashIcon } from '@heroicons/react/24/outline';
 import { MinusIcon, PlusIcon } from '@heroicons/react/24/solid';
 import { CartContext } from '../../context/cart/CartContext';
 import { Link } from 'react-router-dom';
 
 const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
- const { updatingItems } = useContext(CartContext);
+ const { updatingItems, setStockError } = useContext(CartContext);
  const { id_producto, cantidad, precio, producto } = item;
 
  const isUpdating = updatingItems.has(id_producto);
  const outOfStock = producto.stock <= 0;
+ const isAtStockLimit = cantidad >= producto.stock;
+
+ useEffect(() => {
+   if (isAtStockLimit && producto.stock !== 0) {
+     setStockError(`Lo sentimos, solo contamos con ${producto.stock} unidades disponibles para ${producto.nombre}.`);
+   }
+ }, [isAtStockLimit, producto.stock, setStockError]);
 
  if (!producto) return null;
-
+ 
  return (
    <div className={`
      flex items-start gap-4 my-3 w-full transition-opacity duration-200
@@ -66,7 +73,7 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
            <button
              onClick={() => onUpdateQuantity(id_producto, cantidad + 1)}
              className="h-5 w-5 text-white bg-gray-500 rounded-full flex items-center justify-center"
-             disabled={cantidad >= producto.stock || isUpdating}
+             disabled={isAtStockLimit || isUpdating}
            >
              <PlusIcon className="h-3 w-3" />
            </button>

@@ -21,7 +21,6 @@ const SuccessPage = () => {
             status: status_payment, 
             id_direccion 
           });
-          console.log('Order create')
 
           localStorage.removeItem('selectedAddressId');
           

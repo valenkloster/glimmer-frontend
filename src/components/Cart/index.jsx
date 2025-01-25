@@ -3,6 +3,7 @@ import { XMarkIcon } from '@heroicons/react/24/solid';
 import { CartContext } from '../../context/cart/CartContext';
 import CartItem from '../CartItem';
 import { useNavigate } from 'react-router-dom';
+import StockAlert from '../StockAlert';
 
 const Cart = () => {
  const navigate = useNavigate();
@@ -15,7 +16,8 @@ const Cart = () => {
    cartTotal,
    updateQuantity,
    removeFromCart,
-   closeCart
+   closeCart,
+   stockError
  } = useContext(CartContext);
 
  const handleCheckout = () => {
@@ -27,6 +29,7 @@ const Cart = () => {
 
  return (
    <aside className="fixed right-0 top-[81px] w-full max-w-[500px] h-[calc(100vh-81px)] border border-black rounded-lg bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${isCartOpen ? 'translate-x-0' : 'translate-x-full'} z-50 flex flex-col">
+    {stockError && <StockAlert message={stockError} />}
       {/* Header */}
       <div className="flex justify-between items-center p-4 sm:p-6 border-b">
         <h2 className="font-medium text-lg sm:text-xl">Mi Carrito</h2>
