@@ -15,7 +15,7 @@ const OrderList = () => {
   
     if (error) {
       return (
-        <div className="flex justify-center items-center min-h-[calc(100vh-81px)]" style={{ marginTop: '81px' }}>
+        <div className="flex justify-center items-center pt-[81px]">
           <div className="text-center p-4">
             <p className="text-red-500">{error}</p>
           </div>
@@ -25,19 +25,19 @@ const OrderList = () => {
   
     if (!orders?.length) {
       return (
-        <div className="flex items-center justify-center min-h-[calc(100vh-81px)]" style={{ marginTop: '81px' }}>
-          <div className="text-center p-8 bg-nude rounded-lg max-w-md w-full mx-4">
-            <div className="mb-4">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+        <div className="flex items-center justify-center h-[calc(100vh-81px)]">
+            <div className="text-center p-8 bg-nude rounded-lg max-w-md w-full mx-4">
+                <div className="mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                </div>
+                <p className="text-gray-600 text-lg mb-2">No tienes pedidos realizados</p>
+                <p className="text-gray-500 mb-4">¡Comienza a explorar nuestra tienda!</p>
+                <Link to="/shop" className="bg-verde-agua text-white px-6 py-2 rounded-full hover:bg-opacity-90 transition-all inline-block">
+                Ir a la tienda
+                </Link>
             </div>
-            <p className="text-gray-600 text-lg mb-2">No tienes pedidos realizados</p>
-            <p className="text-gray-500 mb-4">¡Comienza a explorar nuestra tienda!</p>
-            <Link to="/shop" className="bg-verde-agua text-white px-6 py-2 rounded-full hover:bg-opacity-90 transition-all inline-block">
-              Ir a la tienda
-            </Link>
-          </div>
         </div>
       );
     }

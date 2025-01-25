@@ -3,7 +3,6 @@ import ProtectedRoute from '../../hooks/ProtectedRoute';
 import Home from '../Home';
 import Shop from '../Shop';
 import FavoritesPage from '../Favorites';
-import MyOrder from '../MyOrder';
 import MyOrders from '../MyOrders';
 import NotFound from '../NotFound';
 import LoginPage from '../Auth/LoginPage';
@@ -23,14 +22,13 @@ const AppRoutes = () => {
     { path: '/aboutUs', element: <AboutUs /> },
     { path: '/shop', element: <Shop /> },
     { path: '/favorites', element: <FavoritesPage /> },
-    { path: '/my-order', element: <ProtectedRoute><MyOrder /></ProtectedRoute> },
     { path: '/my-orders', element: <ProtectedRoute><MyOrders /></ProtectedRoute> },
     { path: '/login', element: <LoginPage /> },
     { path: '/register', element: <RegisterPage /> },
     { path: '/olvide-contrasena', element: <ForgotPassword /> },
     { path: '/cambio-de-contrasena', element: <ResetPassword /> },
     { path: '/products/:id', element: <ProductPage /> },
-    { path: '/orders/:id', element: <OrderDetail /> },
+    { path: '/orders/:id', element: <ProtectedRoute><OrderDetail /></ProtectedRoute> },
     { path: '/success', element: <SuccessPage /> },
     { path: '/failure', element: <FailurePage /> },
     { path: '/checkout', element: <CheckoutPage /> },

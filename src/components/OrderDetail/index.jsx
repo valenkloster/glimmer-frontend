@@ -30,7 +30,7 @@ const OrderDetail = () => {
   if (!selectedOrder) return null;
 
   return (
-    <div className="max-w-3xl mx-auto p-4">
+    <div className="max-w-3xl mx-auto p-4 pt-[80px]">
       <div className="mb-4">
         <Link to="/orders" className="text-verde-agua hover:underline">
           ← Volver a mis pedidos
