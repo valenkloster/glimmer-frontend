@@ -72,6 +72,28 @@ export const CartProvider = ({ children }) => {
     };
   }, []);
 
+  const checkStock = async () => {
+    if (!cart?.detalles?.length) return;
+    
+    const updatedDetalles = await Promise.all(
+      cart.detalles.map(async (detalle) => {
+        const productResponse = await productService.getById(detalle.id_producto);
+        return {
+          ...detalle,
+          producto: {
+            ...detalle.producto,
+            stock: productResponse.body.stock
+          }
+        };
+      })
+    );
+    
+    setCart(prev => ({
+      ...prev,
+      detalles: updatedDetalles
+    }));
+  };
+
   const addToCart = async (productId, quantity = 1) => {
     try {
       const response = await cartService.add(productId, quantity);
@@ -136,11 +158,17 @@ export const CartProvider = ({ children }) => {
   };
 
 
-  const openCart = () => setIsCartOpen(true);
+  const openCart = async () => {
+    setIsCartOpen(true);
+    await checkStock();
+  };
   const closeCart = () => setIsCartOpen(false);
 
   const cartCount = cart?.detalles?.length || 0;
-  const cartTotal = parseFloat(cart?.monto_total || 0);
+  const cartTotal = cart?.detalles?.reduce((total, item) => 
+    total + (item.producto.stock > 0 ? parseFloat(item.cantidad) * parseFloat(item.producto.precio) : 0), 
+    0
+  ) || 0;
 
   const contextValue = {
     cart,
