@@ -7,7 +7,7 @@ const OrderList = () => {
   
     if (loading) {
       return (
-        <div className="flex justify-center items-center min-h-[calc(100vh-81px)]" style={{ marginTop: '81px' }}>
+        <div className="flex justify-center items-center min-h-[calc(100vh-81px)]">
           <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-verde-agua"></div>
         </div>
       );
@@ -63,7 +63,7 @@ const OrderList = () => {
               {orders.map((order, index) => (
                 <Link 
                   key={order.id_pedido}
-                  to={`/orders/${order.id_pedido}`}
+                  to={`/my-orders/${order.id_pedido}`}
                   className={`block transition-all duration-300 hover:bg-gray-50 ${
                     index !== orders.length - 1 ? 'border-b border-gray-100' : ''
                   }`}

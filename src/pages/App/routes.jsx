@@ -28,7 +28,7 @@ const AppRoutes = () => {
     { path: '/olvide-contrasena', element: <ForgotPassword /> },
     { path: '/cambio-de-contrasena', element: <ResetPassword /> },
     { path: '/products/:id', element: <ProductPage /> },
-    { path: '/orders/:id', element: <ProtectedRoute><OrderDetail /></ProtectedRoute> },
+    { path: '/my-orders/:id', element: <ProtectedRoute><OrderDetail /></ProtectedRoute> },
     { path: '/success', element: <SuccessPage /> },
     { path: '/failure', element: <FailurePage /> },
     { path: '/checkout', element: <CheckoutPage /> },

@@ -2,8 +2,8 @@ import OrderList from '../../components/OrderList'
 
 function MyOrders() {
   return (
-    <div className='min-h-screen pt-[80px]'>
-      < OrderList/>;
+    <div className='min-h-screen pt-[10px]'>
+      < OrderList/>
     </div>
   
   );
