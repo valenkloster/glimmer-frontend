@@ -8,7 +8,6 @@ export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [stockError, setStockError] = useState(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [updatingItems, setUpdatingItems] = useState(new Set());
 
@@ -76,30 +75,36 @@ export const CartProvider = ({ children }) => {
   const checkStock = async () => {
     if (!cart?.detalles?.length) return;
     
-    const updatedDetalles = await Promise.all(
-      cart.detalles.map(async (detalle) => {
-        const productResponse = await productService.getById(detalle.id_producto);
-        return {
-          ...detalle,
-          producto: {
-            ...detalle.producto,
-            stock: productResponse.body.stock
-          }
-        };
-      })
-    );
-    
-    setCart(prev => ({
-      ...prev,
-      detalles: updatedDetalles
-    }));
+    try {
+      const updatedDetalles = await Promise.all(
+        cart.detalles.map(async (detalle) => {
+          const productResponse = await productService.getById(detalle.id_producto);
+          return {
+            ...detalle,
+            producto: {
+              ...detalle.producto,
+              stock: productResponse.body.stock
+            }
+          };
+        })
+      );
+      
+      setCart(prev => ({
+        ...prev,
+        detalles: updatedDetalles
+      }));
+
+      return updatedDetalles;
+    } catch (error) {
+      console.error('Error checking stock:', error);
+      setError('Error al verificar stock');
+    }
   };
 
   const addToCart = async (productId, quantity = 1) => {
     try {
       const response = await cartService.add(productId, quantity);
       if (response.error === false && response.status === 200) {
-        setStockError(null);
         await loadCart();
       }
     } catch (err) {
@@ -116,7 +121,6 @@ export const CartProvider = ({ children }) => {
       const response = await cartService.update(productId, quantity);
   
       if (response.error === false && response.status === 200) {
-        setStockError(null);
         await loadCart();
       }
     } catch (err) {
@@ -160,15 +164,26 @@ export const CartProvider = ({ children }) => {
     }
   };
 
+  const adjustCartQuantities = async (stockIssues) => {
+    try {
+      await Promise.all(
+        stockIssues.map(item => 
+          updateQuantity(item.id_producto, item.producto.stock)
+        )
+      );
+    } catch (err) {
+      setError('Error al ajustar cantidades');
+      console.error('Error adjusting quantities:', err);
+    }
+  };
+
   const openCart = async () => {
     setIsCartOpen(true);
-    setStockError(null);
     await checkStock();
   };
 
   const closeCart = () => {
     setIsCartOpen(false);
-    setStockError(null);
   };
 
   const cartCount = cart?.detalles?.length || 0;
@@ -181,7 +196,6 @@ export const CartProvider = ({ children }) => {
     cart,
     loading,
     error,
-    stockError,
     isCartOpen,
     cartCount,
     cartTotal,
@@ -192,7 +206,8 @@ export const CartProvider = ({ children }) => {
     closeCart,
     loadCart,
     updatingItems,
-    setStockError
+    adjustCartQuantities,
+    checkStock,
   };
 
   return (

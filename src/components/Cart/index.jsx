@@ -1,12 +1,14 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { XMarkIcon } from '@heroicons/react/24/solid';
 import { CartContext } from '../../context/cart/CartContext';
 import CartItem from '../CartItem';
 import { useNavigate } from 'react-router-dom';
-import StockAlert from '../StockAlert';
+import StockModal from '../StockModal';
 
 const Cart = () => {
  const navigate = useNavigate();
+ const [showStockModal, setShowStockModal] = useState(false);
+ const [stockIssues, setStockIssues] = useState([]);
  
  const { 
    cart,
@@ -17,20 +19,41 @@ const Cart = () => {
    updateQuantity,
    removeFromCart,
    closeCart,
-   stockError
+   checkStock,
+   adjustCartQuantities
  } = useContext(CartContext);
 
- const handleCheckout = () => {
-   closeCart();
-   navigate('/checkout');
- };
+ const validateAndCheckout = async () => {
+  const updatedDetalles = await checkStock();
+  
+  const issues = updatedDetalles.filter(
+    item => item.cantidad > item.producto.stock
+  );
+
+  if (issues.length > 0) {
+    setStockIssues(issues);
+    setShowStockModal(true);
+    return;
+  }
+
+  proceedToCheckout();
+};
+
+const handleContinueWithAdjustments = async () => {
+  await adjustCartQuantities(stockIssues);
+  setShowStockModal(false);
+  proceedToCheckout();
+};
+
+const proceedToCheckout = () => {
+  closeCart();
+  navigate('/checkout');
+};
 
  if (!isCartOpen) return null;
 
  return (
    <aside className="fixed right-0 top-[81px] w-full max-w-[500px] h-[calc(100vh-81px)] border border-black rounded-lg bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${isCartOpen ? 'translate-x-0' : 'translate-x-full'} z-50 flex flex-col">
-    {stockError && <StockAlert message={stockError} />}
-      {/* Header */}
       <div className="flex justify-between items-center p-4 sm:p-6 border-b">
         <h2 className="font-medium text-lg sm:text-xl">Mi Carrito</h2>
         <XMarkIcon
@@ -39,7 +62,6 @@ const Cart = () => {
         />
       </div>
 
-      {/* Content */}
       <div className="flex-1 overflow-y-auto px-4 sm:px-6">
         {loading && (
           <div className="flex justify-center py-4">
@@ -60,7 +82,6 @@ const Cart = () => {
         )}
       </div>
 
-      {/* Footer */}
       <div className="px-4 sm:px-6 py-4 border-t bg-white">
         <p className="flex justify-between items-center mb-2">
           <span className="font-light text-sm sm:text-base">Total:</span>
@@ -71,12 +92,19 @@ const Cart = () => {
         <button 
           className={`w-full rounded-lg text-sm sm:text-base py-2 sm:py-3 transition-colors duration-200 ${!cart?.detalles?.length ? 'bg-gray-400 text-gray-200 cursor-not-allowed' : 'bg-black text-white hover:bg-gray-900'}`}
           disabled={!cart?.detalles?.length}
-          onClick={handleCheckout}
+          onClick={validateAndCheckout}
         >
           Finalizar Compra
         </button>
       </div>
-   </aside>
+
+      <StockModal
+        isOpen={showStockModal}
+        onClose={() => setShowStockModal(false)}
+        stockIssues={stockIssues}
+        onContinue={handleContinueWithAdjustments}
+      />
+    </aside>
  );
 };
 

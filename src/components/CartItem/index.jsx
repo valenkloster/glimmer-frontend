@@ -1,22 +1,15 @@
-import { useContext, useEffect } from 'react';
+import { useContext } from 'react';
 import { TrashIcon } from '@heroicons/react/24/outline';
 import { MinusIcon, PlusIcon } from '@heroicons/react/24/solid';
 import { CartContext } from '../../context/cart/CartContext';
 import { Link } from 'react-router-dom';
 
 const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
- const { updatingItems, setStockError } = useContext(CartContext);
+ const { updatingItems } = useContext(CartContext);
  const { id_producto, cantidad, precio, producto } = item;
 
  const isUpdating = updatingItems.has(id_producto);
  const outOfStock = producto.stock <= 0;
- const isAtStockLimit = cantidad >= producto.stock;
-
- useEffect(() => {
-   if (isAtStockLimit && producto.stock !== 0) {
-     setStockError(`Lo sentimos, solo contamos con ${producto.stock} unidades disponibles para ${producto.nombre}.`);
-   }
- }, [isAtStockLimit, producto.stock, setStockError]);
 
  if (!producto) return null;
  
@@ -71,12 +64,12 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
              {cantidad}
            </span>
            <button
-             onClick={() => onUpdateQuantity(id_producto, cantidad + 1)}
-             className="h-5 w-5 text-white bg-gray-500 rounded-full flex items-center justify-center"
-             disabled={isAtStockLimit || isUpdating}
-           >
-             <PlusIcon className="h-3 w-3" />
-           </button>
+              onClick={() => onUpdateQuantity(id_producto, cantidad + 1)}
+              className="h-5 w-5 text-white bg-gray-500 rounded-full flex items-center justify-center"
+              disabled={isUpdating} // Removido isAtStockLimit
+            >
+              <PlusIcon className="h-3 w-3" />
+            </button>
            <TrashIcon
              onClick={() => onRemove(id_producto)}
              className={`h-5 w-5 cursor-pointer ml-2 ${
