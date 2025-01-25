@@ -6,7 +6,11 @@ import { initMercadoPago, Wallet } from '@mercadopago/sdk-react';
 import { httpClient } from '../../services/httpClient';
 
 const CheckoutPage = () => {
-    const { selectedAddress } = useContext(AddressContext);
+    const { selectedAddress, loadAddresses } = useContext(AddressContext);
+
+    useEffect(() => {
+      loadAddresses();
+    }, []);
     
     const [preferenceId, setPreferenceId] = useState(null);
     const [paymentLoading, setPaymentLoading] = useState(false);

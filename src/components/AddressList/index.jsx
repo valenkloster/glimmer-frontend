@@ -23,7 +23,6 @@ export const AddressList = () => {
   const handleDelete = async (e, id_direccion) => {
     e.stopPropagation();
     try {
-      console.log(id_direccion)
       await deleteAddress({ id_direccion });
     } catch (error) {
       console.error('Error al eliminar la dirección:', error);

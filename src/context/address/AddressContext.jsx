@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useState, useEffect } from 'react';
 import { addressService } from '../../services/addressService';
 
 export const AddressContext = createContext();
@@ -7,26 +7,13 @@ export const AddressProvider = ({ children }) => {
   const [provincias, setProvincias] = useState([]);
   const [addresses, setAddresses] = useState([]);
   const [selectedAddress, setSelectedAddress] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('token'));
 
-  const fetchProvincias = async () => {
-    try {
-      setLoading(true);
-      const response = await addressService.getProvincias();
-      setProvincias(response.body);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchAddresses = async () => {
-    const currentToken = localStorage.getItem('token');
+  const loadAddresses = async () => {
+    const token = localStorage.getItem('token');
     
-    if (!currentToken) {
+    if (!token) {
       setAddresses([]);
       setSelectedAddress(null);
       setLoading(false);
@@ -39,76 +26,85 @@ export const AddressProvider = ({ children }) => {
       setAddresses(response.body);
       setError(null);
     } catch (err) {
-      setError(err.message);
-      setAddresses([]);
+      setError('Error al cargar direcciones');
+      console.error('Error loading addresses:', err);
+      setAddresses([]); // Clear addresses in case of error
       setSelectedAddress(null);
     } finally {
       setLoading(false);
     }
   };
 
-  // Observar cambios en el token
+  // Fetch provinces
+  const fetchProvincias = async () => {
+    try {
+      const response = await addressService.getProvincias();
+      setProvincias(response.body);
+    } catch (err) {
+      console.error('Error loading provinces:', err);
+    }
+  };
+
   useEffect(() => {
-    const checkToken = () => {
-      const newToken = localStorage.getItem('token');
-      if (newToken !== token) {
-        setToken(newToken);
-        fetchAddresses();
+    // Listen for token changes in other tabs/windows
+    const handleStorageChange = (e) => {
+      if (e.key === 'token') {
+        loadAddresses();
       }
     };
 
-    window.addEventListener('storage', checkToken);
-    const interval = setInterval(checkToken, 1000);
+    window.addEventListener('storage', handleStorageChange);
     
-    return () => {
-      window.removeEventListener('storage', checkToken);
-      clearInterval(interval);
-    };
-  }, [token]);
+    // Initial load of addresses
+    loadAddresses();
 
+    // Fetch provinces
+    fetchProvincias();
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
+
+  // Create a new address
   const createAddress = async (addressData) => {
     try {
-      setLoading(true);
-      const response = await addressService.createAddress(addressData);
-      await fetchAddresses();
-      return response;
+      await addressService.createAddress(addressData);
+      await loadAddresses();
     } catch (err) {
-      setError(err.message);
+      setError('Error al crear dirección');
+      console.error('Error creating address:', err);
       throw err;
-    } finally {
-      setLoading(false);
     }
   };
 
+  // Delete an address
   const deleteAddress = async (id_direccion) => {
     try {
-      setLoading(true);
-      const response = await addressService.deleteAddress(id_direccion);
-      await fetchAddresses();
-      return response;
+      await addressService.deleteAddress(id_direccion);
+      await loadAddresses();
     } catch (err) {
-      setError(err.message);
+      setError('Error al eliminar dirección');
+      console.error('Error deleting address:', err);
       throw err;
-    } finally {
-      setLoading(false);
     }
+  };
+
+  const contextValue = {
+    provincias,
+    addresses,
+    selectedAddress,
+    setSelectedAddress,
+    loading,
+    error,
+    createAddress,
+    deleteAddress,
+    loadAddresses,
+    fetchProvincias
   };
 
   return (
-    <AddressContext.Provider 
-      value={{ 
-        provincias,
-        addresses,
-        selectedAddress,
-        setSelectedAddress,
-        loading,
-        error,
-        fetchProvincias,
-        createAddress,
-        fetchAddresses,
-        deleteAddress
-      }}
-    >
+    <AddressContext.Provider value={contextValue}>
       {children}
     </AddressContext.Provider>
   );
