@@ -19,14 +19,14 @@ function Shop() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ marginTop: '81px' }}>
+      <div className="min-h-screen flex items-center justify-center pt-[80px]">
         <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-verde-agua"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white" style={{ marginTop: '81px' }}>
+    <div className="min-h-screen bg-white pt-[80px]">
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex flex-wrap justify-center gap-8">
           {filteredProducts?.map(item => (

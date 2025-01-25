@@ -1,7 +1,12 @@
+import OrderList from '../../components/OrderList'
+
 function MyOrders() {
   return (
-    'MyOrders'
-  )
-}
+    <div className='min-h-screen pt-[80px]'>
+      < OrderList/>;
+    </div>
+  
+  );
+};
 
-export default MyOrders
+export default MyOrders;

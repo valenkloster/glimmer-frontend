@@ -30,7 +30,7 @@ const ProductPage = () => {
   }, [id]);
 
   return (
-    <div className="min-h-screen bg-white" style={{ marginTop: '81px' }}>
+    <div className="min-h-screen bg-white pt-[80px]">
       <ProductDetail />
       <div className="max-w-7xl mx-auto px-4 md:px-20">
         <Reviews productId={id} />

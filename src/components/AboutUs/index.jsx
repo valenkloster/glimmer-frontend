@@ -57,14 +57,14 @@ const AboutUs = () => {
     };
 
   return (
-    <div className="w-full pt-[81px]">
+    <div className="w-full pt-[80px]">
       {/* Hero Section */}
-      <section className={`relative h-[60vh] bg-[#F5F2ED] flex items-center justify-center transition-opacity duration-1000 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
+      <section className={`relative h-[60vh] bg-nude flex items-center justify-center transition-opacity duration-1000 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
         <div className="absolute inset-0 overflow-hidden">
             {/* Loading Spinner */}
             {!imagesLoaded && (
                 <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
-                    <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[#5EA692]"></div>
+                    <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-verde-agua"></div>
                 </div>
             )}
             <img
@@ -100,7 +100,7 @@ const AboutUs = () => {
                 <div className="aspect-w-4 aspect-h-3 rounded-lg overflow-hidden">
                   {!imagesLoaded && (
                     <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
-                      <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[#5EA692]"></div>
+                      <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-verde-agua"></div>
                     </div>
                   )}
                   <img
@@ -117,7 +117,7 @@ const AboutUs = () => {
       </section>
 
       {/* Values */}
-      <section className={`py-20 bg-[#F5F2ED] transition-opacity duration-1000 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
+      <section className={`py-20 bg-nude transition-opacity duration-1000 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
         <div className="max-w-6xl mx-auto px-4">
           <h2 className="text-3xl mb-12 text-center font-light">Nuestros Valores</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -188,7 +188,7 @@ const AboutUs = () => {
             ].map((feature, index) => (
               <div 
                 key={feature.title}
-                className="p-6 border border-gray-100 rounded-lg transform transition-all duration-500 hover:shadow-lg hover:border-[#5EA692]"
+                className="p-6 border border-gray-100 rounded-lg transform transition-all duration-500 hover:shadow-lg hover:border-verde-agua"
               >
                 <h3 className="text-xl mb-4 font-light">{feature.title}</h3>
                 <p className="text-gray-600">{feature.description}</p>
@@ -199,7 +199,7 @@ const AboutUs = () => {
       </section>
 
       {/* Call to Action */}
-      <section className={`py-20 bg-[#5EA692] text-white transition-opacity duration-1000 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
+      <section className={`py-20 bg-verde-agua text-white transition-opacity duration-1000 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-3xl mb-6 font-light">Comenzá tu rutina de skincare hoy</h2>
           <p className="text-xl mb-8 font-light">
@@ -207,7 +207,7 @@ const AboutUs = () => {
           </p>
           <button 
             onClick={handleExploreClick}
-            className="bg-white text-[#5EA692] px-8 py-3 rounded-full hover:bg-opacity-90 transition-all inline-block hover:transform hover:scale-105 duration-300"
+            className="bg-white text-verde-agua px-8 py-3 rounded-full hover:bg-opacity-90 transition-all inline-block hover:transform hover:scale-105 duration-300"
           >
               Explorar productos
           </button>

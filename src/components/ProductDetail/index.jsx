@@ -82,7 +82,7 @@ const ProductDetail = () => {
   }
 
   return (
-    <section className="w-full bg-white">
+    <section className="w-full bg-white py-10">
       {showFavAlert && <LoginAlert text="agregar productos a favoritos" />}
       {showCartAlert && <LoginAlert text="agregar productos al carrito" />}
       <div className="max-w-7xl mx-auto px-4 md:px-20 py-8">

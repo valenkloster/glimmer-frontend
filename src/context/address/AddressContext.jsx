@@ -9,6 +9,7 @@ export const AddressProvider = ({ children }) => {
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [token, setToken] = useState(localStorage.getItem('token'));
 
   const fetchProvincias = async () => {
     try {
@@ -23,16 +24,47 @@ export const AddressProvider = ({ children }) => {
   };
 
   const fetchAddresses = async () => {
+    const currentToken = localStorage.getItem('token');
+    
+    if (!currentToken) {
+      setAddresses([]);
+      setSelectedAddress(null);
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
       const response = await addressService.getAddresses();
       setAddresses(response.body);
+      setError(null);
     } catch (err) {
       setError(err.message);
+      setAddresses([]);
+      setSelectedAddress(null);
     } finally {
       setLoading(false);
     }
   };
+
+  // Observar cambios en el token
+  useEffect(() => {
+    const checkToken = () => {
+      const newToken = localStorage.getItem('token');
+      if (newToken !== token) {
+        setToken(newToken);
+        fetchAddresses();
+      }
+    };
+
+    window.addEventListener('storage', checkToken);
+    const interval = setInterval(checkToken, 1000);
+    
+    return () => {
+      window.removeEventListener('storage', checkToken);
+      clearInterval(interval);
+    };
+  }, [token]);
 
   const createAddress = async (addressData) => {
     try {
@@ -47,10 +79,6 @@ export const AddressProvider = ({ children }) => {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    fetchAddresses();
-  }, []);
 
   const deleteAddress = async (id_direccion) => {
     try {

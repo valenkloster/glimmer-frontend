@@ -31,7 +31,7 @@ const FavoritesPage = () => {
   const favoriteProducts = favorites;
 
   return (
-    <div className="min-h-screen bg-white" style={{ marginTop: '81px' }}>
+    <div className="min-h-screen bg-white pt-[80px]">
       {/* Header Section */}
       <section className="bg-nude py-12">
         <div className="max-w-6xl mx-auto px-4">

@@ -4,10 +4,9 @@ const Footer = () => {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="bg-nude border-t border-gray-200">
+    <footer className="bg-nude border-t h-full">
       <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
-          {/* Sección de la marca */}
           <div className="max-w-xs">
             <h3 className="text-lg font-light mb-3">GLIMMER</h3>
             <p className="text-sm text-gray-600 leading-relaxed">
@@ -15,7 +14,6 @@ const Footer = () => {
             </p>
           </div>
 
-          {/* Redes Sociales */}
           <div className="flex flex-col items-start sm:items-end gap-4">
             <h3 className="text-lg font-light">Síguenos</h3>
             <div className="flex space-x-6">
@@ -38,8 +36,7 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Copyright */}
-        <div className="border-t border-gray-200 mt-8 pt-8 text-center">
+        <div className="mt-8 pt-8 text-center">
           <p className="text-sm text-gray-600">
             © {year} GLIMMER. Todos los derechos reservados.
           </p>

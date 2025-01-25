@@ -34,7 +34,7 @@ const CheckoutPage = () => {
     };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col" style={{ marginTop: '81px' }}>
+    <div className="min-h-screen bg-white flex flex-col pt-[80px]">
       <section className="bg-nude py-8">
         <div className="max-w-5xl mx-auto px-4">
           <h1 className="text-4xl font-light mb-3 text-center">

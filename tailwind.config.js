@@ -10,7 +10,7 @@ export default {
         product: ['"Playfair Display"', ...defaultTheme.fontFamily.sans]      },
       colors: {
         'verde-agua': '#5EA692',
-        'nude': '#F5F2ED',
+        'nude': '#E5E4E2',
       },
     },
   },
