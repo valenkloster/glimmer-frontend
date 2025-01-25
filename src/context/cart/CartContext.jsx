@@ -121,11 +121,17 @@ export const CartProvider = ({ children }) => {
       const response = await cartService.update(productId, quantity);
   
       if (response.error === false && response.status === 200) {
-        await loadCart();
+        setCart(prevCart => ({
+          ...prevCart,
+          detalles: prevCart.detalles.map(item =>
+            item.id_producto === productId
+              ? { ...item, cantidad: quantity }
+              : item
+          )
+        }));
       }
     } catch (err) {
       setError('Error al actualizar cantidad');
-      console.error('Error updating quantity:', err);
       await loadCart();
     } finally {
       setUpdatingItems(prev => {
