@@ -1,4 +1,3 @@
-// context/index.jsx
 import { createContext, useState, useEffect } from 'react';
 import { productService, categoryService } from '../services';
 
@@ -15,6 +14,7 @@ export const ShoppingCartProvider = ({ children }) => {
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [productToShow, setProductToShow] = useState({});
+  const [searchQuery, setSearchQuery] = useState('');
 
   // ==================== Controladores de UI ====================
   const openProductDetail = () => setIsProductDetailOpen(true);
@@ -83,6 +83,9 @@ export const ShoppingCartProvider = ({ children }) => {
     categories,
     selectedCategory,
     productToShow,
+    searchQuery,
+    setSearchQuery,
+    setFilteredProducts,
 
     // UI Controllers
     openProductDetail,
