@@ -1,5 +1,5 @@
 import { useContext, useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   ShoppingBagIcon, 
   Bars3Icon, 
@@ -13,12 +13,14 @@ import { ShoppingCartContext } from '../../context';
 import { CartContext } from '../../context/cart/CartContext';
 import { useAuth } from '../../context/auth/AuthContext';
 import { accountService } from '../../services/accountService';
+import SearchBar from '../SearchBar';
 
 const Navbar = () => {
   const context = useContext(ShoppingCartContext);
   const { cartCount, openCart } = useContext(CartContext);
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const activeStyle = 'underline underline-offset-4';
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isShopMenuOpen, setIsShopMenuOpen] = useState(false);
@@ -244,7 +246,8 @@ const Navbar = () => {
         </div>
 
         {/* Right section - Icons and menu button */}
-        <div className='flex items-center gap-4'>
+        <div className="flex items-center gap-4">
+          <SearchBar />
           <div className="relative">
             <button
               className="flex items-center focus:outline-none"
@@ -277,6 +280,9 @@ const Navbar = () => {
       {/* Mobile menu */}
       {isMenuOpen && (
         <div className='absolute top-full left-0 w-full bg-nude md:hidden max-h-[calc(100vh-5rem)] overflow-y-auto'>
+          <div className="p-4">
+            <SearchBar />
+          </div>
           <ul className='flex flex-col items-start p-4 gap-4'>
             <li>
               <button
