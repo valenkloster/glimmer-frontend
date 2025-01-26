@@ -18,6 +18,7 @@ import OrderDetail from '../../components/OrderDetail';
 import AdminLayout from '../../components/AdminLayout';
 import SalesStats from '../../components/SalesStats';
 import Top5Products from '../../components/Top5Products';
+import StockControl from '../../components/StockControl';
 
 const AppRoutes = () => {
   const routes = useRoutes([
@@ -36,15 +37,13 @@ const AppRoutes = () => {
     { path: '/failure', element: <FailurePage /> },
     { path: '/checkout', element: <CheckoutPage /> },
     { path: '/*', element: <NotFound /> },
-    // Rutas de administrador
     { 
       path: '/admin', 
       element: <ProtectedRoute requiredRole="admin"><AdminLayout /></ProtectedRoute>,
       children: [
         { path: 'ventas', element: <SalesStats /> },
         { path: 'top5', element: <Top5Products /> },
-        // { path: 'stock', element: <StockControl /> },
-        // { path: '', element: <Navigate to="/admin/ventas" replace /> }
+        { path: 'stock', element: <StockControl /> },
       ]
     },
   ]);
