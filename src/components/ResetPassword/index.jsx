@@ -47,8 +47,8 @@ const ResetPassword = () => {
   if (success) {
     return (
       <div className="fixed inset-0 w-full flex flex-col md:flex-row">
-        <div className="hidden md:flex md:w-1/2 bg-[#5EA692] relative overflow-hidden justify-center">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#5EA692]/90 to-nude/30">
+        <div className="hidden md:flex md:w-1/2 bg-verde-agua relative overflow-hidden justify-center">
+          <div className="absolute inset-0 bg-gradient-to-br from-verde-agua/90 to-nude/30">
             <div className="absolute inset-0 backdrop-blur-sm"></div>
           </div>
           <div className="relative z-10 flex flex-col justify-center items-center p-12 text-white">
@@ -84,8 +84,8 @@ const ResetPassword = () => {
   return (
     <div className="fixed inset-0 w-full flex flex-col md:flex-row">
       {/* Sección izquierda - Decorativa */}
-      <div className="hidden md:flex md:w-1/2 bg-[#5EA692] relative overflow-hidden justify-center">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#5EA692]/90 to-nude/30">
+      <div className="hidden md:flex md:w-1/2 bg-verde-agua relative overflow-hidden justify-center">
+        <div className="absolute inset-0 bg-gradient-to-br from-verde-agua/90 to-nude/30">
           <div className="absolute inset-0 backdrop-blur-sm"></div>
         </div>
         <div className="relative z-10 flex flex-col justify-center items-center p-12 text-white">
@@ -133,7 +133,7 @@ const ResetPassword = () => {
                     type="password"
                     required
                     className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm 
-                             placeholder-gray-400 focus:outline-none focus:ring-[#5EA692] focus:border-[#5EA692]
+                             placeholder-gray-400 focus:outline-none focus:ring-verde-agua focus:border-verde-agua
                              transition duration-150 ease-in-out"
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
@@ -153,7 +153,7 @@ const ResetPassword = () => {
                     type="password"
                     required
                     className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm 
-                             placeholder-gray-400 focus:outline-none focus:ring-[#5EA692] focus:border-[#5EA692]
+                             placeholder-gray-400 focus:outline-none focus:ring-verde-agua focus:border-verde-agua
                              transition duration-150 ease-in-out"
                     value={formData.confirmPassword}
                     onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
@@ -166,8 +166,8 @@ const ResetPassword = () => {
                 type="submit"
                 disabled={loading}
                 className="w-full flex justify-center items-center px-4 py-3 border border-transparent 
-                         rounded-lg shadow-sm text-sm font-medium text-white bg-[#5EA692] hover:bg-[#4c8576]
-                         focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#5EA692]
+                         rounded-lg shadow-sm text-sm font-medium text-white bg-verde-agua hover:bg-[#4c8576]
+                         focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-verde-agua
                          transition duration-150 ease-in-out space-x-2"
               >
                 <span>{loading ? 'Actualizando...' : 'Actualizar contraseña'}</span>
@@ -175,7 +175,7 @@ const ResetPassword = () => {
               </button>
 
               <div className="text-center">
-                <Link to="/login" className="font-medium text-[#5EA692] hover:text-[#4c8576]">
+                <Link to="/login" className="font-medium text-verde-agua hover:text-[#4c8576]">
                   Volver al inicio de sesión
                 </Link>
               </div>
