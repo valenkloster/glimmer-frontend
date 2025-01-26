@@ -15,6 +15,8 @@ import ForgotPassword from '../../components/ForgotPassword';
 import ResetPassword from '../../components/ResetPassword';
 import AboutUs from '../../components/AboutUs';
 import OrderDetail from '../../components/OrderDetail';
+import AdminLayout from '../../components/AdminLayout';
+import SalesStats from '../../components/SalesStats';
 
 const AppRoutes = () => {
   const routes = useRoutes([
@@ -33,6 +35,17 @@ const AppRoutes = () => {
     { path: '/failure', element: <FailurePage /> },
     { path: '/checkout', element: <CheckoutPage /> },
     { path: '/*', element: <NotFound /> },
+    // Rutas de administrador
+    { 
+      path: '/admin', 
+      element: <ProtectedRoute requiredRole="admin"><AdminLayout /></ProtectedRoute>,
+      children: [
+        { path: 'ventas', element: <SalesStats /> },
+        // { path: 'productos', element: <TopProducts /> },
+        // { path: 'stock', element: <StockControl /> },
+        // { path: '', element: <Navigate to="/admin/ventas" replace /> }
+      ]
+    },
   ]);
 
   return routes;

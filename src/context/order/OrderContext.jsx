@@ -4,11 +4,12 @@ import { orderService } from '../../services/orderService';
 export const OrderContext = createContext();
 
 export const OrderProvider = ({ children }) => {
-  const [orders, setOrders] = useState([]);
-  const [selectedOrder, setSelectedOrder] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem('token'));
+ const [orders, setOrders] = useState([]);
+ const [selectedOrder, setSelectedOrder] = useState(null);
+ const [monthlyStats, setMonthlyStats] = useState([]);
+ const [loading, setLoading] = useState(false);
+ const [error, setError] = useState(null);
+ const [token, setToken] = useState(localStorage.getItem('token'));
 
   const fetchOrders = async () => {
     const currentToken = localStorage.getItem('token');
@@ -73,11 +74,29 @@ export const OrderProvider = ({ children }) => {
     };
   }, [token]);
 
+  const fetchMonthlyStats = async (month, year) => {
+    try {
+      setLoading(true);
+      const response = await orderService.getMonthStats(month, year);
+      setMonthlyStats(response.body || []);
+      setError(null);
+      return response.body;
+    } catch (err) {
+      setError('Error al cargar las estadísticas mensuales');
+      setMonthlyStats([]);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <OrderContext.Provider 
       value={{ 
         orders,
         selectedOrder,
+        monthlyStats,
+        fetchMonthlyStats,
         loading,
         error,
         fetchOrders,
