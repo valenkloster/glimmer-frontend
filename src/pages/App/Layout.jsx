@@ -7,8 +7,9 @@ import AppRoutes from './routes';
 const Layout = () => {
   const location = useLocation();
   const isAuthPage = ['/login', '/register', '/olvide-contrasena', '/cambio-de-contrasena'].includes(location.pathname);
+  const isAdminPage = location.pathname.startsWith('/admin');
 
-  if (isAuthPage) {
+  if (isAuthPage || isAdminPage) {
     return <AppRoutes />;
   }
 

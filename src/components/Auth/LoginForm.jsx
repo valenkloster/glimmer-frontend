@@ -19,7 +19,8 @@ const LoginForm = () => {
     const result = await login(formData.email, formData.password);
     
     if (result.success) {
-      navigate('/');
+      const currentUser = JSON.parse(localStorage.getItem('user'));
+      currentUser.role === 'admin' ? navigate('/admin') : navigate('/');
     } else {
       setError(result.error || 'Error al iniciar sesión');
     }
