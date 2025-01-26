@@ -48,7 +48,7 @@ const ResetPassword = () => {
     return (
       <div className="fixed inset-0 w-full flex flex-col md:flex-row">
         <div className="hidden md:flex md:w-1/2 bg-[#5EA692] relative overflow-hidden justify-center">
-          <div className="absolute inset-0 bg-gradient-to-br from-[#5EA692]/90 to-[#F5F2ED]/30">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#5EA692]/90 to-nude/30">
             <div className="absolute inset-0 backdrop-blur-sm"></div>
           </div>
           <div className="relative z-10 flex flex-col justify-center items-center p-12 text-white">
@@ -58,13 +58,13 @@ const ResetPassword = () => {
               Serás redirigido al inicio de sesión en unos segundos...
             </p>
             {/* Círculos decorativos */}
-            <div className="absolute top-1/3 right-1/4 w-32 h-32 rounded-full bg-[#F5F2ED]/20"></div>
-            <div className="absolute bottom-1/3 left-1/4 w-40 h-40 rounded-full bg-[#F5F2ED]/10"></div>
-            <div className="absolute top-1/2 left-1/3 w-24 h-24 rounded-full bg-[#F5F2ED]/15"></div>
+            <div className="absolute top-1/3 right-1/4 w-32 h-32 rounded-full bg-nude/20"></div>
+            <div className="absolute bottom-1/3 left-1/4 w-40 h-40 rounded-full bg-nude/10"></div>
+            <div className="absolute top-1/2 left-1/3 w-24 h-24 rounded-full bg-nude/15"></div>
           </div>
         </div>
 
-        <div className="w-full md:w-1/2 flex-1 overflow-y-auto bg-[#F5F2ED]">
+        <div className="w-full md:w-1/2 flex-1 overflow-y-auto bg-nude">
           <div className="min-h-full flex flex-col justify-center items-center p-6 md:p-12">
             <div className="w-full max-w-md space-y-8">
               <div className="text-center mb-8">
@@ -85,7 +85,7 @@ const ResetPassword = () => {
     <div className="fixed inset-0 w-full flex flex-col md:flex-row">
       {/* Sección izquierda - Decorativa */}
       <div className="hidden md:flex md:w-1/2 bg-[#5EA692] relative overflow-hidden justify-center">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#5EA692]/90 to-[#F5F2ED]/30">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#5EA692]/90 to-nude/30">
           <div className="absolute inset-0 backdrop-blur-sm"></div>
         </div>
         <div className="relative z-10 flex flex-col justify-center items-center p-12 text-white">
@@ -94,14 +94,14 @@ const ResetPassword = () => {
             Ingresa y confirma tu nueva contraseña para recuperar el acceso a tu cuenta
           </p>
           {/* Círculos decorativos */}
-          <div className="absolute top-1/3 right-1/4 w-32 h-32 rounded-full bg-[#F5F2ED]/20"></div>
-          <div className="absolute bottom-1/3 left-1/4 w-40 h-40 rounded-full bg-[#F5F2ED]/10"></div>
-          <div className="absolute top-1/2 left-1/3 w-24 h-24 rounded-full bg-[#F5F2ED]/15"></div>
+          <div className="absolute top-1/3 right-1/4 w-32 h-32 rounded-full bg-nude/20"></div>
+          <div className="absolute bottom-1/3 left-1/4 w-40 h-40 rounded-full bg-nude/10"></div>
+          <div className="absolute top-1/2 left-1/3 w-24 h-24 rounded-full bg-nude/15"></div>
         </div>
       </div>
 
       {/* Sección derecha - Formulario */}
-      <div className="w-full md:w-1/2 flex-1 overflow-y-auto bg-[#F5F2ED]">
+      <div className="w-full md:w-1/2 flex-1 overflow-y-auto bg-nude">
         <div className="min-h-full flex flex-col justify-center items-center p-6 md:p-12">
           <div className="w-full max-w-md space-y-8">
             {/* Logo */}

@@ -83,8 +83,8 @@ const RegisterForm = () => {
   return (
     <div className="fixed inset-0 w-full flex flex-col md:flex-row">
       {/* Sección izquierda - Decorativa */}
-      <div className="hidden md:flex md:w-1/2 bg-[#5EA692] relative overflow-hidden justify-center">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#5EA692]/90 to-[#F5F2ED]/30">
+      <div className="hidden md:flex md:w-1/2 bg-verde-agua relative overflow-hidden justify-center">
+        <div className="absolute inset-0 bg-gradient-to-br from-verde-agua/90 to-nude/30">
           <div className="absolute inset-0 backdrop-blur-sm"></div>
         </div>
         <div className="relative z-10 flex flex-col justify-center items-center p-12 text-white">
@@ -93,14 +93,14 @@ const RegisterForm = () => {
             Descubre nuestra exclusiva colección de productos para el cuidado de la piel
           </p>
           {/* Círculos decorativos */}
-          <div className="absolute top-1/3 right-1/4 w-32 h-32 rounded-full bg-[#F5F2ED]/20"></div>
-          <div className="absolute bottom-1/3 left-1/4 w-40 h-40 rounded-full bg-[#F5F2ED]/10"></div>
-          <div className="absolute top-1/2 left-1/3 w-24 h-24 rounded-full bg-[#F5F2ED]/15"></div>
+          <div className="absolute top-1/3 right-1/4 w-32 h-32 rounded-full bg-nude/20"></div>
+          <div className="absolute bottom-1/3 left-1/4 w-40 h-40 rounded-full bg-nude/10"></div>
+          <div className="absolute top-1/2 left-1/3 w-24 h-24 rounded-full bg-nude/15"></div>
         </div>
       </div>
 
       {/* Sección derecha - Formulario */}
-      <div className="w-full md:w-1/2 flex-1 overflow-y-auto bg-[#F5F2ED]">
+      <div className="w-full md:w-1/2 flex-1 overflow-y-auto bg-nude">
         <div className="min-h-full flex flex-col justify-center items-center p-6 md:p-12">
           <div className="w-full max-w-md space-y-8">
             {/* Logo */}
@@ -133,7 +133,7 @@ const RegisterForm = () => {
                       type="text"
                       required
                       className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm 
-                               placeholder-gray-400 focus:outline-none focus:ring-[#5EA692] focus:border-[#5EA692]
+                               placeholder-gray-400 focus:outline-none focus:ring-verde-agua focus:border-verde-agua
                                transition duration-150 ease-in-out"
                       value={formData.nombre}
                       onChange={handleInputChange}
@@ -149,7 +149,7 @@ const RegisterForm = () => {
                       type="text"
                       required
                       className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm 
-                               placeholder-gray-400 focus:outline-none focus:ring-[#5EA692] focus:border-[#5EA692]
+                               placeholder-gray-400 focus:outline-none focus:ring-verde-agua focus:border-verde-agua
                                transition duration-150 ease-in-out"
                       value={formData.apellido}
                       onChange={handleInputChange}
@@ -167,7 +167,7 @@ const RegisterForm = () => {
                     type="email"
                     required
                     className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm 
-                             placeholder-gray-400 focus:outline-none focus:ring-[#5EA692] focus:border-[#5EA692]
+                             placeholder-gray-400 focus:outline-none focus:ring-verde-agua focus:border-verde-agua
                              transition duration-150 ease-in-out"
                     value={formData.user.email}
                     onChange={handleInputChange}
@@ -185,7 +185,7 @@ const RegisterForm = () => {
                     required
                     minLength={8}
                     className={`appearance-none block w-full px-4 py-3 border rounded-lg shadow-sm 
-                             placeholder-gray-400 focus:outline-none focus:ring-[#5EA692] focus:border-[#5EA692]
+                             placeholder-gray-400 focus:outline-none focus:ring-verde-agua focus:border-verde-agua
                              transition duration-150 ease-in-out ${
                                errors.password ? 'border-red-300' : 'border-gray-300'
                              }`}
@@ -203,8 +203,8 @@ const RegisterForm = () => {
               <button
                 type="submit"
                 className="w-full flex justify-center items-center px-4 py-3 border border-transparent 
-                         rounded-lg shadow-sm text-sm font-medium text-white bg-[#5EA692] hover:bg-[#4c8576]
-                         focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#5EA692]
+                         rounded-lg shadow-sm text-sm font-medium text-white bg-verde-agua hover:bg-[#4c8576]
+                         focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-verde-agua
                          transition duration-150 ease-in-out space-x-2"
               >
                 <span>Crear cuenta</span>
@@ -216,17 +216,17 @@ const RegisterForm = () => {
                   <div className="w-full border-t border-gray-300"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-4 bg-[#F5F2ED] text-gray-500">¿Ya tienes cuenta?</span>
+                  <span className="px-4 bg-nude text-gray-500">¿Ya tienes cuenta?</span>
                 </div>
               </div>
 
               <button
                 type="button"
                 onClick={() => navigate('/login')}
-                className="w-full flex justify-center items-center px-4 py-3 border border-[#5EA692]
-                         rounded-lg shadow-sm text-sm font-medium text-[#5EA692] bg-transparent 
-                         hover:bg-[#5EA692] hover:text-white focus:outline-none focus:ring-2 
-                         focus:ring-offset-2 focus:ring-[#5EA692] transition duration-150 ease-in-out"
+                className="w-full flex justify-center items-center px-4 py-3 border border-verde-agua
+                         rounded-lg shadow-sm text-sm font-medium text-verde-agua bg-transparent 
+                         hover:bg-verde-agua hover:text-white focus:outline-none focus:ring-2 
+                         focus:ring-offset-2 focus:ring-verde-agua transition duration-150 ease-in-out"
               >
                 Iniciar sesión
               </button>
