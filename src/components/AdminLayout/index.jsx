@@ -11,7 +11,7 @@ const AdminLayout = () => {
    
    const menuItems = [
        { title: "KPIs", path: "/admin/ventas", icon: <ChartBarIcon className="w-6 h-6" /> },
-       { title: "Top Productos", path: "/admin/productos", icon: <Bars3Icon className="w-6 h-6" /> },
+       { title: "Top 5 Productos", path: "/admin/top5", icon: <Bars3Icon className="w-6 h-6" /> },
        { title: "Control Stock", path: "/admin/stock", icon: <ExclamationCircleIcon className="w-6 h-6" /> }
    ];
 

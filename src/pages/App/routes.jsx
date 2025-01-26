@@ -17,6 +17,7 @@ import AboutUs from '../../components/AboutUs';
 import OrderDetail from '../../components/OrderDetail';
 import AdminLayout from '../../components/AdminLayout';
 import SalesStats from '../../components/SalesStats';
+import Top5Products from '../../components/Top5Products';
 
 const AppRoutes = () => {
   const routes = useRoutes([
@@ -41,7 +42,7 @@ const AppRoutes = () => {
       element: <ProtectedRoute requiredRole="admin"><AdminLayout /></ProtectedRoute>,
       children: [
         { path: 'ventas', element: <SalesStats /> },
-        // { path: 'productos', element: <TopProducts /> },
+        { path: 'top5', element: <Top5Products /> },
         // { path: 'stock', element: <StockControl /> },
         // { path: '', element: <Navigate to="/admin/ventas" replace /> }
       ]

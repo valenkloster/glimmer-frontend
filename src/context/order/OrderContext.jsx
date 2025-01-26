@@ -7,6 +7,7 @@ export const OrderProvider = ({ children }) => {
  const [orders, setOrders] = useState([]);
  const [selectedOrder, setSelectedOrder] = useState(null);
  const [monthlyStats, setMonthlyStats] = useState([]);
+ const [topProducts, setTopProducts] = useState([]);
  const [loading, setLoading] = useState(false);
  const [error, setError] = useState(null);
  const [token, setToken] = useState(localStorage.getItem('token'));
@@ -90,6 +91,22 @@ export const OrderProvider = ({ children }) => {
     }
   };
 
+  const fetchTop5Products = async (month, year) => {
+    try {
+      setLoading(true);
+      const response = await orderService.getTop5Products(month, year);
+      setTopProducts(response.body || []);
+      setError(null);
+      return response.body;
+    } catch (err) {
+      setError('Error al cargar los productos más vendidos');
+      setTopProducts([]);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <OrderContext.Provider 
       value={{ 
@@ -97,6 +114,8 @@ export const OrderProvider = ({ children }) => {
         selectedOrder,
         monthlyStats,
         fetchMonthlyStats,
+        topProducts,
+        fetchTop5Products,
         loading,
         error,
         fetchOrders,
