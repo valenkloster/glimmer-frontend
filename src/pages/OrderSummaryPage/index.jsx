@@ -107,7 +107,7 @@ const OrderSummaryPage = () => {
           {/* Resumen de costos */}
           <div className="mb-8">
             <h2 className="text-xl font-product mb-4">Resumen</h2>
-            <div className="bg-white p-6 rounded-xl shadow-sm">
+            <div className="bg-nude p-6 rounded-xl shadow-sm">
               <div className="flex justify-between mb-2">
                 <p>Subtotal:</p>
                 <p className="font-medium">${cartTotal.toLocaleString('es-AR')}</p>
@@ -120,7 +120,7 @@ const OrderSummaryPage = () => {
                 <p className="font-medium">${shippingCost.toLocaleString('es-AR')}</p>
               </div>
 
-              <div className="border-t pt-4 mt-4">
+              <div className="border-t border-white pt-4 mt-4">
                 <div className="flex justify-between text-lg font-medium">
                   <p>Total:</p>
                   <p>${totalWithShipping.toLocaleString('es-AR')}</p>

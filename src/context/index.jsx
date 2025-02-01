@@ -17,6 +17,10 @@ export const ShoppingCartProvider = ({ children }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [lowStockProducts, setLowStockProducts] = useState([]);
 
+  // ==================== Estados de Filtros ====================
+  const [priceRange, setPriceRange] = useState({ min: '', max: '' });
+  const [sortOrder, setSortOrder] = useState('');
+
   const loadLowStockProducts = async () => {
     try {
       setLoading(true);
@@ -33,7 +37,7 @@ export const ShoppingCartProvider = ({ children }) => {
     try {
       setLoading(true);
       await productService.updateStock(productId, newStock);
-      await loadLowStockProducts(); // Recargar lista después de actualizar
+      await loadLowStockProducts();
     } catch (error) {
       console.error('Error updating stock:', error);
     } finally {
@@ -54,6 +58,56 @@ export const ShoppingCartProvider = ({ children }) => {
   const clearSelectedCategory = () => {
     setSelectedCategory(null);
     setFilteredProducts(products);
+  };
+
+  // ==================== Funciones de Filtrado ====================
+  const applyFilters = (productsToFilter) => {
+    let result = [...productsToFilter];
+  
+    // Aplicar filtro de precio
+    result = result.filter(product => {
+      const precio = parseFloat(product.precio);
+      const min = priceRange.min !== '' ? Number(priceRange.min) : null;
+      const max = priceRange.max !== '' ? Number(priceRange.max) : null;
+      
+      // Validar solo mínimo
+      if (min !== null && max === null) {
+        return precio >= min;
+      }
+      // Validar solo máximo
+      if (max !== null && min === null) {
+        return precio <= max;
+      }
+      // Validar ambos
+      if (min !== null && max !== null) {
+        return precio >= min && precio <= max;
+      }
+      
+      return true;
+    });
+  
+    // Aplicar ordenamiento
+    if (sortOrder) {
+      result.sort((a, b) => {
+        const precioA = parseFloat(a.precio);
+        const precioB = parseFloat(b.precio);
+        
+        switch (sortOrder) {
+          case 'price-asc':
+            return precioA - precioB;
+          case 'price-desc':
+            return precioB - precioA;
+          case 'name-asc':
+            return a.nombre.localeCompare(b.nombre);
+          case 'name-desc':
+            return b.nombre.localeCompare(a.nombre);
+          default:
+            return 0;
+        }
+      });
+    }
+  
+    return result;
   };
 
   // Cargar datos iniciales
@@ -78,18 +132,23 @@ export const ShoppingCartProvider = ({ children }) => {
     loadData();
   }, []);
 
-  // Filtrar productos por categoría
+  // Filtrar productos por categoría y aplicar filtros adicionales
   useEffect(() => {
-    if (!selectedCategory) {
-      setFilteredProducts(products);
-      return;
-    }
-
     const fetchProductsByCategory = async () => {
       try {
         setLoading(true);
-        const response = await productService.getByCategory(selectedCategory);
-        setFilteredProducts(response.body);
+        let productsToFilter;
+
+        if (selectedCategory) {
+          const response = await productService.getByCategory(selectedCategory);
+          productsToFilter = response.body;
+        } else {
+          productsToFilter = products;
+        }
+
+        // Aplicar filtros adicionales
+        const filteredResult = applyFilters(productsToFilter);
+        setFilteredProducts(filteredResult);
       } catch (error) {
         console.error('Error fetching products by category:', error);
         setFilteredProducts(products);
@@ -99,7 +158,7 @@ export const ShoppingCartProvider = ({ children }) => {
     };
 
     fetchProductsByCategory();
-  }, [selectedCategory, products]);
+  }, [selectedCategory, products, priceRange, sortOrder]);
 
   // ==================== Valor del Contexto ====================
   const contextValue = {
@@ -120,6 +179,12 @@ export const ShoppingCartProvider = ({ children }) => {
     lowStockProducts,
     loadLowStockProducts,
     updateProductStock,
+
+    // Filter State
+    priceRange,
+    setPriceRange,
+    sortOrder,
+    setSortOrder,
 
     // UI Controllers
     openProductDetail,

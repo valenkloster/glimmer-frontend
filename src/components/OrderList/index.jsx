@@ -1,7 +1,13 @@
 import React, { useContext, useState, useMemo, useRef, useEffect } from 'react';
 import { OrderContext } from '../../context/order/OrderContext';
 import { Link } from 'react-router-dom';
-import { CalendarIcon, FunnelIcon, AdjustmentsHorizontalIcon } from '@heroicons/react/24/outline';
+import { 
+    CalendarIcon, 
+    FunnelIcon, 
+    AdjustmentsHorizontalIcon, 
+    XMarkIcon,
+    ChevronDownIcon 
+} from '@heroicons/react/24/outline';
 
 const OrderList = () => {
     const { orders, loading, error } = useContext(OrderContext);
@@ -13,6 +19,9 @@ const OrderList = () => {
     });
     const [isAmountFilterOpen, setIsAmountFilterOpen] = useState(false);
     const amountFilterRef = useRef(null);
+    const minAmountRef = useRef(null);
+    const maxAmountRef = useRef(null);
+    const [isFiltersOpen, setIsFiltersOpen] = useState(false);
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -27,19 +36,35 @@ const OrderList = () => {
         };
     }, []);
 
-    // Obtener estados únicos de los pedidos
+    useEffect(() => {
+        if (minAmountRef.current) minAmountRef.current.value = filters.minAmount;
+        if (maxAmountRef.current) maxAmountRef.current.value = filters.maxAmount;
+    }, [filters]);
+
     const uniqueStatuses = useMemo(() => {
         if (!orders) return [];
         return [...new Set(orders.map(order => order.estado.descripcion))];
     }, [orders]);
 
-    // Función para manejar cambios en los filtros
     const handleFilterChange = (e) => {
         const { name, value } = e.target;
-        setFilters(prev => ({
-            ...prev,
-            [name]: value
-        }));
+        if (name !== 'minAmount' && name !== 'maxAmount') {
+            setFilters(prev => ({
+                ...prev,
+                [name]: value
+            }));
+        }
+    };
+
+    const handleAmountKeyDown = (type) => (e) => {
+        if (e.key === 'Enter') {
+            const value = e.target.value;
+            setFilters(prev => ({
+                ...prev,
+                [type]: value
+            }));
+            e.target.blur();
+        }
     };
 
     const handleClearFilters = () => {
@@ -49,19 +74,18 @@ const OrderList = () => {
             minAmount: '',
             maxAmount: ''
         });
+        if (minAmountRef.current) minAmountRef.current.value = '';
+        if (maxAmountRef.current) maxAmountRef.current.value = '';
     };
 
-    // Filtrar pedidos
     const filteredOrders = useMemo(() => {
         if (!orders) return [];
         
         return orders.filter(order => {
-            // Filtro por estado
             if (filters.status && order.estado.descripcion !== filters.status) {
                 return false;
             }
             
-            // Filtro por rango de fechas
             if (filters.dateRange) {
                 const orderDate = new Date(order.fecha);
                 const today = new Date();
@@ -79,10 +103,11 @@ const OrderList = () => {
                         const last3Months = new Date(today.setMonth(today.getMonth() - 3));
                         if (orderDate < last3Months) return false;
                         break;
+                    default:
+                        break;
                 }
             }
             
-            // Filtro por monto
             const amount = parseFloat(order.monto_total);
             if (filters.minAmount && amount < parseFloat(filters.minAmount)) {
                 return false;
@@ -135,107 +160,215 @@ const OrderList = () => {
     return (
         <div className="pt-20">
             <div className="max-w-4xl mx-auto p-4">
-                {/* Header Section */}
                 <div className="mb-8 text-center">
                     <h1 className="text-3xl font-light mb-2">Historial de Pedidos</h1>
                     <p className="text-gray-600">Encuentra todos tus pedidos y sigue su estado</p>
                 </div>
-
-                {/* Filters Section */}
-                <div className="mb-6 bg-white rounded-lg shadow p-4">
-                    <div className="flex flex-wrap justify-center gap-4">
+    
+                {/* Filters Section - Desktop */}
+                <div className="hidden md:block mb-6 bg-nude rounded-lg p-4">
+                    <div className="flex justify-center items-center gap-4">
                         {/* Estado */}
-                        <div className="w-full sm:w-48">
-                            <div className="relative">
-                                <select
-                                    name="status"
-                                    value={filters.status}
-                                    onChange={handleFilterChange}
-                                    className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-1 focus:ring-verde-agua focus:border-verde-agua appearance-none"
-                                >
-                                    <option value="">Todos los estados</option>
-                                    {uniqueStatuses.map(status => (
-                                        <option key={status} value={status}>{status}</option>
-                                    ))}
-                                </select>
-                                <FunnelIcon className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
-                            </div>
+                        <div className="relative">
+                            <select
+                                name="status"
+                                value={filters.status}
+                                onChange={handleFilterChange}
+                                className={`w-56 pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-1 focus:ring-verde-agua focus:border-verde-agua focus:outline-none bg-white ${
+                                    filters.status ? 'border-verde-agua ring-1 ring-verde-agua' : ''
+                                }`}
+                            >
+                                <option value="">Todos los estados</option>
+                                {uniqueStatuses.map(status => (
+                                    <option key={status} value={status}>{status}</option>
+                                ))}
+                            </select>
+                            <FunnelIcon className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
                         </div>
-
+    
                         {/* Rango de fechas */}
-                        <div className="w-full sm:w-48">
-                            <div className="relative">
-                                <select
-                                    name="dateRange"
-                                    value={filters.dateRange}
-                                    onChange={handleFilterChange}
-                                    className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-1 focus:ring-verde-agua focus:border-verde-agua appearance-none"
-                                >
-                                    <option value="">Todas las fechas</option>
-                                    <option value="last7days">Últimos 7 días</option>
-                                    <option value="last30days">Últimos 30 días</option>
-                                    <option value="last3months">Últimos 3 meses</option>
-                                </select>
-                                <CalendarIcon className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
-                            </div>
+                        <div className="relative">
+                            <select
+                                name="dateRange"
+                                value={filters.dateRange}
+                                onChange={handleFilterChange}
+                                className={`w-56 pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-1 focus:ring-verde-agua focus:border-verde-agua focus:outline-none bg-white ${
+                                    filters.dateRange ? 'border-verde-agua ring-1 ring-verde-agua' : ''
+                                }`}
+                            >
+                                <option value="">Todas las fechas</option>
+                                <option value="last7days">Últimos 7 días</option>
+                                <option value="last30days">Últimos 30 días</option>
+                                <option value="last3months">Últimos 3 meses</option>
+                            </select>
+                            <CalendarIcon className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
                         </div>
-
-                        {/* Filtro de monto */}
-                        <div className="relative w-full sm:w-auto" ref={amountFilterRef}>
+    
+                        {/* Monto */}
+                        <div className="relative" ref={amountFilterRef}>
                             <button 
                                 onClick={() => setIsAmountFilterOpen(!isAmountFilterOpen)}
-                                className={`w-full sm:w-48 px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 focus:ring-1 focus:ring-verde-agua focus:border-verde-agua flex items-center gap-2 ${isAmountFilterOpen ? 'bg-gray-50 ring-1 ring-verde-agua border-verde-agua' : ''}`}
+                                className={`w-56 pl-10 pr-4 py-2 border border-gray-200 rounded-lg bg-white focus:ring-1 focus:ring-verde-agua focus:border-verde-agua focus:outline-none flex items-center gap-2 ${
+                                    isAmountFilterOpen || filters.minAmount || filters.maxAmount ? 'border-verde-agua ring-1 ring-verde-agua' : ''
+                                }`}
                             >
-                                <AdjustmentsHorizontalIcon className="h-5 w-5 text-gray-400" />
+                                <AdjustmentsHorizontalIcon className="absolute left-3 h-5 w-5 text-gray-400" />
                                 <span>Monto</span>
                             </button>
                             {isAmountFilterOpen && (
-                                <div 
-                                    className="absolute right-0 sm:right-auto mt-2 w-full sm:w-64 bg-white rounded-lg shadow-lg p-4 z-10 border border-gray-200"
-                                >
+                                <div className="absolute mt-2 w-64 bg-white rounded-lg shadow-lg p-4 z-10 border border-gray-200">
                                     <div className="space-y-4">
                                         <div>
                                             <label className="block text-sm text-gray-600 mb-1">Monto mínimo</label>
                                             <input
                                                 type="number"
-                                                name="minAmount"
-                                                value={filters.minAmount}
-                                                onChange={handleFilterChange}
+                                                ref={minAmountRef}
+                                                defaultValue={filters.minAmount}
+                                                onKeyDown={handleAmountKeyDown('minAmount')}
                                                 placeholder="$0"
-                                                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-1 focus:ring-verde-agua focus:border-verde-agua"
+                                                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-1 focus:ring-verde-agua focus:border-verde-agua focus:outline-none bg-white"
                                             />
                                         </div>
                                         <div>
                                             <label className="block text-sm text-gray-600 mb-1">Monto máximo</label>
                                             <input
                                                 type="number"
-                                                name="maxAmount"
-                                                value={filters.maxAmount}
-                                                onChange={handleFilterChange}
+                                                ref={maxAmountRef}
+                                                defaultValue={filters.maxAmount}
+                                                onKeyDown={handleAmountKeyDown('maxAmount')}
                                                 placeholder="$9999"
-                                                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-1 focus:ring-verde-agua focus:border-verde-agua"
+                                                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-1 focus:ring-verde-agua focus:border-verde-agua focus:outline-none bg-white"
                                             />
                                         </div>
                                     </div>
                                 </div>
                             )}
                         </div>
-
-                        {/* Botón limpiar filtros */}
+    
+                        {/* Limpiar filtros */}
                         {(filters.status || filters.dateRange || filters.minAmount || filters.maxAmount) && (
                             <button
                                 onClick={handleClearFilters}
-                                className="w-full sm:w-auto px-4 py-2 text-sm text-gray-600 hover:text-verde-agua flex items-center justify-center gap-2 transition-colors"
+                                className="px-4 py-2 text-sm text-gray-600 hover:text-verde-agua flex items-center gap-2 transition-colors"
                             >
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-                                </svg>
+                                <XMarkIcon className="h-5 w-5" />
                                 Limpiar filtros
                             </button>
                         )}
                     </div>
                 </div>
 
+                {/* Filters Section - Versión Móvil */}
+                <div className="md:hidden mb-6">
+                    <button
+                        onClick={() => setIsFiltersOpen(!isFiltersOpen)}
+                        className="w-full bg-nude rounded-lg shadow p-4 flex items-center justify-between"
+                    >
+                        <div className="flex items-center gap-2">
+                            <FunnelIcon className="h-5 w-5 text-gray-400" />
+                            <span className="font-medium">Filtros</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm text-gray-500">
+                                {(filters.status || filters.dateRange || filters.minAmount || filters.maxAmount) 
+                                    ? 'Filtros activos' 
+                                    : 'Sin filtros'
+                                }
+                            </span>
+                            {isFiltersOpen ? (
+                                <XMarkIcon className="h-5 w-5 text-gray-400" />
+                            ) : (
+                                <ChevronDownIcon className="h-5 w-5 text-gray-400" />
+                            )}
+                        </div>
+                    </button>
+
+                    {isFiltersOpen && (
+                        <div className="mt-2 bg-white rounded-lg shadow p-4 space-y-4">
+                            {/* Estado */}
+                            <div className="w-full">
+                                <label className="block text-sm text-gray-600 mb-1">Estado</label>
+                                <div className="relative">
+                                    <select
+                                        name="status"
+                                        value={filters.status}
+                                        onChange={handleFilterChange}
+                                        className={`w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-1 focus:ring-verde-agua focus:border-verde-agua focus:outline-none bg-white ${
+                                            filters.status ? 'border-verde-agua ring-1 ring-verde-agua' : ''
+                                        }`}
+                                    >
+                                        <option value="">Todos los estados</option>
+                                        {uniqueStatuses.map(status => (
+                                            <option key={status} value={status}>{status}</option>
+                                        ))}
+                                    </select>
+                                    <FunnelIcon className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+                                </div>
+                            </div>
+
+                            {/* Rango de fechas */}
+                            <div className="w-full">
+                                <label className="block text-sm text-gray-600 mb-1">Fecha</label>
+                                <div className="relative">
+                                    <select
+                                        name="dateRange"
+                                        value={filters.dateRange}
+                                        onChange={handleFilterChange}
+                                        className={`w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-1 focus:ring-verde-agua focus:border-verde-agua focus:outline-none bg-white ${
+                                            filters.dateRange ? 'border-verde-agua ring-1 ring-verde-agua' : ''
+                                        }`}
+                                    >
+                                        <option value="">Todas las fechas</option>
+                                        <option value="last7days">Últimos 7 días</option>
+                                        <option value="last30days">Últimos 30 días</option>
+                                        <option value="last3months">Últimos 3 meses</option>
+                                    </select>
+                                    <CalendarIcon className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+                                </div>
+                            </div>
+
+                            {/* Monto */}
+                            <div className="w-full">
+                                <label className="block text-sm text-gray-600 mb-1">Rango de monto</label>
+                                <div className="flex gap-2">
+                                    <input
+                                        type="number"
+                                        ref={minAmountRef}
+                                        defaultValue={filters.minAmount}
+                                        onKeyDown={handleAmountKeyDown('minAmount')}
+                                        placeholder="Mínimo"
+                                        className={`w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-1 focus:ring-verde-agua focus:border-verde-agua focus:outline-none bg-white ${
+                                            filters.minAmount ? 'border-verde-agua ring-1 ring-verde-agua' : ''
+                                        }`}
+                                    />
+                                    <span className="self-center">-</span>
+                                    <input
+                                        type="number"
+                                        ref={maxAmountRef}
+                                        defaultValue={filters.maxAmount}
+                                        onKeyDown={handleAmountKeyDown('maxAmount')}
+                                        placeholder="Máximo"
+                                        className={`w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-1 focus:ring-verde-agua focus:border-verde-agua focus:outline-none bg-white ${
+                                            filters.maxAmount ? 'border-verde-agua ring-1 ring-verde-agua' : ''
+                                        }`}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Botón limpiar filtros */}
+                            {(filters.status || filters.dateRange || filters.minAmount || filters.maxAmount) && (
+                                <button
+                                    onClick={handleClearFilters}
+                                    className="w-full px-4 py-2 text-sm text-gray-600 hover:text-verde-agua flex items-center justify-center gap-2 transition-colors"
+                                >
+                                    <XMarkIcon className="h-5 w-5" />
+                                    Limpiar filtros
+                                </button>
+                            )}
+                        </div>
+                    )}
+                </div>
+    
                 {/* Orders List */}
                 <div className="bg-white rounded-lg shadow">
                     <div className="p-4 bg-nude rounded-t-lg border-b border-gray-100">
@@ -243,15 +376,13 @@ const OrderList = () => {
                             Mostrando <span className="font-medium text-verde-agua">{filteredOrders.length}</span> de {orders.length} pedidos
                         </p>
                     </div>
-
+    
                     <div className="max-h-[calc(100vh-400px)] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
                         {filteredOrders.map((order, index) => (
                             <Link 
                                 key={order.id_pedido}
                                 to={`/my-orders/${order.id_pedido}`}
-                                className={`block transition-all duration-300 hover:bg-gray-50 ${
-                                    index !== filteredOrders.length - 1 ? 'border-b border-gray-100' : ''
-                                }`}
+                                className="block transition-all duration-300 hover:bg-gray-50"
                             >
                                 <div className="p-4 md:p-6">
                                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -277,9 +408,6 @@ const OrderList = () => {
                                         <div className="flex flex-col items-end">
                                             <span className="text-xl font-medium text-verde-agua">
                                                 ${parseFloat(order.monto_total).toLocaleString('es-AR')}
-                                            </span>
-                                            <span className="text-sm text-gray-500 hover:text-verde-agua transition-colors">
-                                                Ver detalle →
                                             </span>
                                         </div>
                                     </div>

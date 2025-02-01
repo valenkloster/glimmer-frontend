@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import { ShoppingCartContext } from '../../context';
 import { FavoritesContext } from '../../context/favorites/FavoritesContext';
 import { AuthContext } from '../../context/auth/AuthContext';
@@ -18,6 +18,16 @@ const ProductDetail = () => {
   const { productToShow } = context;
   const [showFavAlert, setShowFavAlert] = useState(false);
   const [showCartAlert, setShowCartAlert] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    if (productToShow) {
+      setTimeout(() => {
+        setIsVisible(true);
+      }, 100);
+    }
+    return () => setIsVisible(false);
+  }, [productToShow]);
 
   const handleFavoriteClick = () => {
     if (!isAuthenticated) {
@@ -82,7 +92,9 @@ const ProductDetail = () => {
   }
 
   return (
-    <section className="w-full bg-white py-10">
+    <section className={`w-full bg-white py-10 transition-all duration-500 ${
+      isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+    }`}>
       {showFavAlert && <LoginAlert text="agregar productos a favoritos" />}
       {showCartAlert && <LoginAlert text="agregar productos al carrito" />}
       <div className="max-w-7xl mx-auto px-4 md:px-20 py-8">

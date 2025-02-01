@@ -37,6 +37,9 @@ export const OrderProvider = ({ children }) => {
   };
 
   const fetchOrderById = async (orderId) => {
+    // Si ya tenemos el pedido, no lo volvemos a cargar
+    if (selectedOrder?.id_pedido === orderId) return;
+  
     try {
       setLoading(true);
       const response = await orderService.getById(orderId);
@@ -44,8 +47,6 @@ export const OrderProvider = ({ children }) => {
       setError(null);
     } catch (err) {
       setError('Error al cargar el pedido');
-      setSelectedOrder(null);
-      throw err;
     } finally {
       setLoading(false);
     }

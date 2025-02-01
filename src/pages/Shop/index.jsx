@@ -2,11 +2,17 @@ import { useContext, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import Card from '../../components/Card';
 import { ShoppingCartContext } from '../../context';
-import { productService } from '../../services';
+import FilterBar from '../../components/FilterBar';
 
 function Shop() {
   const context = useContext(ShoppingCartContext);
-  const { filteredProducts, products, loading, selectedCategory } = context;
+  const { 
+    filteredProducts, 
+    products, 
+    loading,
+    setPriceRange,
+    setSortOrder
+  } = context;
   const location = useLocation();
 
   useEffect(() => {
@@ -17,6 +23,10 @@ function Shop() {
     if (categoryId && categoryId !== context.selectedCategory) {
       context.setSelectedCategory(Number(categoryId));
     }
+
+    // Limpiar filtros cuando cambia la categoría
+    setPriceRange({ min: '', max: '' });
+    setSortOrder('');
   }, [location.search]);
 
   if (loading) {
@@ -32,6 +42,7 @@ function Shop() {
   return (
     <div className="min-h-screen bg-white pt-[80px]">
       <div className="max-w-7xl mx-auto px-4 py-8">
+        <FilterBar />
         {showNoResults && (
           <div className="text-center mb-8">
             <p className="text-gray-600 mb-4">No hemos encontrado productos con esas características.</p>

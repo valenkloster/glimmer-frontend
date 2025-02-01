@@ -1,10 +1,11 @@
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { OrderContext } from '../../context/order/OrderContext';
 
 const OrderDetail = () => {
   const { id } = useParams();
   const { selectedOrder, loading, error, fetchOrderById } = useContext(OrderContext);
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -12,25 +13,42 @@ const OrderDetail = () => {
     }
   }, [id]);
 
-  if (loading) return (
-    <div className="flex justify-center items-center min-h-[400px]">
-      <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-verde-agua"></div>
-    </div>
-  );
+  useEffect(() => {
+    if (selectedOrder) {
+      setTimeout(() => {
+        setIsVisible(true);
+      }, 100);
+    }
+    return () => setIsVisible(false);
+  }, [selectedOrder]);
 
-  if (error) return (
-    <div className="text-center p-4">
-      <p className="text-red-500">{error}</p>
-      <Link to="/orders" className="text-verde-agua hover:underline mt-2 inline-block">
-        Volver a mis pedidos
-      </Link>
-    </div>
-  );
+  if (error) {
+    return (
+      <div className="min-h-[calc(100vh-223px)] max-w-3xl mx-auto p-4 pt-[120px]">
+        <div className="text-center p-4">
+          <p className="text-red-500">{error}</p>
+          <Link to="/my-orders" className="text-verde-agua hover:underline mt-2 inline-block">
+            Volver a mis pedidos
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
-  if (!selectedOrder) return null;
+  if (!selectedOrder) {
+    return (
+      <div className="min-h-[calc(100vh-223px)] max-w-3xl mx-auto p-4 pt-[120px]">
+        <div className="flex justify-center items-center h-full">
+          <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-verde-agua"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-[calc(100vh-223px)] max-w-3xl mx-auto p-4 pt-[120px]">
+    <div className={`min-h-[calc(100vh-223px)] max-w-3xl mx-auto p-4 pt-[120px] transition-all duration-500 ${
+      isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
+    }`}>
       <div className="flex flex-col justify-center h-full">
         <div className="mb-4">
           <Link to="/my-orders" className="text-verde-agua hover:underline">
@@ -88,7 +106,6 @@ const OrderDetail = () => {
               </span>
             </div>
  
-            {/* Costo de envío */}
             <div className="flex justify-between items-center mb-2">
               <div>
                 <span className="text-black">Costo de envío</span>
@@ -99,7 +116,6 @@ const OrderDetail = () => {
               </span>
             </div>
  
-            {/* Total */}
             <div className="flex justify-between items-center text-lg font-medium border-t pt-4 mt-2">
               <span>Total</span>
               <span>${parseFloat(selectedOrder.monto_total).toLocaleString('es-AR')}</span>
