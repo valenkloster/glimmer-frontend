@@ -117,7 +117,7 @@ const ProductDetail = () => {
                 ${parseFloat(productToShow.precio).toLocaleString('es-AR')}
               </p>
               <p className="text-sm text-gray-600">
-                Tamaño: {productToShow.tamanio}
+                Tamaño: {productToShow.tamanio} g
               </p>
             </div>
 
