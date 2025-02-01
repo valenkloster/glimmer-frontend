@@ -37,7 +37,7 @@ const OrderDetail = () => {
             ← Volver a mis pedidos
           </Link>
         </div>
-
+ 
         <div className="bg-white shadow rounded-lg p-6">
           <div className="border-b pb-4 mb-4">
             <h1 className="text-2xl font-medium">Pedido #{selectedOrder.id_pedido}</h1>
@@ -58,7 +58,7 @@ const OrderDetail = () => {
               <p className="ml-2">{selectedOrder.cliente_direccion.localidad.provincia.pais.nombre}</p>
             </div>
           </div>
-
+ 
           <div className="mb-6">
             <h2 className="text-lg font-medium mb-3">Productos</h2>
             <div className="space-y-4">
@@ -79,9 +79,28 @@ const OrderDetail = () => {
               ))}
             </div>
           </div>
-
+ 
           <div className="border-t pt-4">
-            <div className="flex justify-between items-center text-lg font-medium">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-black">Subtotal</span>
+              <span className="text-black">
+                ${parseFloat(selectedOrder.monto_productos).toLocaleString('es-AR')}
+              </span>
+            </div>
+ 
+            {/* Costo de envío */}
+            <div className="flex justify-between items-center mb-2">
+              <div>
+                <span className="text-black">Costo de envío</span>
+                <span className="text-xs text-gray-500 block">(IVA incluido)</span>
+              </div>
+              <span className="text-black">
+                ${parseFloat(selectedOrder.monto_envio).toLocaleString('es-AR')}
+              </span>
+            </div>
+ 
+            {/* Total */}
+            <div className="flex justify-between items-center text-lg font-medium border-t pt-4 mt-2">
               <span>Total</span>
               <span>${parseFloat(selectedOrder.monto_total).toLocaleString('es-AR')}</span>
             </div>

@@ -9,6 +9,9 @@ export const AddressProvider = ({ children }) => {
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+   const [shippingCost, setShippingCost] = useState(0);
+   const [shippingLoading, setShippingLoading] = useState(false);
+   const [shippingError, setShippingError] = useState(null);
 
   const loadAddresses = async () => {
     const token = localStorage.getItem('token');
@@ -90,6 +93,39 @@ export const AddressProvider = ({ children }) => {
     }
   };
 
+  const calculateShipping = async (items) => {
+    if (!selectedAddress) {
+      setShippingError('No hay dirección seleccionada');
+      return;
+    }
+  
+    try {
+      setShippingLoading(true);
+      setShippingError(null);
+  
+      const shippingData = {
+        items: items,
+        direction: {
+          city: selectedAddress.direccion.localidad.nombre,
+          state: selectedAddress.direccion.localidad.provincia.nombre,
+          zipcode: selectedAddress.direccion.codigo_postal
+        }
+      };
+  
+      console.log('Enviando al servidor:', shippingData);
+      const response = await addressService.calculateShipping(shippingData.items, shippingData.direction);
+      setShippingCost(response.body);
+      return response.body;
+  
+    } catch (err) {
+      setShippingError('Error al calcular el costo de envío');
+      console.error('Error calculating shipping:', err);
+      throw err;
+    } finally {
+      setShippingLoading(false);
+    }
+  };
+
   const contextValue = {
     provincias,
     addresses,
@@ -100,7 +136,11 @@ export const AddressProvider = ({ children }) => {
     createAddress,
     deleteAddress,
     loadAddresses,
-    fetchProvincias
+    fetchProvincias,
+    calculateShipping,
+    shippingCost,
+    shippingLoading,
+    shippingError
   };
 
   return (

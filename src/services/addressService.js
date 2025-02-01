@@ -11,5 +11,11 @@ export const addressService = {
     httpClient.get('/api/v1/cliente_direcciones'),
     
   deleteAddress: (id_direccion) =>
-    httpClient.delete('/api/v1/cliente_direcciones', id_direccion)
+    httpClient.delete('/api/v1/cliente_direcciones', id_direccion),
+
+  calculateShipping: (items, direction) =>
+    httpClient.post('/api/v1/envios/rate', {
+      items,
+      direction
+    })
 };

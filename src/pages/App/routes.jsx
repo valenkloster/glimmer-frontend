@@ -19,6 +19,8 @@ import AdminLayout from '../../components/AdminLayout';
 import SalesStats from '../../components/SalesStats';
 import Top5Products from '../../components/Top5Products';
 import StockControl from '../../components/StockControl';
+import OrderSummaryPage from '../OrderSummaryPage';
+
 
 const AppRoutes = () => {
   const routes = useRoutes([
@@ -36,6 +38,7 @@ const AppRoutes = () => {
     { path: '/success', element: <SuccessPage /> },
     { path: '/failure', element: <FailurePage /> },
     { path: '/checkout', element: <CheckoutPage /> },
+    { path: '/checkout/summary', element: <OrderSummaryPage /> },
     { path: '/*', element: <NotFound /> },
     { 
       path: '/admin', 
