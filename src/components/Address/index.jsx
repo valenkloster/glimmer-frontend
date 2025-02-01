@@ -67,10 +67,6 @@ export const Address = () => {
             placeholder="Ej: 1414"
             {...register("codigo_postal", { 
               required: "Este campo es requerido",
-              pattern: {
-                value: /^[0-9]{4}$/,
-                message: "El código postal debe tener 4 dígitos numéricos"
-              }
             })}
           />
         </label>
