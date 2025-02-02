@@ -6,4 +6,8 @@ export default defineConfig({
   server: {
     port: process.env.PORT || 5173,
   },
+  // Añade esta configuración para manejar rutas
+  build: {
+    outDir: 'dist', // Asegúrate de que la carpeta de salida sea 'dist'
+  }
 })
