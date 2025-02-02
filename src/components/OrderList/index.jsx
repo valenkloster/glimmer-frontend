@@ -389,7 +389,12 @@ const OrderList = () => {
                                         <div>
                                             <div className="flex items-center gap-3 mb-2">
                                                 <span className="text-lg font-medium">Pedido #{order.id_pedido}</span>
-                                                <span className="px-3 py-1 rounded-full text-sm text-verde-agua bg-verde-agua/10">
+                                                <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                                                    order.estado.descripcion === 'Entregado' ? 'bg-green-100 text-green-800' :
+                                                    order.estado.descripcion === 'Procesado' ? 'bg-blue-100 text-blue-800' :
+                                                    order.estado.descripcion === 'Enviado' ? 'bg-yellow-100 text-yellow-800' :
+                                                    'bg-verde-agua/10 text-verde-agua'
+                                                }`}>
                                                     {order.estado.descripcion}
                                                 </span>
                                             </div>

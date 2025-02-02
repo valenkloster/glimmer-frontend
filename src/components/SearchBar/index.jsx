@@ -1,10 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { productService } from '../../services/productService';
 import { ShoppingCartContext } from '../../context';
 import { useContext } from 'react';
-import _ from 'lodash';
 
 const SearchBar = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -12,45 +11,49 @@ const SearchBar = () => {
   const [isSearchActive, setIsSearchActive] = useState(false);
   const { setFilteredProducts } = useContext(ShoppingCartContext);
   const navigate = useNavigate();
+  const location = useLocation();
   const searchRef = useRef(null);
 
-  const debouncedSearch = useRef(
-    _.debounce(async (searchQuery) => {
-      if (!searchQuery.trim()) {
-        setFilteredProducts([]);
-        return;
-      }
-
-      setIsLoading(true);
-      try {
-        const response = await productService.searchProducts(searchQuery);
-        setFilteredProducts(response.body || []);
-        navigate(`/shop?search=${encodeURIComponent(searchQuery)}`);
-      } catch (error) {
-        console.error('Error:', error);
-      }
-      setIsLoading(false);
-    }, 500)
-  ).current;
-
-  const handleSearch = (e) => {
-    const value = e.target.value;
-    setQuery(value);
-  };
-  
-  const handleKeyPress = async (e) => {
-    if (e.key === 'Enter' && query.trim()) {
-      setIsLoading(true);
-      try {
-        const response = await productService.searchProducts(query);
-        setFilteredProducts(response.body || []);
-        navigate(`/shop?search=${encodeURIComponent(query)}`);
-      } catch (error) {
-        console.error('Error:', error);
-      }
+  const performSearch = async (searchQuery) => {
+    if (!searchQuery.trim()) return;
+    
+    setIsLoading(true);
+    try {
+      const response = await productService.searchProducts(searchQuery);
+      setFilteredProducts(response.body || []);
+    } catch (error) {
+      console.error('Error:', error);
+    } finally {
       setIsLoading(false);
     }
   };
+
+  const handleInputChange = (e) => {
+    setQuery(e.target.value);
+  };
+
+  const handleKeyPress = async (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const searchQuery = query.trim();
+      if (!searchQuery) return;
+
+      // Primero realizar la búsqueda
+      await performSearch(searchQuery);
+      // Luego actualizar la URL
+      navigate(`/shop?search=${encodeURIComponent(searchQuery)}`);
+    }
+  };
+
+  // Manejar búsqueda inicial cuando se carga la página con una URL de búsqueda
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const searchQuery = params.get('search');
+    if (searchQuery) {
+      setQuery(searchQuery);
+      performSearch(searchQuery);
+    }
+  }, [location.search]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -63,7 +66,6 @@ const SearchBar = () => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
-      debouncedSearch.cancel();
     };
   }, []);
 
@@ -79,15 +81,20 @@ const SearchBar = () => {
       {isSearchActive && (
         <div className="fixed md:absolute left-0 md:left-auto right-0 md:right-0 top-20 md:top-auto mt-0 md:mt-2 w-full md:w-72 px-4 md:px-0">
           <div className="mx-auto md:mx-0 max-w-lg md:max-w-none bg-white/80 backdrop-blur-sm rounded-lg shadow-lg p-3 border border-gray-100">
-          <input
-            type="text"
-            value={query}
-            onChange={handleSearch}
-            onKeyDown={handleKeyPress}
-            placeholder="Buscar productos..."
-            className="w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-verde-agua"
-            autoFocus
-          />
+            <input
+              type="text"
+              value={query}
+              onChange={handleInputChange}
+              onKeyDown={handleKeyPress}
+              placeholder="Buscar productos..."
+              className="w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-verde-agua"
+              autoFocus
+            />
+            {isLoading && (
+              <div className="absolute right-6 top-1/2 transform -translate-y-1/2">
+                <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-verde-agua"></div>
+              </div>
+            )}
           </div>
         </div>
       )}

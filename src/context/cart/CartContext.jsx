@@ -11,15 +11,28 @@ export const CartProvider = ({ children }) => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [updatingItems, setUpdatingItems] = useState(new Set());
 
+  const isAdminUser = () => {
+    const userInfo = localStorage.getItem('user');
+    if (!userInfo) return false;
+    
+    try {
+      const user = JSON.parse(userInfo);
+      return user.role === 'admin';
+    } catch (err) {
+      console.error('Error al parsear información del usuario:', err);
+      return false;
+    }
+  };
+  
   const loadCart = async () => {
     const token = localStorage.getItem('token');
     
-    if (!token) {
+    if (!token || isAdminUser()) {  // <- Añade esta verificación
       setCart(null);
       setLoading(false);
       return;
     }
-
+  
     try {
       setLoading(true);
       const cartResponse = await cartService.getAll();
@@ -59,14 +72,14 @@ export const CartProvider = ({ children }) => {
 
   useEffect(() => {
     const handleStorageChange = (e) => {
-      if (e.key === 'token') {
+      if (e.key === 'token' || e.key === 'user') {  // <- Añade la verificación de 'user'
         loadCart();
       }
     };
-
+  
     window.addEventListener('storage', handleStorageChange);
     loadCart();
-
+  
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };

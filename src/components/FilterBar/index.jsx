@@ -1,4 +1,3 @@
-// FilterBar.jsx
 import React, { useState, useRef, useEffect } from 'react';
 import { useContext } from 'react';
 import { ShoppingCartContext } from '../../context';

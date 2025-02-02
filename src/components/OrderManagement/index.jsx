@@ -152,7 +152,11 @@ const OrderManagement = () => {
                       {order.cliente?.nombre} {order.cliente?.apellido}
                     </td>
                     <td className="py-3 px-4 text-gray-600">
-                      {new Date(order.fecha).toLocaleDateString()}
+                    {new Date(order.fecha).toLocaleDateString('es-AR', {
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric'
+                    })}
                     </td>
                     <td className="py-3 px-4 font-medium">
                       {formatPrice(order.monto_total)}

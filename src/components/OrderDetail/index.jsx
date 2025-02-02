@@ -59,21 +59,33 @@ const OrderDetail = () => {
         <div className="bg-white shadow rounded-lg p-6">
           <div className="border-b pb-4 mb-4">
             <h1 className="text-2xl font-medium">Pedido #{selectedOrder.id_pedido}</h1>
-            <p className="text-gray-600">
-              Fecha: {new Date(selectedOrder.fecha).toLocaleDateString()}
+            <p className="text-gray-600 my-1 flex items-center gap-2">
+                <span className="font-medium">Fecha:</span>
+                {new Date(selectedOrder.fecha).toLocaleDateString('es-AR', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric'
+                })}
             </p>
-            <p className="text-gray-600">
-              Estado: {selectedOrder.estado.descripcion}
+            <p className="text-gray-600 font-medium flex items-center gap-2">
+              Estado: 
+              <span className={`my-1 px-3 py-1 rounded-full text-sm font-medium ${
+                selectedOrder.estado.descripcion === 'Entregado' ? 'bg-green-100 text-green-800' :
+                selectedOrder.estado.descripcion === 'Procesado' ? 'bg-blue-100 text-blue-800' :
+                selectedOrder.estado.descripcion === 'Enviado' ? 'bg-yellow-100 text-yellow-800' :
+                'bg-verde-agua/10 text-verde-agua'
+              }`}>
+                {selectedOrder.estado.descripcion}
+              </span>
             </p>
-            <div className="text-gray-600">
+            <div className="text-gray-600 my-1">
               <p className="font-medium mb-1">Dirección de entrega:</p>
               <p className="ml-2">{selectedOrder.cliente_direccion.direccion}</p>
               {selectedOrder.cliente_direccion.departamento && 
                 <p className="ml-2">Departamento: {selectedOrder.cliente_direccion.departamento}</p>
               }
               <p className="ml-2">CP: {selectedOrder.cliente_direccion.codigo_postal}</p>
-              <p className="ml-2">{selectedOrder.cliente_direccion.localidad.nombre}, {selectedOrder.cliente_direccion.localidad.provincia.nombre}</p>
-              <p className="ml-2">{selectedOrder.cliente_direccion.localidad.provincia.pais.nombre}</p>
+              <p className="ml-2">{selectedOrder.cliente_direccion.localidad.nombre}, {selectedOrder.cliente_direccion.localidad.provincia.nombre}, {selectedOrder.cliente_direccion.localidad.provincia.pais.nombre}</p>
             </div>
           </div>
  
