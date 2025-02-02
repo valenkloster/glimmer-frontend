@@ -4,13 +4,21 @@ import { orderService } from '../../services/orderService';
 export const OrderContext = createContext();
 
 export const OrderProvider = ({ children }) => {
- const [orders, setOrders] = useState([]);
- const [selectedOrder, setSelectedOrder] = useState(null);
- const [monthlyStats, setMonthlyStats] = useState([]);
- const [topProducts, setTopProducts] = useState([]);
- const [loading, setLoading] = useState(false);
- const [error, setError] = useState(null);
- const [token, setToken] = useState(localStorage.getItem('token'));
+  const [orders, setOrders] = useState([]);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [monthlyStats, setMonthlyStats] = useState([]);
+  const [topProducts, setTopProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [filters, setFilters] = useState({
+    estado: '',
+    startDate: '',
+    endDate: '',
+    searchTerm: '',
+    sortBy: 'fecha',
+    sortOrder: 'DESC'
+  });
 
   const fetchOrders = async () => {
     const currentToken = localStorage.getItem('token');
@@ -36,8 +44,21 @@ export const OrderProvider = ({ children }) => {
     }
   };
 
+  const fetchAllOrders = async (filterParams = filters) => {
+    try {
+      setLoading(true);
+      const response = await orderService.getAllOrders(filterParams);
+      setOrders(response.body || []);
+      setError(null);
+    } catch (err) {
+      setError('Error al cargar todos los pedidos');
+      setOrders([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const fetchOrderById = async (orderId) => {
-    // Si ya tenemos el pedido, no lo volvemos a cargar
     if (selectedOrder?.id_pedido === orderId) return;
   
     try {
@@ -47,6 +68,33 @@ export const OrderProvider = ({ children }) => {
       setError(null);
     } catch (err) {
       setError('Error al cargar el pedido');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateOrderStatus = async (orderId, newStatusId) => {
+    try {
+      setLoading(true);
+      const response = await orderService.updateOrderStatus(orderId, newStatusId);
+      
+      // Actualizar el pedido en la lista local
+      setOrders(orders.map(order => 
+        order.id_pedido === orderId 
+          ? { ...order, id_estado_pedido: newStatusId }
+          : order
+      ));
+
+      // Actualizar el pedido seleccionado si es el mismo
+      if (selectedOrder?.id_pedido === orderId) {
+        setSelectedOrder({ ...selectedOrder, id_estado_pedido: newStatusId });
+      }
+
+      setError(null);
+      return response.body;
+    } catch (err) {
+      setError('Error al actualizar el estado del pedido');
+      return null;
     } finally {
       setLoading(false);
     }
@@ -108,19 +156,27 @@ export const OrderProvider = ({ children }) => {
     }
   };
 
+  const updateFilters = (newFilters) => {
+    setFilters(prev => ({ ...prev, ...newFilters }));
+  };
+
   return (
     <OrderContext.Provider 
       value={{ 
         orders,
         selectedOrder,
         monthlyStats,
-        fetchMonthlyStats,
         topProducts,
-        fetchTop5Products,
         loading,
         error,
+        filters,
         fetchOrders,
-        fetchOrderById
+        fetchAllOrders,
+        fetchOrderById,
+        fetchMonthlyStats,
+        fetchTop5Products,
+        updateOrderStatus,
+        updateFilters
       }}
     >
       {children}
