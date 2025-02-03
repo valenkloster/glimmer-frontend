@@ -52,7 +52,7 @@ const HomePage = () => {
           if (loadedImages === totalImages) {
             setImagesLoaded(true);
           }
-          resolve(); // Resolvemos incluso con error para no bloquear la carga
+          resolve();
         };
       });
     };
@@ -71,7 +71,10 @@ const HomePage = () => {
 
   useEffect(() => {
     if (imagesLoaded) {
-      setIsVisible(true);
+      // Pequeño delay para asegurar que todo se muestre junto
+      setTimeout(() => {
+        setIsVisible(true);
+      }, 100);
     }
   }, [imagesLoaded]);
 
@@ -158,52 +161,53 @@ const HomePage = () => {
     <div className="w-full overflow-x-hidden">
       {/* Hero Section with Collage */}
       <section 
-        className={`relative transition-opacity duration-1000 ${isVisible ? 'opacity-100' : 'opacity-0'}`}
+        className="relative"
         style={{ 
           height: 'calc(100vh - 81px)',
           marginTop: '81px'
         }}
       >
-        <div className="absolute inset-0">
-          <div className={`grid grid-cols-3 grid-rows-2 gap-2 h-full ${!imagesLoaded ? 'invisible' : ''}`}>
-            {collageStructure.map((item, index) => (
-              <div 
-                key={index} 
-                className={`${item.className} overflow-hidden group relative`}
-              >
-                <img
-                  src={item.image}
-                  alt={`Collage ${index + 1}`}
-                  className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-black bg-opacity-10 group-hover:bg-opacity-0 transition-all duration-700" />
-              </div>
-            ))}
-          </div>
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/30 to-black/50" />
-        </div>
-
-        {/* Loading Spinner */}
         {!imagesLoaded && (
-          <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+          <div className="absolute inset-0 z-50 flex items-center justify-center bg-gray-100">
             <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-verde-agua"></div>
           </div>
         )}
+        
+        <div className={`transition-all duration-500 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
+          <div className="absolute inset-0">
+            <div className="grid grid-cols-3 grid-rows-2 gap-2 h-full">
+              {collageStructure.map((item, index) => (
+                <div 
+                  key={index} 
+                  className={`${item.className} overflow-hidden group relative`}
+                >
+                  <img
+                    src={item.image}
+                    alt={`Collage ${index + 1}`}
+                    className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-black bg-opacity-10 group-hover:bg-opacity-0 transition-all duration-700" />
+                </div>
+              ))}
+            </div>
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/30 to-black/50" />
+          </div>
 
-        <div className={`relative h-full flex items-center justify-center transition-opacity duration-1000 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
-          <div className="text-center px-4">
-            <h1 className="text-5xl md:text-6xl font-light mb-6 text-white drop-shadow-lg">
-              Tu piel merece lo mejor
-            </h1>
-            <p className="text-xl md:text-2xl mb-8 font-light text-white drop-shadow-md">
-              Encuentra los productos perfectos para tu rutina de skincare
-            </p>
-            <button 
-              onClick={handleExploreClick}
-              className="bg-verde-agua text-white px-8 py-3 rounded-full hover:bg-opacity-90 transition-all inline-block hover:transform hover:scale-105 duration-300"
-            >
-              Explorar productos
-            </button>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="max-w-4xl mx-auto text-center px-4">
+              <h1 className="text-5xl md:text-6xl font-light mb-6 text-white drop-shadow-lg">
+                Tu piel merece lo mejor
+              </h1>
+              <p className="text-xl md:text-2xl mb-8 font-light text-white drop-shadow-md max-w-2xl mx-auto">
+                Encuentra los productos perfectos para tu rutina de skincare
+              </p>
+              <button 
+                onClick={handleExploreClick}
+                className="bg-verde-agua text-white px-8 py-3 rounded-full hover:bg-opacity-90 transition-all inline-block hover:transform hover:scale-105 duration-300"
+              >
+                Explorar productos
+              </button>
+            </div>
           </div>
         </div>
       </section>
