@@ -1,12 +1,55 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { FavoritesContext } from '../../context/favorites/FavoritesContext';
+import { productService } from '../../services/productService';
 import Card from '../../components/Card';
 import { Link } from 'react-router-dom';
 
 const FavoritesPage = () => {
-  const { favorites, loading, error } = useContext(FavoritesContext);
+  const { favorites, loading: favoritesLoading, error: favoritesError } = useContext(FavoritesContext);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  if (loading) {
+  useEffect(() => {
+    const loadProductDetails = async () => {
+      if (favoritesLoading || !favorites.length) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const productsDetails = await Promise.all(
+          favorites.map(async (favorite) => {
+            try {
+              const response = await productService.getById(favorite.id_producto);
+              return {
+                ...favorite,
+                producto: response.body
+              };
+            } catch (err) {
+              console.error(`Error loading product ${favorite.id_producto}:`, err);
+              return null;
+            }
+          })
+        );
+
+        // Filtrar productos que no se pudieron cargar
+        const validProducts = productsDetails.filter(p => p && p.producto);
+        setProducts(validProducts);
+        setError(null);
+      } catch (err) {
+        console.error('Error loading product details:', err);
+        setError('Error al cargar los detalles de los productos');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadProductDetails();
+  }, [favorites, favoritesLoading]);
+
+  if (loading || favoritesLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ marginTop: '81px' }}>
         <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-verde-agua"></div>
@@ -14,10 +57,10 @@ const FavoritesPage = () => {
     );
   }
 
-  if (error) {
+  if (error || favoritesError) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-6" style={{ marginTop: '81px' }}>
-        <p className="text-xl text-gray-600 font-light">{error}</p>
+        <p className="text-xl text-gray-600 font-light">{error || favoritesError}</p>
         <Link 
           to="/shop" 
           className="bg-verde-agua text-white px-8 py-3 rounded-full hover:bg-opacity-90 transition-all inline-block hover:transform hover:scale-105 duration-300"
@@ -27,8 +70,6 @@ const FavoritesPage = () => {
       </div>
     );
   }
-
-  const favoriteProducts = favorites;
 
   return (
     <div className="min-h-screen bg-white pt-[80px]">
@@ -47,7 +88,7 @@ const FavoritesPage = () => {
       {/* Products Grid Section */}
       <section className="py-12">
         <div className="max-w-6xl mx-auto px-4">
-          {favoriteProducts.length === 0 ? (
+          {!products.length ? (
             <div className="text-center py-16">
               <svg 
                 xmlns="http://www.w3.org/2000/svg" 
@@ -78,7 +119,7 @@ const FavoritesPage = () => {
             </div>
           ) : (
             <div className="flex flex-wrap justify-center md:justify-start gap-8">
-              {favoriteProducts.map((favorite) => (
+              {products.map((favorite) => (
                 <div 
                   key={favorite.id_favoritos}
                   className="w-64 transform transition-all duration-500 hover:scale-105"
