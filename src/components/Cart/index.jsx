@@ -47,6 +47,7 @@ const handleContinueWithAdjustments = async () => {
 
 const proceedToCheckout = () => {
   closeCart();
+  window.scrollTo(0, 0);
   navigate('/checkout');
 };
 

@@ -34,7 +34,7 @@ const CheckoutPage = () => {
         }));
             
         const shippingCost = await calculateShipping(shippingItems);
-    
+        window.scrollTo(0, 0);
         navigate('/checkout/summary', { 
           state: { 
             shippingCost 
