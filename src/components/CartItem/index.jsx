@@ -6,10 +6,11 @@ import { Link } from 'react-router-dom';
 
 const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
  const { updatingItems } = useContext(CartContext);
- const { id_producto, cantidad, precio, producto } = item;
+ const { id_producto, cantidad, producto } = item;
 
  const isUpdating = updatingItems.has(id_producto);
  const outOfStock = producto.stock <= 0;
+ const precio = parseFloat(producto.precio).toLocaleString('es-AR');
 
  if (!producto) return null;
  
@@ -41,7 +42,7 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
          {producto.marca}
        </p>
        <p className="text-base font-medium">
-       ${parseFloat(precio).toLocaleString('es-AR')}
+         ${precio}
        </p>
        {outOfStock && (
          <p className="text-red-500 text-sm">Producto no disponible</p>
@@ -66,7 +67,7 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
            <button
               onClick={() => onUpdateQuantity(id_producto, cantidad + 1)}
               className="h-5 w-5 text-white bg-gray-500 rounded-full flex items-center justify-center"
-              disabled={isUpdating} // Removido isAtStockLimit
+              disabled={isUpdating || cantidad >= producto.stock}
             >
               <PlusIcon className="h-3 w-3" />
             </button>

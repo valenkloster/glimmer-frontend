@@ -10,15 +10,16 @@ import { LoginAlert } from '../LoginAlert';
 import AverageRating from '../AverageRating';
 
 const ProductDetail = () => {
-  const context = useContext(ShoppingCartContext);
+  const { productToShow } = useContext(ShoppingCartContext);
   const { addToFavorites, removeFromFavorites, isProductFavorite } = useContext(FavoritesContext);
   const { isAuthenticated } = useContext(AuthContext);
   const { addToCart, cart } = useContext(CartContext);
   const { reviews = [] } = useContext(ReviewContext) || {};
-  const { productToShow } = context;
+  
   const [showFavAlert, setShowFavAlert] = useState(false);
   const [showCartAlert, setShowCartAlert] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
 
   useEffect(() => {
     if (productToShow) {
@@ -29,7 +30,7 @@ const ProductDetail = () => {
     return () => setIsVisible(false);
   }, [productToShow]);
 
-  const handleFavoriteClick = () => {
+  const handleFavoriteClick = async () => {
     if (!isAuthenticated) {
       setShowFavAlert(true);
       setTimeout(() => setShowFavAlert(false), 3000);
@@ -37,15 +38,44 @@ const ProductDetail = () => {
     }
 
     if (isProductFavorite(productToShow?.id_producto)) {
-      removeFromFavorites(productToShow.id_producto);
+      await removeFromFavorites(productToShow.id_producto);
     } else {
-      addToFavorites(productToShow.id_producto);
+      await addToFavorites(productToShow.id_producto);
     }
   };
 
-  const renderIcon = (id_producto) => {
+  const handleAddToCart = async (event) => {
+    event.stopPropagation();
+    
+    console.log('1. Iniciando agregar al carrito');
+    
+    if (!isAuthenticated) {
+      console.log('2. Usuario no autenticado');
+      setShowCartAlert(true);
+      setTimeout(() => setShowCartAlert(false), 3000);
+      return;
+    }
+
+    if (isAddingToCart || !productToShow?.id_producto) {
+      console.log('3. No se puede agregar:', { isAddingToCart, productId: productToShow?.id_producto });
+      return;
+    }
+
+    try {
+      console.log('4. Intentando agregar:', productToShow);
+      setIsAddingToCart(true);
+      await addToCart(productToShow.id_producto, 1, productToShow);
+      console.log('5. Producto agregado exitosamente');
+    } catch (error) {
+      console.error('6. Error agregando al carrito:', error);
+    } finally {
+      setIsAddingToCart(false);
+    }
+  };
+
+  const renderIcon = () => {
     const isInCart = cart?.detalles?.some(item => 
-      item.id_producto === id_producto
+      item.id_producto === productToShow.id_producto
     );
 
     if (productToShow?.stock <= 0) {
@@ -66,17 +96,14 @@ const ProductDetail = () => {
 
     return (
       <button 
-        className="p-3 m-2 border rounded-full hover:border-black"
-        onClick={(event) => {
-          event.stopPropagation();
-          if (!isAuthenticated) {
-            setShowCartAlert(true);
-            setTimeout(() => setShowCartAlert(false), 3000);
-            return;
-          }
-          addToCart(productToShow.id_producto, 1);
-        }}>
-        Agregar al carrito
+        className={`
+          p-3 m-2 border rounded-full transition-all duration-200
+          ${isAddingToCart ? 'opacity-50 cursor-not-allowed' : 'hover:border-black'}
+        `}
+        onClick={handleAddToCart}
+        disabled={isAddingToCart || !productToShow || !productToShow.id_producto}
+      >
+        {isAddingToCart ? 'Agregando...' : 'Agregar al carrito'}
       </button>
     );
   };
@@ -145,7 +172,7 @@ const ProductDetail = () => {
 
             {/* Botones de acción */}
             <div className="flex items-center justify-around mx-4 md:mx-20 mt-6">
-              {renderIcon(productToShow.id_producto)}
+              {renderIcon()}
               <button 
                 onClick={handleFavoriteClick}
                 className={`p-3 border rounded-full transition-colors duration-300 ${
