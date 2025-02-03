@@ -20,14 +20,19 @@ const ProductDetail = () => {
   const [showCartAlert, setShowCartAlert] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (productToShow) {
+      setIsLoading(false);
       setTimeout(() => {
         setIsVisible(true);
       }, 100);
     }
-    return () => setIsVisible(false);
+    return () => {
+      setIsVisible(false);
+      setIsLoading(true);
+    };
   }, [productToShow]);
 
   const handleFavoriteClick = async () => {
@@ -47,27 +52,21 @@ const ProductDetail = () => {
   const handleAddToCart = async (event) => {
     event.stopPropagation();
     
-    console.log('1. Iniciando agregar al carrito');
-    
     if (!isAuthenticated) {
-      console.log('2. Usuario no autenticado');
       setShowCartAlert(true);
       setTimeout(() => setShowCartAlert(false), 3000);
       return;
     }
 
     if (isAddingToCart || !productToShow?.id_producto) {
-      console.log('3. No se puede agregar:', { isAddingToCart, productId: productToShow?.id_producto });
       return;
     }
 
     try {
-      console.log('4. Intentando agregar:', productToShow);
       setIsAddingToCart(true);
       await addToCart(productToShow.id_producto, 1, productToShow);
-      console.log('5. Producto agregado exitosamente');
     } catch (error) {
-      console.error('6. Error agregando al carrito:', error);
+      console.error('Error agregando al carrito:', error);
     } finally {
       setIsAddingToCart(false);
     }
@@ -110,7 +109,24 @@ const ProductDetail = () => {
 
   const isFavorite = productToShow?.id_producto ? isProductFavorite(productToShow.id_producto) : false;
 
-  if (!productToShow) {
+  // Mostrar spinner mientras carga
+  if (isLoading || !productToShow) {
+    return (
+      <div className="flex justify-center items-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-verde-agua"></div>
+      </div>
+    );
+  }
+
+  // Verificar que todos los datos necesarios estén disponibles
+  const isDataComplete = 
+    productToShow.nombre &&
+    productToShow.marca &&
+    productToShow.codigo &&
+    productToShow.precio &&
+    productToShow.imagen;
+
+  if (!isDataComplete) {
     return (
       <div className="flex justify-center items-center min-h-[400px]">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-verde-agua"></div>
