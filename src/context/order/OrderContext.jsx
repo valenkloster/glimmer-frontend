@@ -58,7 +58,6 @@ export const OrderProvider = ({ children }) => {
     }
   };
 
-  //cambie esto
   const fetchOrderById = async (orderId) => {
     if (selectedOrder?.id_pedido === orderId) return;
   

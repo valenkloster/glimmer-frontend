@@ -382,6 +382,7 @@ const OrderList = () => {
                             <Link 
                                 key={order.id_pedido}
                                 to={`/my-orders/${order.id_pedido}`}
+                                onClick={() => window.scrollTo(0, 0)}
                                 className="block transition-all duration-300 hover:bg-gray-50"
                             >
                                 <div className="p-4 md:p-6">
