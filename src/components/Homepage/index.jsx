@@ -12,29 +12,35 @@ const HomePage = () => {
   const collageStructure = [
     { 
       className: 'col-span-full row-span-full md:col-span-2 md:row-span-2', 
-      image: '/product_green.jpg' 
+      image: '/product_green.jpg',
+      priority: true
     },
     { 
       className: 'col-span-1 hidden md:block', 
-      image: '/person2.jpg' 
+      image: '/person2.jpg',
+      priority: false
     },
     { 
       className: 'col-span-1 hidden md:block', 
-      image: '/product2.jpg' 
+      image: '/product2.jpg',
+      priority: false
     },
     { 
       className: 'col-span-1 hidden md:block', 
-      image: '/person1.jpg' 
+      image: '/person1.jpg',
+      priority: false
     },
     { 
       className: 'col-span-1 hidden md:block', 
-      image: '/products.jpg' 
+      image: '/products.jpg',
+      priority: false
     }
   ];
 
   useEffect(() => {
     let loadedImages = 0;
-    const totalImages = collageStructure.length;
+    const mainImage = collageStructure.find(item => item.priority);
+    const otherImages = collageStructure.filter(item => !item.priority);
 
     const preloadImage = (src) => {
       return new Promise((resolve, reject) => {
@@ -42,7 +48,8 @@ const HomePage = () => {
         img.src = src;
         img.onload = () => {
           loadedImages += 1;
-          if (loadedImages === totalImages) {
+          if (loadedImages === 1 && mainImage) {
+            // Show content once the main image is loaded
             setImagesLoaded(true);
           }
           resolve();
@@ -53,10 +60,15 @@ const HomePage = () => {
 
     const preloadAllImages = async () => {
       try {
-        await Promise.all(collageStructure.map(item => preloadImage(item.image)));
+        // Load main image first
+        if (mainImage) {
+          await preloadImage(mainImage.image);
+        }
+        
+        // Then load other images
+        await Promise.all(otherImages.map(item => preloadImage(item.image)));
       } catch (error) {
         console.error('Error preloading images:', error);
-        // Mostrar el contenido incluso si hay error en algunas imágenes
         setImagesLoaded(true);
       }
     };
@@ -100,7 +112,6 @@ const HomePage = () => {
     }
   ];
   
-
   const categories = [
     {
       id_categoria: 1,
@@ -153,7 +164,7 @@ const HomePage = () => {
     <div className="w-full overflow-x-hidden">
       {/* Hero Section with Collage */}
       <section 
-        className={`relative transition-opacity duration-1000 ${isVisible ? 'opacity-100' : 'opacity-0'}`}
+        className={`relative transition-opacity duration-700 ${isVisible ? 'opacity-100' : 'opacity-0'}`}
         style={{ 
           height: 'calc(100vh - 81px)',
           marginTop: '81px'
@@ -166,11 +177,15 @@ const HomePage = () => {
                 key={index} 
                 className={`${item.className} overflow-hidden group relative`}
               >
-                <img
-                  src={item.image}
-                  alt={`Collage ${index + 1}`}
-                  className="w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110"
-                />
+                {imagesLoaded || item.priority ? (
+                  <img
+                    src={item.image}
+                    alt={`Collage ${index + 1}`}
+                    className={`w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-110 ${
+                      item.priority ? 'opacity-100' : 'opacity-0 md:opacity-100'
+                    } transition-opacity duration-500`}
+                  />
+                ) : null}
                 <div className="absolute inset-0 bg-black bg-opacity-10 group-hover:bg-opacity-0 transition-all duration-700" />
               </div>
             ))}
@@ -178,14 +193,14 @@ const HomePage = () => {
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/30 to-black/50" />
         </div>
 
-        {/* Loading Spinner (opcional) */}
+        {/* Loading Spinner */}
         {!imagesLoaded && (
           <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
-            <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-verde-agua"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-verde-agua"></div>
           </div>
         )}
 
-        <div className={`relative h-full flex items-center justify-center transition-opacity duration-1000 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
+        <div className={`relative h-full flex items-center justify-center transition-opacity duration-700 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
           <div className="text-center px-4">
             <h1 className="text-5xl md:text-6xl font-light mb-6 text-white drop-shadow-lg">
               Tu piel merece lo mejor
