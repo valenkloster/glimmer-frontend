@@ -144,6 +144,25 @@ const LoginForm = () => {
               >
                 Crear cuenta
               </button>
+
+              <div className="relative py-4">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-300"></div>
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-4 bg-nude text-gray-500">o</span>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => navigate('/')}
+                className="w-full flex justify-center items-center px-4 py-3 
+                         text-sm font-medium text-gray-600 hover:text-verde-agua 
+                         focus:outline-none transition duration-150 ease-in-out"
+              >
+                Continuar sin iniciar sesión
+              </button>
             </form>
           </div>
         </div>
