@@ -60,12 +60,12 @@ const OrderDetail = () => {
           <div className="border-b pb-4 mb-4">
             <h1 className="text-2xl font-medium">Pedido #{selectedOrder.id_pedido}</h1>
             <p className="text-gray-600 my-1 flex items-center gap-2">
-                <span className="font-medium">Fecha:</span>
-                {new Date(selectedOrder.fecha).toLocaleDateString('es-AR', {
-                  day: '2-digit',
-                  month: '2-digit',
-                  year: 'numeric'
-                })}
+              <span className="font-medium">Fecha:</span>
+              {new Date(selectedOrder.fecha).toLocaleDateString('es-AR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+              })}
             </p>
             <p className="text-gray-600 font-medium flex items-center gap-2">
               Estado: 
@@ -85,7 +85,11 @@ const OrderDetail = () => {
                 <p className="ml-2">Departamento: {selectedOrder.cliente_direccion.departamento}</p>
               }
               <p className="ml-2">CP: {selectedOrder.cliente_direccion.codigo_postal}</p>
-              <p className="ml-2">{selectedOrder.cliente_direccion.localidad.nombre}, {selectedOrder.cliente_direccion.localidad.provincia.nombre}, {selectedOrder.cliente_direccion.localidad.provincia.pais.nombre}</p>
+              <p className="ml-2">
+                {selectedOrder.cliente_direccion.localidad.nombre}, 
+                {selectedOrder.cliente_direccion.localidad.provincia.nombre}, 
+                {selectedOrder.cliente_direccion.localidad.provincia.pais.nombre}
+              </p>
             </div>
           </div>
  
@@ -94,17 +98,25 @@ const OrderDetail = () => {
             <div className="space-y-4">
               {selectedOrder.detalles.map((item) => (
                 <div key={item.id_pedido_detalle} className="flex items-center gap-4 p-3 border rounded-lg">
-                  <img 
-                    src={item.producto.imagen} 
-                    alt={item.producto.nombre}
-                    className="w-16 h-16 object-cover rounded"
-                  />
-                  <div className="flex-1">
-                    <p className="font-medium">{item.producto.nombre}</p>
-                    <p className="text-sm text-gray-600">{item.producto.marca}</p>
-                    <p className="text-sm text-gray-600">Cantidad: {item.cantidad}</p>
-                  </div>
-                  <p className="font-medium">${parseFloat(item.precio).toLocaleString('es-AR')}</p>
+                  <Link 
+                    to={`/products/${item.producto.id_producto}`} 
+                    onClick={() => window.scrollTo(0, 0)}
+                    className="flex items-center gap-4 flex-1 hover:opacity-90"
+                  >
+                    <img 
+                      src={item.producto.imagen} 
+                      alt={item.producto.nombre}
+                      className="w-16 h-16 object-cover rounded"
+                    />
+                    <div className="flex-1">
+                      <p className="font-medium">{item.producto.nombre}</p>
+                      <p className="text-sm text-gray-600">{item.producto.marca}</p>
+                      <p className="text-sm text-gray-600">Cantidad: {item.cantidad}</p>
+                    </div>
+                    <p className="font-medium">
+                      ${parseFloat(item.precio).toLocaleString('es-AR')}
+                    </p>
+                  </Link>
                 </div>
               ))}
             </div>
@@ -130,7 +142,9 @@ const OrderDetail = () => {
  
             <div className="flex justify-between items-center text-lg font-medium border-t pt-4 mt-2">
               <span>Total</span>
-              <span>${parseFloat(selectedOrder.monto_total).toLocaleString('es-AR')}</span>
+              <span>
+                ${parseFloat(selectedOrder.monto_total).toLocaleString('es-AR')}
+              </span>
             </div>
           </div>
         </div>

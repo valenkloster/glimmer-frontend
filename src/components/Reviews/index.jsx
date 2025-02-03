@@ -3,6 +3,7 @@ import { StarIcon } from '@heroicons/react/24/solid';
 import { StarIcon as StarOutline } from '@heroicons/react/24/outline';
 import { ReviewContext } from '../../context/review/reviewContext';
 import { AuthContext } from '../../context/auth/AuthContext';
+import { OrderContext } from '../../context/order/OrderContext';
 import { LoginAlert } from '../LoginAlert';
 
 const Reviews = ({ productId }) => {
@@ -16,12 +17,32 @@ const Reviews = ({ productId }) => {
     filterReviews
   } = useContext(ReviewContext);
   const { isAuthenticated } = useContext(AuthContext);
+  const { orders, fetchOrders } = useContext(OrderContext);
   
   const [rating, setRating] = useState(0);
   const [description, setDescription] = useState('');
   const [showLoginAlert, setShowLoginAlert] = useState(false);
   const [hoveredStar, setHoveredStar] = useState(null);
   const [showForm, setShowForm] = useState(false);
+  const [hasOrdered, setHasOrdered] = useState(false);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      const checkIfUserOrdered = async () => {
+        await fetchOrders();
+        
+        const hasBoughtProduct = orders.some(order => 
+          order.detalles?.some(detalle => 
+            detalle.id_producto === parseInt(productId)
+          )
+        );
+        
+        console.log('¿Ha comprado el producto?', hasBoughtProduct);
+        setHasOrdered(hasBoughtProduct);
+      };
+      checkIfUserOrdered();
+    }
+  }, [isAuthenticated, productId]);
 
   useEffect(() => {
     loadReviews(productId);
@@ -45,6 +66,13 @@ const Reviews = ({ productId }) => {
       setTimeout(() => setShowLoginAlert(false), 3000);
       return;
     }
+   
+    if (!hasOrdered) {
+      setShowLoginAlert(true);
+      setTimeout(() => setShowLoginAlert(false), 3000);
+      return;
+    }
+
     setShowForm(true);
   };
 
@@ -76,7 +104,15 @@ const Reviews = ({ productId }) => {
 
   return (
     <div className="mt-8 mb-20">
-      {showLoginAlert && <LoginAlert text="escribir reseñas" />}
+      {showLoginAlert && 
+        <LoginAlert 
+          text={
+            isAuthenticated 
+              ? "dejar reseñas en productos que hayas comprado" 
+              : "escribir reseñas"
+          } 
+        />
+      }
       
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-2xl font-bold">Reseñas</h3>
@@ -189,7 +225,11 @@ const Reviews = ({ productId }) => {
                     {renderStars(review.puntaje)}
                   </div>
                   <span className="text-gray-500 text-sm">
-                    {new Date(review.fecha).toLocaleDateString()}
+                    {new Date(review.fecha).toLocaleDateString('es-AR', {
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric'
+                    })}
                   </span>
                 </div>
                 <p className="text-gray-700">{review.descripcion}</p>
