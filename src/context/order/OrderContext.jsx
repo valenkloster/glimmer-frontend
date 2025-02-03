@@ -58,11 +58,13 @@ export const OrderProvider = ({ children }) => {
     }
   };
 
+  //cambie esto
   const fetchOrderById = async (orderId) => {
     if (selectedOrder?.id_pedido === orderId) return;
   
     try {
       setLoading(true);
+      setSelectedOrder(null); // Limpiar el estado anterior
       const response = await orderService.getById(orderId);
       setSelectedOrder(response.body);
       setError(null);
