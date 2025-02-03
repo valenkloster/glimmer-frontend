@@ -47,7 +47,13 @@ const HomePage = () => {
           }
           resolve();
         };
-        img.onerror = reject;
+        img.onerror = () => {
+          loadedImages += 1;
+          if (loadedImages === totalImages) {
+            setImagesLoaded(true);
+          }
+          resolve();
+        };
       });
     };
 
@@ -56,7 +62,6 @@ const HomePage = () => {
         await Promise.all(collageStructure.map(item => preloadImage(item.image)));
       } catch (error) {
         console.error('Error preloading images:', error);
-        // Mostrar el contenido incluso si hay error en algunas imágenes
         setImagesLoaded(true);
       }
     };
@@ -178,14 +183,14 @@ const HomePage = () => {
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/30 to-black/50" />
         </div>
 
-        {/* Loading Spinner (opcional) */}
+        {/* Loading Spinner */}
         {!imagesLoaded && (
-          <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+          <div className="absolute inset-0 z-50 flex items-center justify-center bg-gray-100">
             <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-verde-agua"></div>
           </div>
         )}
 
-        <div className={`relative h-full flex items-center justify-center transition-opacity duration-1000 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
+        <div className={`relative h-full flex items-center justify-center invisible ${isVisible ? '!visible' : ''}`}>
           <div className="text-center px-4">
             <h1 className="text-5xl md:text-6xl font-light mb-6 text-white drop-shadow-lg">
               Tu piel merece lo mejor
