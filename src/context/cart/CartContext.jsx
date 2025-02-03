@@ -1,8 +1,11 @@
-import { createContext, useState, useEffect, useContext } from 'react';
+import { createContext, useState, useEffect, useContext, useCallback } from 'react';
 import { cartService } from '../../services/cartService';
 import { productService } from '../../services/productService';
 
 export const CartContext = createContext();
+
+// Cache global para productos
+const PRODUCTS_CACHE = new Map();
 
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState(null);
@@ -11,7 +14,7 @@ export const CartProvider = ({ children }) => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [updatingItems, setUpdatingItems] = useState(new Set());
 
-  const isAdminUser = () => {
+  const isAdminUser = useCallback(() => {
     const userInfo = localStorage.getItem('user');
     if (!userInfo) return false;
     
@@ -22,12 +25,23 @@ export const CartProvider = ({ children }) => {
       console.error('Error al parsear información del usuario:', err);
       return false;
     }
+  }, []);
+
+  // Función para obtener producto del cache o del servidor
+  const getProductFromCache = async (productId) => {
+    if (PRODUCTS_CACHE.has(productId)) {
+      return PRODUCTS_CACHE.get(productId);
+    }
+    
+    const productResponse = await productService.getById(productId);
+    PRODUCTS_CACHE.set(productId, productResponse.body);
+    return productResponse.body;
   };
   
   const loadCart = async () => {
     const token = localStorage.getItem('token');
     
-    if (!token || isAdminUser()) {  // <- Añade esta verificación
+    if (!token || isAdminUser()) {
       setCart(null);
       setLoading(false);
       return;
@@ -37,19 +51,16 @@ export const CartProvider = ({ children }) => {
       setLoading(true);
       const cartResponse = await cartService.getAll();
       
-      if (cartResponse.detalles && cartResponse.detalles.length > 0) {
+      if (cartResponse.detalles?.length > 0) {
         const detallesOrdenados = [...cartResponse.detalles].sort((a, b) => 
           a.id_carrito_detalle - b.id_carrito_detalle
         );
 
         const detallesWithProducts = await Promise.all(
-          detallesOrdenados.map(async (detalle) => {
-            const productResponse = await productService.getById(detalle.id_producto);
-            return {
-              ...detalle,
-              producto: productResponse.body
-            };
-          })
+          detallesOrdenados.map(async (detalle) => ({
+            ...detalle,
+            producto: await getProductFromCache(detalle.id_producto)
+          }))
         );
 
         setCart({
@@ -64,7 +75,6 @@ export const CartProvider = ({ children }) => {
     } catch (err) {
       setError('Error al cargar el carrito');
       console.error('Error loading cart:', err);
-      setCart(null);
     } finally {
       setLoading(false);
     }
@@ -72,7 +82,7 @@ export const CartProvider = ({ children }) => {
 
   useEffect(() => {
     const handleStorageChange = (e) => {
-      if (e.key === 'token' || e.key === 'user') {  // <- Añade la verificación de 'user'
+      if (e.key === 'token' || e.key === 'user') {
         loadCart();
       }
     };
@@ -91,12 +101,12 @@ export const CartProvider = ({ children }) => {
     try {
       const updatedDetalles = await Promise.all(
         cart.detalles.map(async (detalle) => {
-          const productResponse = await productService.getById(detalle.id_producto);
+          const producto = await getProductFromCache(detalle.id_producto);
           return {
             ...detalle,
             producto: {
               ...detalle.producto,
-              stock: productResponse.body.stock
+              stock: producto.stock
             }
           };
         })
@@ -114,15 +124,32 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  const addToCart = async (productId, quantity = 1) => {
+  const addToCart = async (productId, quantity = 1, productData = null) => {
     try {
+      // Optimistic update
+      if (productData) {
+        setCart(prevCart => ({
+          ...prevCart,
+          detalles: [
+            ...(prevCart?.detalles || []),
+            {
+              id_producto: productId,
+              cantidad: quantity,
+              producto: productData
+            }
+          ]
+        }));
+      }
+
       const response = await cartService.add(productId, quantity);
-      if (response.error === false && response.status === 200) {
+      
+      if (response.error || response.status !== 200) {
+        // Revert optimistic update if failed
         await loadCart();
       }
     } catch (err) {
       setError('Error al agregar al carrito');
-      console.error('Error adding to cart:', err);
+      await loadCart(); // Revert on error
     }
   };
 
@@ -131,17 +158,21 @@ export const CartProvider = ({ children }) => {
     
     try {
       setUpdatingItems(prev => new Set(prev).add(productId));
+      
+      // Optimistic update
+      setCart(prevCart => ({
+        ...prevCart,
+        detalles: prevCart.detalles.map(item =>
+          item.id_producto === productId
+            ? { ...item, cantidad: quantity }
+            : item
+        )
+      }));
+
       const response = await cartService.update(productId, quantity);
   
-      if (response.error === false && response.status === 200) {
-        setCart(prevCart => ({
-          ...prevCart,
-          detalles: prevCart.detalles.map(item =>
-            item.id_producto === productId
-              ? { ...item, cantidad: quantity }
-              : item
-          )
-        }));
+      if (response.error || response.status !== 200) {
+        await loadCart(); // Revert if failed
       }
     } catch (err) {
       setError('Error al actualizar cantidad');
@@ -157,6 +188,7 @@ export const CartProvider = ({ children }) => {
   
   const removeFromCart = async (productId) => {
     try {
+      // Optimistic update
       setCart(prevCart => {
         const newDetalles = prevCart.detalles.filter(item => item.id_producto !== productId);
         
@@ -174,21 +206,20 @@ export const CartProvider = ({ children }) => {
   
       const response = await cartService.remove(productId);
       if (response.error || response.status !== 200) {
-        await loadCart();
+        await loadCart(); // Revert if failed
       }
     } catch (err) {
-      await loadCart();
       setError('Error al eliminar del carrito');
-      console.error('Error removing from cart:', err);
+      await loadCart();
     }
   };
 
   const adjustCartQuantities = async (stockIssues) => {
     try {
       await Promise.all(
-        stockIssues.map(item => 
-          updateQuantity(item.id_producto, item.producto.stock)
-        )
+        stockIssues.map(async (item) => {
+          await updateQuantity(item.id_producto, item.producto.stock);
+        })
       );
     } catch (err) {
       setError('Error al ajustar cantidades');
@@ -196,16 +227,18 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  const openCart = async () => {
+  const openCart = useCallback(async () => {
     setIsCartOpen(true);
     await checkStock();
-  };
+  }, []);
 
-  const closeCart = () => {
+  const closeCart = useCallback(() => {
     setIsCartOpen(false);
-  };
+  }, []);
 
+  // Memoized calculations
   const cartCount = cart?.detalles?.length || 0;
+  
   const cartTotal = cart?.detalles?.reduce((total, item) => 
     total + (item.producto.stock > 0 ? parseFloat(item.cantidad) * parseFloat(item.producto.precio) : 0), 
     0

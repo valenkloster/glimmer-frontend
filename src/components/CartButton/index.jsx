@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useState, useCallback } from 'react';
 import { PlusIcon, CheckIcon } from '@heroicons/react/24/solid';
 import { CartContext } from '../../context/cart/CartContext';
 import { AuthContext } from '../../context/auth/AuthContext';
@@ -8,12 +8,13 @@ export const CartButton = ({ product }) => {
   const { addToCart, cart } = useContext(CartContext);
   const { isAuthenticated } = useContext(AuthContext);
   const [showAlert, setShowAlert] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
 
   const isInCart = cart?.detalles?.some(item => 
     item.id_producto === product.id_producto
   );
 
-  const handleClick = (event) => {
+  const handleClick = useCallback(async (event) => {
     event.stopPropagation();
 
     if (!isAuthenticated) {
@@ -22,8 +23,15 @@ export const CartButton = ({ product }) => {
       return;
     }
 
-    addToCart(product.id_producto, 1);
-  };
+    if (isAdding) return;
+
+    setIsAdding(true);
+    try {
+      await addToCart(product.id_producto, 1, product);
+    } finally {
+      setIsAdding(false);
+    }
+  }, [isAuthenticated, isAdding, product, addToCart]);
 
   if (product.stock <= 0) {
     return (
@@ -44,7 +52,7 @@ export const CartButton = ({ product }) => {
   return (
     <>
       <button
-        disabled={product.stock <= 0}
+        disabled={product.stock <= 0 || isAdding}
         className='absolute top-0 right-0 flex justify-center items-center bg-verde-agua text-white w-6 h-6 rounded-full m-4 p-1 disabled:bg-gray-400'
         onClick={handleClick}
       >
