@@ -186,23 +186,33 @@ const ProductDetail = () => {
               </p>
             </div>
 
+            {/* CAMBIE ESTO */}
             {/* Botones de acción */}
-            <div className="flex items-center justify-around mx-4 md:mx-20 mt-6">
-              {renderIcon()}
-              <button 
-                onClick={handleFavoriteClick}
-                className={`p-3 border rounded-full transition-colors duration-300 ${
-                  isFavorite 
-                    ? 'border-red-500 hover:bg-red-50' 
-                    : 'hover:border-black'
-                }`}
-              >
-                {isFavorite ? (
-                  <HeartSolid className="h-6 w-6 text-red-500"/>
-                ) : (
-                  <HeartOutline className="h-6 w-6"/>
-                )}
-              </button>
+            <div className="relative flex flex-col items-center">
+              {/* Contenedor de alertas */}
+              <div className="w-full h-12 relative mb-2">
+                {showFavAlert && <LoginAlert text="agregar productos a favoritos" position="relative" />}
+                {showCartAlert && <LoginAlert text="agregar productos al carrito" position="relative" />}
+              </div>
+              
+              {/* Botones */}
+              <div className="flex items-center justify-around w-full mx-4 md:mx-20">
+                {renderIcon()}
+                <button 
+                  onClick={handleFavoriteClick}
+                  className={`p-3 border rounded-full transition-colors duration-300 ${
+                    isFavorite 
+                      ? 'border-red-500 hover:bg-red-50' 
+                      : 'hover:border-black'
+                  }`}
+                >
+                  {isFavorite ? (
+                    <HeartSolid className="h-6 w-6 text-red-500"/>
+                  ) : (
+                    <HeartOutline className="h-6 w-6"/>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         </div>
