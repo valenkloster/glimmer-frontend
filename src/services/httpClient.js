@@ -13,42 +13,54 @@ const createHeaders = () => {
   return headers;
 };
 
+const handleResponse = async (response) => {
+  if (!response.ok) {
+    try {
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Network response was not ok');
+    } catch (e) {
+      throw new Error('Network response was not ok');
+    }
+  }
+  return response.json();
+};
+
 export const httpClient = {
-  async get(endpoint) {
+  async get(endpoint, options = {}) {
     const response = await fetch(`${baseURL}${endpoint}`, {
-      headers: createHeaders()
+      headers: createHeaders(),
+      signal: options.signal
     });
-    if (!response.ok) throw new Error('Network response was not ok');
-    return response.json();
+    return handleResponse(response);
   },
 
-  async post(endpoint, data) {
+  async post(endpoint, data, options = {}) {
     const response = await fetch(`${baseURL}${endpoint}`, {
       method: 'POST',
       headers: createHeaders(),
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
+      signal: options.signal
     });
-    if (!response.ok) throw new Error('Network response was not ok');
-    return response.json();
+    return handleResponse(response);
   },
   
-  async patch(endpoint, data) {
+  async patch(endpoint, data, options = {}) {
     const response = await fetch(`${baseURL}${endpoint}`, {
       method: 'PATCH',
       headers: createHeaders(),
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
+      signal: options.signal
     });
-    if (!response.ok) throw new Error('Network response was not ok');
-    return response.json();
+    return handleResponse(response);
   },
 
-  async delete(endpoint, data) {
+  async delete(endpoint, data, options = {}) {
     const response = await fetch(`${baseURL}${endpoint}`, {
       method: 'DELETE',
       headers: createHeaders(),
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
+      signal: options.signal
     });
-    if (!response.ok) throw new Error('Network response was not ok');
-    return response.json();
+    return handleResponse(response);
   }
 };

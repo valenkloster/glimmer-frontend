@@ -13,16 +13,32 @@ const SearchBar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const searchRef = useRef(null);
+  const abortControllerRef = useRef(null);
 
   const performSearch = async (searchQuery) => {
     if (!searchQuery.trim()) return;
     
+    // Cancelar búsqueda anterior si existe
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    // Crear nuevo controlador para esta búsqueda
+    abortControllerRef.current = new AbortController();
+    
     setIsLoading(true);
     try {
-      const response = await productService.searchProducts(searchQuery);
+      const response = await productService.searchProducts(
+        searchQuery,
+        { signal: abortControllerRef.current.signal }
+      );
+      
       setFilteredProducts(response.body || []);
+      navigate(`/shop?search=${encodeURIComponent(searchQuery)}`);
     } catch (error) {
+      if (error.name === 'AbortError') return;
       console.error('Error:', error);
+      setFilteredProducts([]);
     } finally {
       setIsLoading(false);
     }
@@ -36,16 +52,12 @@ const SearchBar = () => {
     if (e.key === 'Enter') {
       e.preventDefault();
       const searchQuery = query.trim();
-      if (!searchQuery) return;
-
-      // Primero realizar la búsqueda
-      await performSearch(searchQuery);
-      // Luego actualizar la URL
-      navigate(`/shop?search=${encodeURIComponent(searchQuery)}`);
+      if (searchQuery) {
+        await performSearch(searchQuery);
+      }
     }
   };
 
-  // Manejar búsqueda inicial cuando se carga la página con una URL de búsqueda
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const searchQuery = params.get('search');
@@ -60,14 +72,18 @@ const SearchBar = () => {
       if (searchRef.current && !searchRef.current.contains(event.target)) {
         setIsSearchActive(false);
         setQuery('');
+        setFilteredProducts([]);
       }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
     };
-  }, []);
+  }, [setFilteredProducts]);
 
   return (
     <div ref={searchRef} className="relative">
@@ -81,20 +97,22 @@ const SearchBar = () => {
       {isSearchActive && (
         <div className="fixed md:absolute left-0 md:left-auto right-0 md:right-0 top-20 md:top-auto mt-0 md:mt-2 w-full md:w-72 px-4 md:px-0">
           <div className="mx-auto md:mx-0 max-w-lg md:max-w-none bg-white/80 backdrop-blur-sm rounded-lg shadow-lg p-3 border border-gray-100">
-            <input
-              type="text"
-              value={query}
-              onChange={handleInputChange}
-              onKeyDown={handleKeyPress}
-              placeholder="Buscar productos..."
-              className="w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-verde-agua"
-              autoFocus
-            />
-            {isLoading && (
-              <div className="absolute right-6 top-1/2 transform -translate-y-1/2">
-                <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-verde-agua"></div>
-              </div>
-            )}
+            <div className="relative">
+              <input
+                type="text"
+                value={query}
+                onChange={handleInputChange}
+                onKeyDown={handleKeyPress}
+                placeholder="Buscar productos..."
+                className="w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-verde-agua"
+                autoFocus
+              />
+              {isLoading && (
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                  <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-verde-agua"></div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       )}
