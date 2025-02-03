@@ -4,6 +4,10 @@ import { FavoriteButton } from '../Favorite/FavoriteButton'
 import { Link } from 'react-router-dom'
 
 const Card = (data) => {
+  const handleClick = () => {
+    window.scrollTo(0, 0);
+  };
+
   return (
     <div 
       className={`
@@ -13,7 +17,7 @@ const Card = (data) => {
       `}
     >
       <figure className="relative mb-4 w-full h-48 md:h-72">
-        <Link to={`/products/${data.data.id_producto}`}>
+        <Link to={`/products/${data.data.id_producto}`} onClick={handleClick}>
           <div className="w-full h-full bg-gray-50 rounded-lg p-6">
             <img 
               className="w-full h-full object-contain" 
@@ -26,7 +30,7 @@ const Card = (data) => {
         <FavoriteButton productId={data.data.id_producto} />
         <CartButton product={data.data} />
       </figure>
-      <Link to={`/products/${data.data.id_producto}`}>
+      <Link to={`/products/${data.data.id_producto}`} onClick={handleClick}>
         <div className="flex flex-col gap-1">
           <p className="text-sm text-gray-500 font-product">{data.data.marca}</p>
           <p className="text-base font-semibold font-product line-clamp-2">{data.data.nombre}</p>
