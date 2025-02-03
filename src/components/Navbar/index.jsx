@@ -95,7 +95,7 @@ const Navbar = () => {
     window.scrollTo(0, 0);
     logout();
     setIsUserMenuOpen(false);
-    navigate('/');
+    navigate('/shop');
   };
 
   const UserMenu = () => (
