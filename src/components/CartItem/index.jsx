@@ -67,7 +67,7 @@ const CartItem = ({ item, onUpdateQuantity, onRemove }) => {
            <button
               onClick={() => onUpdateQuantity(id_producto, cantidad + 1)}
               className="h-5 w-5 text-white bg-gray-500 rounded-full flex items-center justify-center"
-              disabled={isUpdating || cantidad >= producto.stock}
+              disabled={isUpdating}
             >
               <PlusIcon className="h-3 w-3" />
             </button>
