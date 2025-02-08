@@ -11,7 +11,8 @@ function Shop() {
     products, 
     loading,
     setPriceRange,
-    setSortOrder
+    setSortOrder,
+    priceRange
   } = context;
   const location = useLocation();
 
@@ -38,6 +39,7 @@ function Shop() {
   }
 
   const showNoResults = location.search.includes('search') && filteredProducts.length === 0;
+  const showNoPriceRangeResults = !showNoResults && filteredProducts.length === 0 && (priceRange.min || priceRange.max);
 
   return (
     <>
@@ -76,12 +78,26 @@ function Shop() {
       <div className="min-h-screen bg-white pt-[80px] page-fade-in">
         <div className="max-w-7xl mx-auto px-4 py-8">
           <FilterBar />
+          
           {showNoResults && (
             <div className="text-center mb-8 page-fade-in">
               <p className="text-gray-600 mb-4">No hemos encontrado productos con esas características.</p>
               <p className="text-gray-600">Puedes ver otros productos disponibles:</p>
             </div>
           )}
+
+          {showNoPriceRangeResults && (
+            <div className="w-full text-center py-3 px-4 bg-amber-50 border border-amber-200 text-amber-800 rounded-lg mb-8 page-fade-in">
+              No hay productos disponibles en el rango de precios seleccionado.
+              <button 
+                onClick={() => setPriceRange({ min: '', max: '' })}
+                className="ml-2 text-amber-900 underline hover:no-underline"
+              >
+                Limpiar filtros
+              </button>
+            </div>
+          )}
+
           <div className="flex flex-wrap justify-center gap-8">
             {(showNoResults ? products : filteredProducts)?.map((item, index) => (
               <div 

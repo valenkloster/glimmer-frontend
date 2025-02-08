@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useContext } from 'react';
 import { ShoppingCartContext } from '../../context';
-import { FunnelIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { FunnelIcon, XMarkIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 
 const FilterBar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [error, setError] = useState({ min: '', max: '' });
   const minInputRef = useRef(null);
   const maxInputRef = useRef(null);
   
@@ -15,22 +16,46 @@ const FilterBar = () => {
     sortOrder
   } = useContext(ShoppingCartContext);
 
-  // Actualizar los inputs cuando priceRange cambia
   useEffect(() => {
     if (minInputRef.current) minInputRef.current.value = priceRange.min;
     if (maxInputRef.current) maxInputRef.current.value = priceRange.max;
   }, [priceRange]);
 
+  const handlePriceFilter = () => {
+    const minValue = minInputRef.current.value;
+    const maxValue = maxInputRef.current.value;
+    
+    // Limpiar errores previos
+    setError({ min: '', max: '' });
+    
+    // Validar valores
+    if (minValue !== '' && Number(minValue) <= 0) {
+      setError(prev => ({
+        ...prev,
+        min: 'Ingrese un número positivo'
+      }));
+      return;
+    }
+    
+    if (maxValue !== '' && Number(maxValue) <= 0) {
+      setError(prev => ({
+        ...prev,
+        max: 'Ingrese un número positivo'
+      }));
+      return;
+    }
+
+    // Actualizar el rango de precios
+    setPriceRange({
+      min: minValue === '' ? '' : Number(minValue),
+      max: maxValue === '' ? '' : Number(maxValue)
+    });
+  };
+
   const handlePriceSubmit = (type) => (e) => {
     if (e.key === 'Enter') {
-      const value = type === 'min' ? minInputRef.current.value : maxInputRef.current.value;
-      setPriceRange(prev => ({
-        ...prev,
-        [type]: value === '' ? '' : Number(value)
-      }));
-      // Mantener el foco en el input actual
+      handlePriceFilter();
       e.target.blur();
-      e.target.focus();
     }
   };
 
@@ -43,6 +68,7 @@ const FilterBar = () => {
     if (minInputRef.current) minInputRef.current.value = '';
     if (maxInputRef.current) maxInputRef.current.value = '';
     setSortOrder('');
+    setError({ min: '', max: '' });
   };
 
   const FilterContent = () => (
@@ -50,25 +76,43 @@ const FilterBar = () => {
       {/* Filtro de precio */}
       <div className="flex items-center gap-2">
         <span className="font-product font-medium whitespace-nowrap">Precio:</span>
-        <input
-          type="number"
-          placeholder="Mínimo"
-          className="w-full md:w-24 p-2 border rounded"
-          ref={minInputRef}
-          defaultValue={priceRange.min}
-          onKeyDown={handlePriceSubmit('min')}
-          onWheel={(e) => e.target.blur()}
-        />
+        <div className="flex flex-col relative">
+          <input
+            type="number"
+            placeholder="Mínimo"
+            className={`w-full md:w-24 p-2 border rounded ${
+              error.min ? 'border-red-500' : ''
+            }`}
+            ref={minInputRef}
+            defaultValue={priceRange.min}
+            onKeyDown={handlePriceSubmit('min')}
+            onWheel={(e) => e.target.blur()}
+          />
+          {error.min && (
+            <div className="absolute -bottom-6 left-0 bg-red-100 text-red-500 text-xs rounded px-2 py-1 whitespace-nowrap z-10">
+              {error.min}
+            </div>
+          )}
+        </div>
         <span>-</span>
-        <input
-          type="number"
-          placeholder="Máximo"
-          className="w-full md:w-24 p-2 border rounded"
-          ref={maxInputRef}
-          defaultValue={priceRange.max}
-          onKeyDown={handlePriceSubmit('max')}
-          onWheel={(e) => e.target.blur()}
-        />
+        <div className="flex flex-col relative">
+          <input
+            type="number"
+            placeholder="Máximo"
+            className={`w-full md:w-24 p-2 border rounded ${
+              error.max ? 'border-red-500' : ''
+            }`}
+            ref={maxInputRef}
+            defaultValue={priceRange.max}
+            onKeyDown={handlePriceSubmit('max')}
+            onWheel={(e) => e.target.blur()}
+          />
+          {error.max && (
+            <div className="absolute -bottom-6 left-0 bg-red-100 text-red-500 text-xs rounded px-2 py-1 whitespace-nowrap z-10">
+              {error.max}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Ordenamiento */}
@@ -86,6 +130,14 @@ const FilterBar = () => {
           <option value="name-desc">Nombre: Z-A</option>
         </select>
       </div>
+      {/* Botón de búsqueda */}
+      <button
+          onClick={handlePriceFilter}
+          className="flex items-center gap-1 px-3 py-2 bg-verde-agua hover:bg-verde-agua/80 text-white rounded-lg"
+        >
+          <MagnifyingGlassIcon className="h-4 w-4" />
+          <span className="hidden md:inline">Buscar</span>
+      </button>
 
       {/* Botón para limpiar filtros */}
       {(priceRange.min || priceRange.max || sortOrder) && (
