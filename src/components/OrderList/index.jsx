@@ -18,10 +18,10 @@ const OrderList = () => {
         maxAmount: ''
     });
     const [isAmountFilterOpen, setIsAmountFilterOpen] = useState(false);
+    const [isFiltersOpen, setIsFiltersOpen] = useState(false);
     const amountFilterRef = useRef(null);
     const minAmountRef = useRef(null);
     const maxAmountRef = useRef(null);
-    const [isFiltersOpen, setIsFiltersOpen] = useState(false);
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -130,7 +130,7 @@ const OrderList = () => {
 
     if (error) {
         return (
-            <div className="flex justify-center items-center pt-20">
+            <div className="flex justify-center items-center pt-16 md:pt-20">
                 <div className="text-center p-4">
                     <p className="text-red-500">{error}</p>
                 </div>
@@ -140,8 +140,8 @@ const OrderList = () => {
 
     if (!orders?.length) {
         return (
-            <div className="flex items-center justify-center min-h-screen">
-                <div className="text-center p-8 bg-nude rounded-lg max-w-md w-full mx-4">
+            <div className="flex items-center justify-center min-h-screen p-4">
+                <div className="text-center p-6 md:p-8 bg-nude rounded-lg max-w-md w-full">
                     <div className="mb-4">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -158,14 +158,14 @@ const OrderList = () => {
     }
 
     return (
-        <div className="pt-20">
-            <div className="max-w-4xl mx-auto p-4">
-                <div className="mb-8 text-center">
-                    <h1 className="text-3xl font-light mb-2">Historial de Pedidos</h1>
+        <div className="pt-16 md:pt-20">
+            <div className="max-w-4xl mx-auto px-4 py-2 md:p-4">
+                <div className="mb-6 md:mb-8 text-center">
+                    <h1 className="text-2xl md:text-3xl font-light mb-2">Historial de Pedidos</h1>
                     <p className="text-gray-600">Encuentra todos tus pedidos y sigue su estado</p>
                 </div>
     
-                {/* Filters Section - Desktop */}
+                {/* Filters - Desktop */}
                 <div className="hidden md:block mb-6 bg-nude rounded-lg p-4">
                     <div className="flex justify-center items-center gap-4">
                         {/* Estado */}
@@ -258,11 +258,11 @@ const OrderList = () => {
                     </div>
                 </div>
 
-                {/* Filters Section - Versión Móvil */}
-                <div className="md:hidden mb-6">
+                {/* Filters - Mobile */}
+                <div className="block md:hidden mb-4">
                     <button
                         onClick={() => setIsFiltersOpen(!isFiltersOpen)}
-                        className="w-full bg-nude rounded-lg shadow p-4 flex items-center justify-between"
+                        className="w-full bg-nude rounded-lg p-3 flex items-center justify-between"
                     >
                         <div className="flex items-center gap-2">
                             <FunnelIcon className="h-5 w-5 text-gray-400" />
@@ -286,7 +286,7 @@ const OrderList = () => {
                     {isFiltersOpen && (
                         <div className="mt-2 bg-white rounded-lg shadow p-4 space-y-4">
                             {/* Estado */}
-                            <div className="w-full">
+                            <div>
                                 <label className="block text-sm text-gray-600 mb-1">Estado</label>
                                 <div className="relative">
                                     <select
@@ -306,8 +306,8 @@ const OrderList = () => {
                                 </div>
                             </div>
 
-                            {/* Rango de fechas */}
-                            <div className="w-full">
+                            {/* Fecha */}
+                            <div>
                                 <label className="block text-sm text-gray-600 mb-1">Fecha</label>
                                 <div className="relative">
                                     <select
@@ -328,7 +328,7 @@ const OrderList = () => {
                             </div>
 
                             {/* Monto */}
-                            <div className="w-full">
+                            <div>
                                 <label className="block text-sm text-gray-600 mb-1">Rango de monto</label>
                                 <div className="flex gap-2">
                                     <input
@@ -355,7 +355,7 @@ const OrderList = () => {
                                 </div>
                             </div>
 
-                            {/* Botón limpiar filtros */}
+                            {/* Limpiar filtros */}
                             {(filters.status || filters.dateRange || filters.minAmount || filters.maxAmount) && (
                                 <button
                                     onClick={handleClearFilters}
@@ -378,7 +378,7 @@ const OrderList = () => {
                     </div>
     
                     <div className="max-h-[calc(100vh-400px)] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-                        {filteredOrders.map((order, index) => (
+                        {filteredOrders.map((order) => (
                             <Link 
                                 key={order.id_pedido}
                                 to={`/my-orders/${order.id_pedido}`}
