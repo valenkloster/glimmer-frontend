@@ -27,10 +27,16 @@ const OrderManagement = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [showContent, setShowContent] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
+  const [searchType, setSearchType] = useState('all');
+  const [filteredOrders, setFilteredOrders] = useState([]);
 
   useEffect(() => {
     fetchAllOrders();
   }, []);
+
+  useEffect(() => {
+    setFilteredOrders(orders);
+  }, [orders]);
 
   useEffect(() => {
     if (orders.length > 0 || isSearching) {
@@ -51,11 +57,62 @@ const OrderManagement = () => {
 
   const handleFilterChange = (key, value) => {
     updateFilters({ [key]: value });
+    
+    // Si se está limpiando el campo de búsqueda o el estado
+    if (value === '') {
+      setIsSearching(true);
+      fetchAllOrders({ ...filters, [key]: '' });
+    }
+    // Si es un cambio en el estado, buscar inmediatamente
+    else if (key === 'estado') {
+      setIsSearching(true);
+      fetchAllOrders({ ...filters, estado: value });
+    }
+  };
+
+  const applyFilters = () => {
+    let filtered = [...orders];
+
+    if (filters.searchTerm) {
+      const searchTermLower = filters.searchTerm.toLowerCase().trim();
+      
+      filtered = filtered.filter(order => {
+        const nombre = order.cliente?.nombre?.toLowerCase() || '';
+        const apellido = order.cliente?.apellido?.toLowerCase() || '';
+        const fullName = `${nombre} ${apellido}`.trim();
+        const pedidoId = order.id_pedido?.toString() || '';
+
+        // Búsqueda por ID
+        if (!isNaN(searchTermLower) && pedidoId === searchTermLower) {
+          return true;
+        }
+
+        switch (searchType) {
+          case 'name':
+            return nombre === searchTermLower;
+          case 'lastname':
+            return apellido === searchTermLower;
+          case 'fullname':
+            return fullName === searchTermLower;
+          default:
+            return pedidoId === searchTermLower ||
+                   nombre === searchTermLower || 
+                   apellido === searchTermLower ||
+                   fullName === searchTermLower;
+        }
+      });
+    }
+
+    setFilteredOrders(filtered);
   };
 
   const handleSearch = () => {
     setIsSearching(true);
-    fetchAllOrders(filters);
+    if (filters.estado) {
+      fetchAllOrders(filters);
+    } else {
+      applyFilters();
+    }
   };
 
   const formatPrice = (price) => {
@@ -97,8 +154,8 @@ const OrderManagement = () => {
         <div className="p-4">
           <div className={`${showFilters ? 'max-h-96' : 'max-h-0'} md:max-h-96 overflow-hidden transition-all duration-300 ease-in-out`}>
             <div className="mb-6 p-4 bg-gray-50 rounded-lg space-y-4 border">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="relative">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="relative">
                   <select
                     value={filters.estado}
                     onChange={(e) => handleFilterChange('estado', e.target.value)}
@@ -145,18 +202,18 @@ const OrderManagement = () => {
                 </tr>
               </thead>
               <tbody>
-                {orders.map((order) => (
+                {filteredOrders.map((order) => (
                   <tr key={order.id_pedido} className="border-b hover:bg-gray-50 transition-colors duration-200">
                     <td className="py-3 px-4">{order.id_pedido}</td>
                     <td className="py-3 px-4 font-medium">
                       {order.cliente?.nombre} {order.cliente?.apellido}
                     </td>
                     <td className="py-3 px-4 text-gray-600">
-                    {new Date(order.fecha).toLocaleDateString('es-AR', {
-                      day: '2-digit',
-                      month: '2-digit',
-                      year: 'numeric'
-                    })}
+                      {new Date(order.fecha).toLocaleDateString('es-AR', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric'
+                      })}
                     </td>
                     <td className="py-3 px-4 font-medium">
                       {formatPrice(order.monto_total)}
@@ -171,13 +228,13 @@ const OrderManagement = () => {
                         <select
                           value={order.id_estado_pedido}
                           onChange={(e) => handleStatusChange(order.id_pedido, e.target.value)}
-                          className="w-full p-2 border rounded-lg appearance-none hover:border-verde-agua focus:border-verde-agua focus:ring-1 focus:ring-verde-agua transition-colors duration-200"
+                          className="appearance-none w-auto pr-8 pl-2 py-1 hover:bg-gray-50 cursor-pointer focus:outline-none focus:ring-0 border-none md:w-full md:p-2 md:border md:rounded-lg md:border-gray-200 md:hover:border-verde-agua md:focus:border-verde-agua md:focus:ring-1 md:focus:ring-verde-agua md:transition-colors md:duration-200"
                         >
                           {Object.entries(OrderStatus).map(([id, { name }]) => (
                             <option key={id} value={id}>{name}</option>
                           ))}
                         </select>
-                        <ChevronDownIcon className="w-4 h-4 absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
+                        <ChevronDownIcon className="w-4 h-4 absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none md:right-3" />
                       </div>
                     </td>
                   </tr>
@@ -196,7 +253,7 @@ const OrderManagement = () => {
               {error}
             </div>
           )}
-          {!loading && !error && orders.length === 0 && (
+          {!loading && !error && filteredOrders.length === 0 && (
             <div className="text-center py-8 text-gray-500 bg-gray-50 rounded-lg">
               No se encontraron pedidos
             </div>
