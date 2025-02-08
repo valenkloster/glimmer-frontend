@@ -140,9 +140,9 @@ function StockControl() {
                 <div className="flex items-center w-full">
                   <button 
                     onClick={() => handleDecrement(product.id_producto)}
-                    className="p-2 rounded-l border border-r-0 hover:bg-gray-50 active:bg-gray-100 transition-colors"
+                    className="p-2 rounded-l border border-r-0 bg-verde-agua hover:bg-verde-agua/80 active:bg-gray-100 transition-colors"
                   >
-                    <MinusIcon className="w-4 h-4 text-gray-600" />
+                    <MinusIcon className="w-4 h-4 text-white" />
                   </button>
                   <input
                     type="number"
@@ -157,9 +157,9 @@ function StockControl() {
                   />
                   <button 
                     onClick={() => handleIncrement(product.id_producto)}
-                    className="p-2 rounded-r border border-l-0 hover:bg-gray-50 active:bg-gray-100 transition-colors"
+                    className="p-2 rounded-r border border-l-0 bg-verde-agua hover:bg-verde-agua/80 active:bg-gray-100 transition-colors"
                   >
-                    <PlusIcon className="w-4 h-4 text-gray-600" />
+                    <PlusIcon className="w-4 h-4 text-white" />
                   </button>
                 </div>
 
