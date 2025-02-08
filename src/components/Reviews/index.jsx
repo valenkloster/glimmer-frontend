@@ -104,24 +104,17 @@ const Reviews = ({ productId }) => {
 
   return (
     <div className="mt-8 mb-20">
-      {showLoginAlert && 
-        <LoginAlert 
-          text={
-            isAuthenticated 
-              ? "dejar reseñas en productos que hayas comprado" 
-              : "escribir reseñas"
-          } 
-        />
-      }
-      
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-2xl font-bold">Reseñas</h3>
-        <button
-          onClick={handleWriteReviewClick}
-          className="bg-verde-agua text-white px-4 py-2 rounded-full hover:bg-opacity-90"
-        >
-          Escribir reseña
-        </button>
+        <div className="relative">
+          {showLoginAlert && <LoginAlert text={isAuthenticated ? "dejar reseñas en productos que hayas comprado" : "escribir reseñas"} position="relative" />}
+          <button
+            onClick={handleWriteReviewClick}
+            className="bg-verde-agua text-white px-4 py-2 rounded-full hover:bg-opacity-90"
+          >
+            Escribir reseña
+          </button>
+        </div>
       </div>
 
       {/* Filtros */}

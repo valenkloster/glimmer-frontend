@@ -4,7 +4,7 @@ import { LockClosedIcon } from '@heroicons/react/24/outline';
 export const LoginAlert = ({ text, position = 'fixed' }) => {
   const positionClasses = {
     fixed: 'fixed top-20 right-0',
-    relative: 'absolute top-0 left-1/2 -translate-x-1/2 z-10'
+    relative: 'absolute bottom-full right-0 mb-2'
   };
 
   return (

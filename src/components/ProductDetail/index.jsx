@@ -138,8 +138,6 @@ const ProductDetail = () => {
     <section className={`w-full bg-white py-10 transition-all duration-500 ${
       isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'
     }`}>
-      {showFavAlert && <LoginAlert text="agregar productos a favoritos" />}
-      {showCartAlert && <LoginAlert text="agregar productos al carrito" />}
       <div className="max-w-7xl mx-auto px-4 md:px-20 py-8">
         <div className="grid md:grid-cols-2 gap-8">
           {/* Columna de imagen */}
@@ -186,7 +184,6 @@ const ProductDetail = () => {
               </p>
             </div>
 
-            {/* CAMBIE ESTO */}
             {/* Botones de acción */}
             <div className="relative flex flex-col items-center">
               {/* Contenedor de alertas */}
