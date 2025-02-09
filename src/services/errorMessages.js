@@ -1,6 +1,7 @@
 export const translateError = (error) => {
     const errorMessages = {
       'Invalid credentials': 'Credenciales inválidas',
+      'Incorrect username or password': 'Usuario o contraseña incorrectos',
       'User not found': 'Usuario no encontrado',
       'Email already exists': 'El correo electrónico ya está registrado',
       'Invalid password': 'Contraseña inválida',
