@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
-import { Bars3Icon, ChartBarIcon, ExclamationCircleIcon, ArrowLeftEndOnRectangleIcon, ShoppingCartIcon } from '@heroicons/react/24/outline';
+import { Bars3Icon, ChartBarIcon, ExclamationCircleIcon, ArrowLeftEndOnRectangleIcon, ShoppingCartIcon, CurrencyDollarIcon } from '@heroicons/react/24/outline';
 import { useAuth } from '../../context/auth/AuthContext';
 
 const AdminLayout = () => {
@@ -13,6 +13,7 @@ const AdminLayout = () => {
        { title: "KPIs", path: "/admin/ventas", icon: <ChartBarIcon className="w-6 h-6" /> },
        { title: "Top 5 Productos", path: "/admin/top5", icon: <Bars3Icon className="w-6 h-6" /> },
        { title: "Control Stock", path: "/admin/stock", icon: <ExclamationCircleIcon className="w-6 h-6" /> },
+       { title: "Control Precios", path: "/admin/precios", icon: <CurrencyDollarIcon className="w-6 h-6" /> },
        { title: "Gestión Pedidos", path: "/admin/pedidos", icon: <ShoppingCartIcon className="w-6 h-6" /> }
    ];
 

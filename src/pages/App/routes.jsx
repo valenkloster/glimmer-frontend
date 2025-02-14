@@ -19,6 +19,7 @@ import AdminLayout from '../../components/AdminLayout';
 import SalesStats from '../../components/SalesStats';
 import Top5Products from '../../components/Top5Products';
 import StockControl from '../../components/StockControl';
+import PriceControl from '../../components/PriceControl';
 import OrderManagement from '../../components/OrderManagement';
 import OrderSummaryPage from '../OrderSummaryPage';
 
@@ -48,6 +49,7 @@ const AppRoutes = () => {
         { path: 'ventas', element: <SalesStats /> },
         { path: 'top5', element: <Top5Products /> },
         { path: 'stock', element: <StockControl /> },
+        { path: 'precios', element: <PriceControl /> },
         { path: 'pedidos', element: <OrderManagement /> },
       ]
     },

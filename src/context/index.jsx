@@ -45,6 +45,20 @@ export const ShoppingCartProvider = ({ children }) => {
     }
   };
 
+  const updateProductPrice = async (productId, newPrice) => {
+    try {
+      setLoading(true);
+      await productService.updatePrice(productId, newPrice);
+      const updatedProducts = await productService.getAll();
+      setProducts(updatedProducts.body);
+      setFilteredProducts(updatedProducts.body);
+    } catch (error) {
+      console.error('Error updating price:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const clearSearch = () => {
     setSearchQuery('');
     setFilteredProducts(products);
@@ -179,6 +193,7 @@ export const ShoppingCartProvider = ({ children }) => {
     lowStockProducts,
     loadLowStockProducts,
     updateProductStock,
+    updateProductPrice,
 
     // Filter State
     priceRange,
