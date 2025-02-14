@@ -16,7 +16,7 @@ const OrderSummaryPage = () => {
   const [paymentError, setPaymentError] = useState(null);
 
   const shippingCost = location.state?.shippingCost || 0;
-  const totalWithShipping = cartTotal + shippingCost;
+  const totalWithShipping = cartTotal + shippingCost.amounts.price_incl_tax;
 
   useEffect(() => {
     if (!selectedAddress || !cart) {
@@ -32,9 +32,7 @@ const OrderSummaryPage = () => {
       setPaymentLoading(true);
       setPaymentError(null);
       
-      // Guardamos los datos necesarios en localStorage
       localStorage.setItem('selectedAddressId', selectedAddress.id_direccion);
-      localStorage.setItem('shippingCost', shippingCost);
       localStorage.setItem('productsTotal', cartTotal);
   
       const { body } = await httpClient.post('/api/v1/pagos/create-payment', {
@@ -76,6 +74,17 @@ const OrderSummaryPage = () => {
               <p>{selectedAddress?.direccion?.direccion}</p>
               <p>{selectedAddress?.direccion?.localidad?.nombre}, {selectedAddress?.direccion?.localidad?.provincia?.nombre}, {selectedAddress?.direccion?.localidad?.provincia?.pais?.nombre}</p>
               <p>{selectedAddress?.direccion?.codigo_postal}</p>
+              {/* Fecha estimada de entrega */}
+              <div className="mt-4 pt-4 border-t border-white">
+                <p className="text-sm">
+                  <span className="font-medium">Fecha estimada de entrega: </span>
+                  {new Date(shippingCost.delivery_time.estimated_delivery).toLocaleDateString('es-AR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric'
+                  })}
+                </p>
+              </div>
             </div>
           </div>
 
@@ -117,7 +126,7 @@ const OrderSummaryPage = () => {
                     <p>Costo de envío</p>
                     <p className="text-sm text-gray-500">(IVA incluido)</p>
                 </div>
-                <p className="font-medium">${shippingCost.toLocaleString('es-AR')}</p>
+                <p className="font-medium">${shippingCost.amounts.price_incl_tax.toLocaleString('es-AR')}</p>
               </div>
 
               <div className="border-t border-white pt-4 mt-4">

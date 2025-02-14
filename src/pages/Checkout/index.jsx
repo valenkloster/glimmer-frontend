@@ -34,6 +34,8 @@ const CheckoutPage = () => {
         }));
             
         const shippingCost = await calculateShipping(shippingItems);
+        localStorage.setItem('shippingCost', shippingCost.amounts.price_incl_tax);
+        localStorage.setItem('shippingDate', shippingCost.delivery_time.estimated_delivery);
         window.scrollTo(0, 0);
         navigate('/checkout/summary', { 
           state: { 

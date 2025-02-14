@@ -16,20 +16,23 @@ const SuccessPage = () => {
         const token = localStorage.getItem('token');
         const id_direccion = localStorage.getItem('selectedAddressId');
         const shippingCost = localStorage.getItem('shippingCost');
+        const shippingDate = localStorage.getItem('shippingDate');
         const productsTotal = localStorage.getItem('productsTotal');
-        
+      
         if (status_payment === 'approved') {
           await httpClient.post('/api/v1/pagos/create-order', { 
             sub: token, 
             status: status_payment, 
             id_direccion,
             shippingCost: parseFloat(shippingCost),
-            productsTotal: parseFloat(productsTotal)
+            productsTotal: parseFloat(productsTotal),
+            shippingDate: shippingDate,
           });
 
           // Limpiamos todos los datos del localStorage
           localStorage.removeItem('selectedAddressId');
           localStorage.removeItem('shippingCost');
+          localStorage.removeItem('shippingDate');
           localStorage.removeItem('productsTotal');
           
           const interval = setInterval(() => {
